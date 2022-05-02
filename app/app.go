@@ -921,5 +921,5 @@ func initParamsKeeper(
 }
 
 func (app *Astra) setupUpgradeHandlers() {
-	//upgrade handler
+	// upgrade handler
 }
