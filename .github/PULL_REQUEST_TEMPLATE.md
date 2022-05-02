@@ -1,7 +1,18 @@
-👮🏻👮🏻👮🏻 !!!! REFERENCE THE PROBLEM YOUR ARE SOLVING IN THE PR TITLE AND DESCRIBE YOUR SOLUTION HERE !!!! DO NOT FORGET !!!! 👮🏻👮🏻👮🏻
+<!-- < < < < < < < < < < < < < < < < < < < < < < < < < < < < < < < < < ☺
+v                               ✰  Thanks for creating a PR! ✰    
+v    Before smashing the submit button please review the checkboxes.
+v    If a checkbox is n/a - please still include it but + a little note why
+☺ > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > >  -->
 
+## Description
 
-# PR Checklist:
+<!-- Add a description of the changes that this PR introduces and the files that
+are the most critical to review.
+-->
+
+Closes: #XXX
+
+## PR Checklist:
 
 - [ ] Have you read the [CONTRIBUTING.md](https://github.com/AstraProtocol/astra/blob/master/CONTRIBUTING.md)?
 - [ ] Does your PR follow the [C4 patch requirements](https://rfc.zeromq.org/spec:42/C4/#23-patch-requirements)?
@@ -16,4 +27,16 @@
 - [ ] If your changes affect public APIs, does your PR follow the [C4 evolution of public contracts](https://rfc.zeromq.org/spec:42/C4/#26-evolution-of-public-contracts)?
 - [ ] If your code changes public APIs, have you incremented the crate version numbers and documented your changes in the [CHANGELOG.md](https://github.com/AstraProtocol/astra/blob/master/CHANGELOG.md)?
 
-Thank you for your code, it's appreciated! :)
+
+______
+
+## Reviewers Checklist
+
+**All** items are required. Please add a note if the item is not applicable and please add your handle next to the items reviewed if you only reviewed selected items.
+
+I have...
+
+- [ ] confirmed the correct [type prefix](https://github.com/commitizen/conventional-commit-types/blob/v3.0.0/index.json) in the PR title
+- [ ] confirmed all author checklist items have been addressed
+- [ ] confirmed that this PR does not change production code
+
