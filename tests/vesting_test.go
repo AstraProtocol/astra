@@ -4,8 +4,13 @@ import (
 	"fmt"
 	"github.com/AstraProtocol/astra/v1/app"
 	"github.com/AstraProtocol/astra/v1/app/ante"
+	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
+	"github.com/ethereum/go-ethereum/common"
+	ethtypes "github.com/ethereum/go-ethereum/core/types"
 	"github.com/stretchr/testify/suite"
 	"github.com/tharsis/ethermint/encoding"
+	evmtypes "github.com/tharsis/ethermint/x/evm/types"
+	"math/big"
 	"testing"
 	"time"
 
@@ -23,7 +28,7 @@ func TestVestingTestingSuite(t *testing.T) {
 }
 
 // Example:
-// 21/10 Employee joins Evmos and vesting starts
+// 21/10 Employee joins Astra and vesting starts
 // 22/03 Mainnet launch
 // 22/09 Cliff ends
 // 23/02 Lock ends
@@ -269,6 +274,175 @@ func (suite *KeeperTestSuite) TestCrawbackVestingAccountsTokens() {
 	}
 }
 
+// Example:
+// 21/10 Employee joins Astra and vesting starts
+// 22/03 Mainnet launch
+// 22/09 Cliff ends
+// 23/02 Lock ends
+func (suite *KeeperTestSuite) TestCrawbackVestingAccounts() {
+	// Monthly vesting period
+	stakeDenom := stakingtypes.DefaultParams().BondDenom
+	amt := sdk.NewInt(1)
+	vestingLength := int64(60 * 60 * 24 * 30) // in seconds
+	vestingAmt := sdk.NewCoins(sdk.NewCoin(stakeDenom, amt))
+	vestingPeriod := sdkvesting.Period{Length: vestingLength, Amount: vestingAmt}
+
+	// 4 years vesting total
+	periodsTotal := int64(48)
+	vestingAmtTotal := sdk.NewCoins(sdk.NewCoin(stakeDenom, amt.Mul(sdk.NewInt(periodsTotal))))
+
+	// 6 month cliff
+	cliff := int64(6)
+	cliffLength := vestingLength * cliff
+	cliffAmt := sdk.NewCoins(sdk.NewCoin(stakeDenom, amt.Mul(sdk.NewInt(cliff))))
+	cliffPeriod := sdkvesting.Period{Length: cliffLength, Amount: cliffAmt}
+
+	// 12 month lockup
+	lockup := int64(12) // 12 year
+	lockupLength := vestingLength * lockup
+	lockupPeriod := sdkvesting.Period{Length: lockupLength, Amount: vestingAmtTotal}
+	lockupPeriods := sdkvesting.Periods{lockupPeriod}
+
+	// Create vesting periods with initial cliff
+	vestingPeriods := sdkvesting.Periods{cliffPeriod}
+	for p := int64(1); p <= periodsTotal-cliff; p++ {
+		vestingPeriods = append(vestingPeriods, vestingPeriod)
+	}
+
+	var (
+		clawbackAccount *types.ClawbackVestingAccount
+		unvested        sdk.Coins
+		vested          sdk.Coins
+	)
+
+	addr, _ := sdk.AccAddressFromBech32("astra1gcgds44pfkkc46tecucgtlrwjmrawy44wlpk3g")
+
+	testCases := []struct {
+		name     string
+		malleate func()
+	}{
+		{
+			"before first vesting period",
+			func() {
+				err := suite.delegate(clawbackAccount, 100)
+				suite.Require().Error(err, "cannot delegate tokens")
+
+				err = suite.app.BankKeeper.SendCoins(
+					suite.ctx,
+					addr,
+					tests.GenerateAddress().Bytes(),
+					unvested,
+				)
+				suite.Require().Error(err, "cannot transfer tokens")
+
+				err = suite.performEthTx(clawbackAccount)
+				suite.Require().Error(err, "cannot perform Ethereum tx")
+			},
+		},
+		{
+			"after first vesting period and before lockup",
+			func() {
+				// Surpass cliff but not lockup duration
+				cliffDuration := time.Duration(cliffLength)
+				suite.CommitAfter(cliffDuration * time.Second)
+
+				// Check if some, but not all tokens are vested
+				vested = clawbackAccount.GetVestedOnly(suite.ctx.BlockTime())
+				expVested := sdk.NewCoins(sdk.NewCoin(stakeDenom, amt.Mul(sdk.NewInt(cliff))))
+				suite.Require().NotEqual(vestingAmtTotal, vested)
+				suite.Require().Equal(expVested, vested)
+
+				err := suite.delegate(clawbackAccount, 1)
+				suite.Require().NoError(err, "can delegate vested tokens")
+
+				err = suite.app.BankKeeper.SendCoins(
+					suite.ctx,
+					addr,
+					tests.GenerateAddress().Bytes(),
+					vested,
+				)
+
+				suite.Require().Error(err, "cannot transfer vested tokens")
+
+				err = suite.performEthTx(clawbackAccount)
+
+				suite.Require().Error(err, "cannot perform Ethereum tx")
+			},
+		},
+		{
+			"after first vesting period and lockup",
+			func() {
+				// Surpass lockup duration
+				lockupDuration := time.Duration(lockupLength)
+				suite.CommitAfter(lockupDuration * time.Second)
+
+				// Check if some, but not all tokens are vested
+				unvested = clawbackAccount.GetUnvestedOnly(suite.ctx.BlockTime())
+				vested = clawbackAccount.GetVestedOnly(suite.ctx.BlockTime())
+				expVested := sdk.NewCoins(sdk.NewCoin(stakeDenom, amt.Mul(sdk.NewInt(lockup))))
+				suite.Require().NotEqual(vestingAmtTotal, vested)
+				suite.Require().Equal(expVested, vested)
+
+				err := suite.delegate(clawbackAccount, 1)
+				suite.Require().NoError(err, "can delegate vested tokens")
+
+				err = suite.delegate(clawbackAccount, 30)
+				suite.Require().Error(err, "cannot delegate unvested tokens")
+
+				err = suite.app.BankKeeper.SendCoins(
+					suite.ctx,
+					addr,
+					tests.GenerateAddress().Bytes(),
+					vested,
+				)
+				suite.Require().NoError(err, "can transfer vested tokens")
+
+				err = suite.app.BankKeeper.SendCoins(
+					suite.ctx,
+					addr,
+					tests.GenerateAddress().Bytes(),
+					unvested,
+				)
+				suite.Require().Error(err, "cannot transfer unvested tokens")
+
+				err = suite.performEthTx(clawbackAccount)
+				suite.Require().NoError(err, "can perform ethereum tx")
+			},
+		},
+	}
+
+	for _, tc := range testCases {
+		suite.Run(fmt.Sprintf("Case %s", tc.name), func() {
+			suite.SetupTest()
+
+			// Create and fund periodic vesting account
+			vestingStart := suite.ctx.BlockTime()
+			baseAccount := authtypes.NewBaseAccountWithAddress(addr)
+			funder := sdk.AccAddress(types.ModuleName)
+			clawbackAccount = types.NewClawbackVestingAccount(
+				baseAccount,
+				funder,
+				vestingAmtTotal,
+				vestingStart,
+				lockupPeriods,
+				vestingPeriods,
+			)
+			err := testutil.FundAccount(suite.app.BankKeeper, suite.ctx, addr, vestingAmtTotal)
+			suite.Require().NoError(err)
+			acc := suite.app.AccountKeeper.NewAccount(suite.ctx, clawbackAccount)
+			suite.app.AccountKeeper.SetAccount(suite.ctx, acc)
+
+			// Check if all tokens are unvested at vestingStart
+			unvested = clawbackAccount.GetUnvestedOnly(suite.ctx.BlockTime())
+			vested = clawbackAccount.GetVestedOnly(suite.ctx.BlockTime())
+			suite.Require().Equal(vestingAmtTotal, unvested)
+			suite.Require().True(vested.IsZero())
+
+			tc.malleate()
+		})
+	}
+}
+
 func nextFn(ctx sdk.Context, _ sdk.Tx, _ bool) (sdk.Context, error) {
 	return ctx, nil
 }
@@ -287,6 +461,28 @@ func (suite *KeeperTestSuite) delegate(clawbackAccount *types.ClawbackVestingAcc
 	tx := txBuilder.GetTx()
 
 	dec := ante.NewVestingDelegationDecorator(suite.app.AccountKeeper, suite.app.StakingKeeper, types.ModuleCdc)
+	_, err = dec.AnteHandle(suite.ctx, tx, false, nextFn)
+	return err
+}
+
+func (suite *KeeperTestSuite) performEthTx(clawbackAccount *types.ClawbackVestingAccount) error {
+	addr, err := sdk.AccAddressFromBech32(clawbackAccount.Address)
+	suite.Require().NoError(err)
+	chainID := suite.app.EvmKeeper.ChainID()
+	from := common.BytesToAddress(addr.Bytes())
+	nonce := suite.app.EvmKeeper.GetNonce(suite.ctx, from)
+
+	msgEthereumTx := evmtypes.NewTx(chainID, nonce, &from, nil, 100000, nil,
+		suite.app.FeeMarketKeeper.GetBaseFee(suite.ctx), big.NewInt(1), nil, &ethtypes.AccessList{})
+	msgEthereumTx.From = from.String()
+
+	encodingConfig := encoding.MakeConfig(app.ModuleBasics)
+	txBuilder := encodingConfig.TxConfig.NewTxBuilder()
+	txBuilder.SetMsgs(msgEthereumTx)
+	tx := txBuilder.GetTx()
+
+	// Call Ante decorator
+	dec := ante.NewEthVestingTransactionDecorator(suite.app.AccountKeeper)
 	_, err = dec.AnteHandle(suite.ctx, tx, false, nextFn)
 	return err
 }
