@@ -3,6 +3,7 @@ package tests
 import (
 	"encoding/json"
 	"fmt"
+	stakingkeeper "github.com/cosmos/cosmos-sdk/x/staking/keeper"
 	"math/big"
 	"testing"
 	"time"
@@ -55,11 +56,17 @@ type KeeperTestSuite struct {
 	queryClient      types.QueryClient
 	address          common.Address
 	consAddress      sdk.ConsAddress
+	validator        stakingtypes.Validator
 	clientCtx        client.Context
 	ethSigner        ethtypes.Signer
 	signer           keyring.Signer
 	mintFeeCollector bool
 }
+
+var (
+	contract  common.Address
+	contract2 common.Address
+)
 
 var s *KeeperTestSuite
 
@@ -166,16 +173,26 @@ func (suite *KeeperTestSuite) DoSetupTest(t require.TestingT) {
 
 	suite.app.AccountKeeper.SetAccount(suite.ctx, acc)
 
+	// Set Validator
 	valAddr := sdk.ValAddress(suite.address.Bytes())
 	validator, err := stakingtypes.NewValidator(valAddr, priv.PubKey(), stakingtypes.Description{})
 	require.NoError(t, err)
+	validator = stakingkeeper.TestingUpdateValidator(suite.app.StakingKeeper, suite.ctx, validator, true)
+	suite.app.StakingKeeper.AfterValidatorCreated(suite.ctx, validator.GetOperator())
 	err = suite.app.StakingKeeper.SetValidatorByConsAddr(suite.ctx, validator)
 	require.NoError(t, err)
-	suite.app.StakingKeeper.SetValidator(suite.ctx, validator)
+	validators := suite.app.StakingKeeper.GetValidators(suite.ctx, 1)
+	suite.validator = validators[0]
 
 	encodingConfig := encoding.MakeConfig(app.ModuleBasics)
 	suite.clientCtx = client.Context{}.WithTxConfig(encodingConfig.TxConfig)
 	suite.ethSigner = ethtypes.LatestSignerForChainID(suite.app.EvmKeeper.ChainID())
+
+	// Deploy contracts
+	contract, err = suite.DeployContract(erc20Name, erc20Symbol, erc20Decimals)
+	require.NoError(t, err)
+	contract2, err = suite.DeployContract(erc20Name2, erc20Symbol2, erc20Decimals)
+	require.NoError(t, err)
 }
 
 func (suite *KeeperTestSuite) SetupTest() {
@@ -588,4 +605,22 @@ func (suite *KeeperTestSuite) setupRegisterCoin() (banktypes.Metadata, *types.To
 	suite.Require().NoError(err)
 	suite.Commit()
 	return validMetadata, pair
+}
+
+// CommitAfter Commit commits a block at a given time.
+func (suite *KeeperTestSuite) CommitAfter(t time.Duration) {
+	_ = suite.app.Commit()
+	header := suite.ctx.BlockHeader()
+	header.Height += 1
+	header.Time = header.Time.Add(t)
+	suite.app.BeginBlock(abci.RequestBeginBlock{
+		Header: header,
+	})
+
+	// update ctx
+	suite.ctx = suite.app.BaseApp.NewContext(false, header)
+
+	queryHelper := baseapp.NewQueryServerTestHelper(suite.ctx, suite.app.InterfaceRegistry())
+	evm.RegisterQueryServer(queryHelper, suite.app.EvmKeeper)
+	suite.queryClientEvm = evm.NewQueryClient(queryHelper)
 }
