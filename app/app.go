@@ -109,16 +109,16 @@ import (
 	feemarkettypes "github.com/tharsis/ethermint/x/feemarket/types"
 
 	"github.com/AstraProtocol/astra/v1/app/ante"
-	"github.com/tharsis/evmos/v3/x/epochs"
-	epochskeeper "github.com/tharsis/evmos/v3/x/epochs/keeper"
-	epochstypes "github.com/tharsis/evmos/v3/x/epochs/types"
-	"github.com/tharsis/evmos/v3/x/erc20"
-	erc20client "github.com/tharsis/evmos/v3/x/erc20/client"
-	erc20keeper "github.com/tharsis/evmos/v3/x/erc20/keeper"
-	erc20types "github.com/tharsis/evmos/v3/x/erc20/types"
-	"github.com/tharsis/evmos/v3/x/vesting"
-	vestingkeeper "github.com/tharsis/evmos/v3/x/vesting/keeper"
-	vestingtypes "github.com/tharsis/evmos/v3/x/vesting/types"
+	"github.com/tharsis/evmos/v4/x/epochs"
+	epochskeeper "github.com/tharsis/evmos/v4/x/epochs/keeper"
+	epochstypes "github.com/tharsis/evmos/v4/x/epochs/types"
+	"github.com/tharsis/evmos/v4/x/erc20"
+	erc20client "github.com/tharsis/evmos/v4/x/erc20/client"
+	erc20keeper "github.com/tharsis/evmos/v4/x/erc20/keeper"
+	erc20types "github.com/tharsis/evmos/v4/x/erc20/types"
+	"github.com/tharsis/evmos/v4/x/vesting"
+	vestingkeeper "github.com/tharsis/evmos/v4/x/vesting/keeper"
+	vestingtypes "github.com/tharsis/evmos/v4/x/vesting/types"
 )
 
 func init() {
@@ -162,7 +162,7 @@ var (
 			ibcclientclient.UpdateClientProposalHandler, ibcclientclient.UpgradeProposalHandler,
 			// Astra proposal types
 			erc20client.RegisterCoinProposalHandler, erc20client.RegisterERC20ProposalHandler,
-			erc20client.ToggleTokenRelayProposalHandler, erc20client.UpdateTokenPairERC20ProposalHandler,
+			erc20client.ToggleTokenConversionProposalHandler,
 		),
 		params.AppModuleBasic{},
 		crisis.AppModuleBasic{},
