@@ -1,49 +1,86 @@
-{ lib
-, buildGoApplication
-, nix-gitignore
-, rocksdb ? null
-, db_backend ? "rocksdb"
-, network ? "mainnet"  # mainnet|testnet
-, rev ? "dirty"
-}:
+{ sources ? import ./sources.nix, system ? builtins.currentSystem, ... }:
+
 let
-  version = "v0.1.0";
-  pname = "astrad";
-  tags = lib.concatStringsSep "," (
-    [ "ledger" "cgo" network ]
-    ++ lib.lists.optionals (db_backend == "rocksdb") [ "rocksdb" ]
-  );
-  ldflags = lib.concatStringsSep "\n" ([
-    "-X github.com/cosmos/cosmos-sdk/version.Name=astra"
-    "-X github.com/cosmos/cosmos-sdk/version.AppName=${pname}"
-    "-X github.com/cosmos/cosmos-sdk/version.Version=${version}"
-    "-X github.com/cosmos/cosmos-sdk/version.BuildTags=${tags}"
-    "-X github.com/cosmos/cosmos-sdk/version.Commit=${rev}"
-  ] ++ lib.lists.optionals (db_backend == "rocksdb") [
-    "-X github.com/cosmos/cosmos-sdk/types.DBBackend=rocksdb"
-  ]);
-  buildInputs = lib.lists.optionals (db_backend == "rocksdb") [
-    rocksdb
-  ];
+  dapptools = {
+    x86_64-linux =
+      (import (sources.dapptools + "/release.nix") { }).dapphub.linux.stable;
+    x86_64-darwin =
+      (import (sources.dapptools + "/release.nix") { }).dapphub.darwin.stable;
+  }.${system} or (throw
+    "Unsupported system: ${system}");
 in
-buildGoApplication rec {
-  inherit pname version buildInputs;
-  src = (nix-gitignore.gitignoreSourcePure [
-    "/*" # ignore all, then add whitelists
-    "!/x/"
-    "!/app/"
-    "!/cmd/"
-    "!/client/"
-    "!go.mod"
-    "!go.sum"
-  ] ./.);
-  modules = ./gomod2nix.toml;
-  pwd = src; # needed to support replace
-  subPackages = [ "cmd/astrad" ];
-  CGO_ENABLED = "1";
-  buildFlags = "-tags=${tags}";
-  buildFlagsArray = ''
-    -ldflags=
-    ${ldflags}
-  '';
+import sources.nixpkgs {
+  overlays = [
+    (_: pkgs: dapptools) # use released version to hit the binary cache
+    (import "${sources.poetry2nix}/overlay.nix")
+    (_: pkgs: {
+      go = pkgs.go_1_17;
+      go-ethereum = pkgs.callPackage ./go-ethereum.nix {
+        inherit (pkgs.darwin) libobjc;
+        inherit (pkgs.darwin.apple_sdk.frameworks) IOKit;
+        buildGoModule = pkgs.buildGo117Module;
+      };
+    }) # update to a version that supports eip-1559
+    (_: pkgs: rec {
+      buildGoApplication = pkgs.callPackage (import (sources.gomod2nix + "/builder")) {
+        go = pkgs.go_1_17;
+      };
+      gomod2nix = pkgs.callPackage (import (sources.gomod2nix)) {
+        inherit buildGoApplication;
+      };
+    })
+    (_: pkgs: {
+      pystarport = pkgs.poetry2nix.mkPoetryApplication rec {
+        projectDir = sources.pystarport;
+        src = projectDir;
+      };
+    })
+    (_: pkgs:
+      import ./scripts.nix {
+        inherit pkgs;
+        config = {
+          chainmain-config = ../scripts/chainmain-devnet.yaml;
+          cronos-config = ../scripts/cronos-devnet.yaml;
+          hermes-config = ../scripts/hermes.toml;
+          geth-genesis = ../scripts/geth-genesis.json;
+          dotenv = builtins.path { name = "dotenv"; path = ../scripts/.env; };
+        };
+      })
+    (_: pkgs: {
+      gorc = pkgs.rustPlatform.buildRustPackage rec {
+        name = "gorc";
+        src = sources.gravity-bridge;
+        sourceRoot = "gravity-bridge-src/orchestrator";
+        cargoSha256 = "sha256-OX/cG4p6XGZX85QxmDH/uTvGqvnV+B6TWEL3fyk5/zc=";
+        cargoBuildFlags = "-p ${name} --features ethermint";
+        buildInputs = pkgs.lib.optionals pkgs.stdenv.isDarwin
+          (with pkgs.darwin.apple_sdk.frameworks; [ CoreFoundation Security ]);
+        doCheck = false;
+        OPENSSL_NO_VENDOR = "1";
+        OPENSSL_DIR = pkgs.symlinkJoin {
+          name = "openssl";
+          paths = with pkgs.openssl; [ out dev ];
+        };
+      };
+    })
+    (_: pkgs: { test-env = import ./testenv.nix { inherit pkgs; }; })
+    (_: pkgs: {
+      rocksdb = pkgs.rocksdb.overrideAttrs (old: rec {
+        pname = "rocksdb";
+        version = "6.27.3";
+        src = sources.rocksdb;
+      });
+    })
+    (_: pkgs: {
+      cosmovisor = pkgs.buildGo117Module rec {
+        name = "cosmovisor";
+        src = sources.cosmos-sdk + "/cosmovisor";
+        subPackages = [ "./cmd/cosmovisor" ];
+        vendorSha256 = "sha256-OAXWrwpartjgSP7oeNvDJ7cTR9lyYVNhEM8HUnv3acE=";
+        doCheck = false;
+      };
+    })
+  ];
+  config = { };
+  inherit system;
 }
