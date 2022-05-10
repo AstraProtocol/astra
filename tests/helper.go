@@ -1,9 +1,13 @@
 package tests
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	stakingkeeper "github.com/cosmos/cosmos-sdk/x/staking/keeper"
+	"github.com/ethereum/go-ethereum/core"
+	"github.com/ethereum/go-ethereum/core/vm"
+	"github.com/stretchr/testify/mock"
 	"math/big"
 	"testing"
 	"time"
@@ -38,6 +42,8 @@ import (
 	"github.com/tharsis/ethermint/server/config"
 	"github.com/tharsis/ethermint/tests"
 	ethermint "github.com/tharsis/ethermint/types"
+	evmtypes "github.com/tharsis/ethermint/x/evm/types"
+
 	"github.com/tharsis/ethermint/x/evm/statedb"
 	evm "github.com/tharsis/ethermint/x/evm/types"
 	feemarkettypes "github.com/tharsis/ethermint/x/feemarket/types"
@@ -623,4 +629,95 @@ func (suite *KeeperTestSuite) CommitAfter(t time.Duration) {
 	queryHelper := baseapp.NewQueryServerTestHelper(suite.ctx, suite.app.InterfaceRegistry())
 	evm.RegisterQueryServer(queryHelper, suite.app.EvmKeeper)
 	suite.queryClientEvm = evm.NewQueryClient(queryHelper)
+}
+
+var _ types.EVMKeeper = &MockEVMKeeper{}
+
+type MockEVMKeeper struct {
+	mock.Mock
+}
+
+func (m *MockEVMKeeper) GetParams(ctx sdk.Context) evmtypes.Params {
+	args := m.Called(mock.Anything)
+	return args.Get(0).(evmtypes.Params)
+}
+
+func (m *MockEVMKeeper) GetAccountWithoutBalance(ctx sdk.Context, addr common.Address) *statedb.Account {
+	args := m.Called(mock.Anything, mock.Anything)
+	if args.Get(0) == nil {
+		return nil
+	}
+	return args.Get(0).(*statedb.Account)
+}
+
+func (m *MockEVMKeeper) EstimateGas(c context.Context, req *evmtypes.EthCallRequest) (*evmtypes.EstimateGasResponse, error) {
+	args := m.Called(mock.Anything, mock.Anything)
+	if args.Get(0) == nil {
+		return nil, args.Error(1)
+	}
+	return args.Get(0).(*evmtypes.EstimateGasResponse), args.Error(1)
+}
+
+func (m *MockEVMKeeper) ApplyMessage(ctx sdk.Context, msg core.Message, tracer vm.EVMLogger, commit bool) (*evmtypes.MsgEthereumTxResponse, error) {
+	args := m.Called(mock.Anything, mock.Anything, mock.Anything, mock.Anything)
+
+	if args.Get(0) == nil {
+		return nil, args.Error(1)
+	}
+	return args.Get(0).(*evmtypes.MsgEthereumTxResponse), args.Error(1)
+}
+
+var _ types.BankKeeper = &MockBankKeeper{}
+
+type MockBankKeeper struct {
+	mock.Mock
+}
+
+func (b *MockBankKeeper) SendCoinsFromModuleToAccount(ctx sdk.Context, senderModule string, recipientAddr sdk.AccAddress, amt sdk.Coins) error {
+	args := b.Called(mock.Anything, mock.Anything, mock.Anything, mock.Anything)
+	return args.Error(0)
+}
+
+func (b *MockBankKeeper) SendCoinsFromAccountToModule(ctx sdk.Context, senderAddr sdk.AccAddress, recipientModule string, amt sdk.Coins) error {
+	args := b.Called(mock.Anything, mock.Anything, mock.Anything, mock.Anything)
+	return args.Error(0)
+}
+
+func (b *MockBankKeeper) MintCoins(ctx sdk.Context, moduleName string, amt sdk.Coins) error {
+	args := b.Called(mock.Anything, mock.Anything, mock.Anything)
+	return args.Error(0)
+}
+
+func (b *MockBankKeeper) BurnCoins(ctx sdk.Context, moduleName string, amt sdk.Coins) error {
+	args := b.Called(mock.Anything, mock.Anything, mock.Anything)
+	return args.Error(0)
+}
+
+func (b *MockBankKeeper) IsSendEnabledCoin(ctx sdk.Context, coin sdk.Coin) bool {
+	args := b.Called(mock.Anything, mock.Anything)
+	return args.Bool(0)
+}
+
+func (b *MockBankKeeper) BlockedAddr(addr sdk.AccAddress) bool {
+	args := b.Called(mock.Anything)
+	return args.Bool(0)
+}
+
+func (b *MockBankKeeper) GetDenomMetaData(ctx sdk.Context, denom string) (banktypes.Metadata, bool) {
+	args := b.Called(mock.Anything, mock.Anything)
+	return args.Get(0).(banktypes.Metadata), args.Bool(1)
+}
+
+func (b *MockBankKeeper) SetDenomMetaData(ctx sdk.Context, denomMetaData banktypes.Metadata) {
+
+}
+
+func (b *MockBankKeeper) HasSupply(ctx sdk.Context, denom string) bool {
+	args := b.Called(mock.Anything, mock.Anything)
+	return args.Bool(0)
+}
+
+func (b *MockBankKeeper) GetBalance(ctx sdk.Context, addr sdk.AccAddress, denom string) sdk.Coin {
+	args := b.Called(mock.Anything, mock.Anything)
+	return args.Get(0).(sdk.Coin)
 }
