@@ -13,6 +13,7 @@ def test_simple(cluster):
         {"denom": "basecro", "amount": "20000000000"}
     ]
 
+
 def test_transfer(cluster):
     """
     check simple transfer tx success

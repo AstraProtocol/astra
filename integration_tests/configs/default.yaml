@@ -15,7 +15,7 @@ chaintest:
       coins: 200astra
       vesting: "60s"
     - name: launch
-      coins: 200astra
+      coins: 100astra
   genesis:
     app_state:
       staking:
