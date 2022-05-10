@@ -1,4 +1,4 @@
-chaintest:
+astra_testnet-1:
   cmd: astrad
   start-flags: "--trace"
   validators:
