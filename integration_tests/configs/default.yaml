@@ -1,4 +1,4 @@
-astra_testnet-1:
+astra_777-1:
   cmd: astrad
   start-flags: "--trace"
   validators:
