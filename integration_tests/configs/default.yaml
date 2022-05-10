@@ -1,0 +1,23 @@
+chaintest:
+  cmd: astrad
+  start-flags: "--trace"
+  validators:
+    - coins: 10astra
+      staked: 10astra
+    - coins: 10astra
+      staked: 10astra
+  accounts:
+    - name: community
+      coins: 100astra
+    - name: ecosystem
+      coins: 200astra
+    - name: reserve
+      coins: 200astra
+      vesting: "60s"
+    - name: launch
+      coins: 100astra
+  genesis:
+    app_state:
+      staking:
+        params:
+          unbonding_time: "10s"
