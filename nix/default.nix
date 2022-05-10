@@ -39,9 +39,7 @@ import sources.nixpkgs {
       import ./scripts.nix {
         inherit pkgs;
         config = {
-          chainmain-config = ../scripts/chainmain-devnet.yaml;
-          cronos-config = ../scripts/cronos-devnet.yaml;
-          hermes-config = ../scripts/hermes.toml;
+          astra-config = ../integration_tests/configs/default.yaml;
           geth-genesis = ../scripts/geth-genesis.json;
           dotenv = builtins.path { name = "dotenv"; path = ../scripts/.env; };
         };
