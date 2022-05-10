@@ -3,7 +3,10 @@ package tests
 import (
 	"fmt"
 	"github.com/ethereum/go-ethereum/common"
+	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/suite"
+	evmtypes "github.com/tharsis/ethermint/x/evm/types"
+	"github.com/tharsis/evmos/v4/x/erc20/keeper"
 	"github.com/tharsis/evmos/v4/x/erc20/types"
 	"testing"
 )
@@ -23,7 +26,7 @@ func (suite KeeperTestSuite) TestRegisterERC20() {
 		expPass  bool
 	}{
 		{
-			"intrarelaying is disabled globally",
+			"conversion is disabled globally",
 			func() {
 				params := types.DefaultParams()
 				params.EnableErc20 = false
@@ -56,6 +59,18 @@ func (suite KeeperTestSuite) TestRegisterERC20() {
 			"ok",
 			func() {},
 			true,
+		},
+		{
+			"force fail evm",
+			func() {
+				mockEVMKeeper := &MockEVMKeeper{}
+				sp, found := suite.app.ParamsKeeper.GetSubspace(types.ModuleName)
+				suite.Require().True(found)
+				suite.app.Erc20Keeper = keeper.NewKeeper(suite.app.GetKey("erc20"), suite.app.AppCodec(), sp, suite.app.AccountKeeper, suite.app.BankKeeper, mockEVMKeeper)
+				mockEVMKeeper.On("EstimateGas", mock.Anything, mock.Anything).Return(&evmtypes.EstimateGasResponse{Gas: uint64(200)}, nil)
+				mockEVMKeeper.On("ApplyMessage", mock.Anything, mock.Anything, mock.Anything, mock.Anything).Return(nil, fmt.Errorf("forced ApplyMessage error"))
+			},
+			false,
 		},
 	}
 	for _, tc := range testCases {
