@@ -2,9 +2,12 @@ package tests
 
 import (
 	"fmt"
+	sdk "github.com/cosmos/cosmos-sdk/types"
+	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/suite"
+	"github.com/tharsis/ethermint/tests"
 	evmtypes "github.com/tharsis/ethermint/x/evm/types"
 	"github.com/tharsis/evmos/v4/x/erc20/keeper"
 	"github.com/tharsis/evmos/v4/x/erc20/types"
@@ -185,6 +188,184 @@ func (suite KeeperTestSuite) TestToggleConversion() {
 				} else {
 					suite.Require().False(pair.Enabled)
 				}
+			} else {
+				suite.Require().Error(err, tc.name)
+			}
+		})
+	}
+}
+
+func (suite KeeperTestSuite) TestRegisterCoin() {
+	metadata := banktypes.Metadata{
+		Description: "description",
+		Base:        cosmosTokenBase,
+		// NOTE: Denom units MUST be increasing
+		DenomUnits: []*banktypes.DenomUnit{
+			{
+				Denom:    cosmosTokenBase,
+				Exponent: 0,
+			},
+			{
+				Denom:    cosmosTokenDisplay,
+				Exponent: defaultExponent,
+			},
+		},
+		Name:    cosmosTokenBase,
+		Symbol:  erc20Symbol,
+		Display: cosmosTokenDisplay,
+	}
+
+	testCases := []struct {
+		name     string
+		malleate func()
+		expPass  bool
+	}{
+		{
+			"conversion is disabled globally",
+			func() {
+				params := types.DefaultParams()
+				params.EnableErc20 = false
+				suite.app.Erc20Keeper.SetParams(suite.ctx, params)
+			},
+			false,
+		},
+		{
+			"denom already registered",
+			func() {
+				regPair := types.NewTokenPair(tests.GenerateAddress(), metadata.Base, true, types.OWNER_MODULE)
+				suite.app.Erc20Keeper.SetDenomMap(suite.ctx, regPair.Denom, regPair.GetID())
+				suite.Commit()
+			},
+			false,
+		},
+		{
+			"token doesn't have supply",
+			func() {
+			},
+			false,
+		},
+		{
+			"metadata different that stored",
+			func() {
+				metadata.Base = cosmosTokenBase
+				validMetadata := banktypes.Metadata{
+					Description: "description",
+					Base:        cosmosTokenBase,
+					// NOTE: Denom units MUST be increasing
+					DenomUnits: []*banktypes.DenomUnit{
+						{
+							Denom:    cosmosTokenBase,
+							Exponent: 0,
+						},
+						{
+							Denom:    cosmosTokenDisplay,
+							Exponent: uint32(18),
+						},
+					},
+					Name:    erc20Name,
+					Symbol:  erc20Symbol,
+					Display: cosmosTokenDisplay,
+				}
+
+				err := suite.app.BankKeeper.MintCoins(suite.ctx, types.ModuleName, sdk.Coins{sdk.NewInt64Coin(validMetadata.Base, 1)})
+				suite.Require().NoError(err)
+				suite.app.BankKeeper.SetDenomMetaData(suite.ctx, validMetadata)
+			},
+			false,
+		},
+		{
+			"evm denom registration - evm",
+			func() {
+				metadata.Base = "evm"
+				err := suite.app.BankKeeper.MintCoins(suite.ctx, types.ModuleName, sdk.Coins{sdk.NewInt64Coin(metadata.Base, 1)})
+				suite.Require().NoError(err)
+			},
+			false,
+		},
+		{
+			"evm denom registration - Astra",
+			func() {
+				metadata.Base = "astra"
+				err := suite.app.BankKeeper.MintCoins(suite.ctx, types.ModuleName, sdk.Coins{sdk.NewInt64Coin(metadata.Base, 1)})
+				suite.Require().NoError(err)
+			},
+			false,
+		},
+		{
+			"evm denom registration - aastra",
+			func() {
+				metadata.Base = "aastra"
+				err := suite.app.BankKeeper.MintCoins(suite.ctx, types.ModuleName, sdk.Coins{sdk.NewInt64Coin(metadata.Base, 1)})
+				suite.Require().NoError(err)
+			},
+			false,
+		},
+		{
+			"evm denom registration - wastra",
+			func() {
+				metadata.Base = "wastra"
+				err := suite.app.BankKeeper.MintCoins(suite.ctx, types.ModuleName, sdk.Coins{sdk.NewInt64Coin(metadata.Base, 1)})
+				suite.Require().NoError(err)
+			},
+			false,
+		},
+		{
+			"ok",
+			func() {
+				metadata.Base = cosmosTokenBase
+				err := suite.app.BankKeeper.MintCoins(suite.ctx, types.ModuleName, sdk.Coins{sdk.NewInt64Coin(metadata.Base, 1)})
+				suite.Require().NoError(err)
+			},
+			true,
+		},
+		{
+			"force fail evm",
+			func() {
+				metadata.Base = cosmosTokenBase
+				err := suite.app.BankKeeper.MintCoins(suite.ctx, types.ModuleName, sdk.Coins{sdk.NewInt64Coin(metadata.Base, 1)})
+				suite.Require().NoError(err)
+
+				mockEVMKeeper := &MockEVMKeeper{}
+				sp, found := suite.app.ParamsKeeper.GetSubspace(types.ModuleName)
+				suite.Require().True(found)
+				suite.app.Erc20Keeper = keeper.NewKeeper(suite.app.GetKey("erc20"), suite.app.AppCodec(), sp, suite.app.AccountKeeper, suite.app.BankKeeper, mockEVMKeeper)
+				mockEVMKeeper.On("EstimateGas", mock.Anything, mock.Anything).Return(&evmtypes.EstimateGasResponse{Gas: uint64(200)}, nil)
+				mockEVMKeeper.On("ApplyMessage", mock.Anything, mock.Anything, mock.Anything, mock.Anything).Return(nil, fmt.Errorf("forced ApplyMessage error"))
+			},
+			false,
+		},
+		{
+			"force delete module account evm",
+			func() {
+				metadata.Base = cosmosTokenBase
+				err := suite.app.BankKeeper.MintCoins(suite.ctx, types.ModuleName, sdk.Coins{sdk.NewInt64Coin(metadata.Base, 1)})
+				suite.Require().NoError(err)
+
+				acc := suite.app.AccountKeeper.GetAccount(suite.ctx, types.ModuleAddress.Bytes())
+				suite.app.AccountKeeper.RemoveAccount(suite.ctx, acc)
+			},
+			false,
+		},
+	}
+	for _, tc := range testCases {
+		suite.Run(fmt.Sprintf("Case %s", tc.name), func() {
+			suite.SetupTest() // reset
+
+			tc.malleate()
+
+			pair, err := suite.app.Erc20Keeper.RegisterCoin(suite.ctx, metadata)
+			suite.Commit()
+
+			expPair := &types.TokenPair{
+				Erc20Address:  "0x80b5a32E4F032B2a058b4F29EC95EEfEEB87aDcd",
+				Denom:         "acoin",
+				Enabled:       true,
+				ContractOwner: 1,
+			}
+
+			if tc.expPass {
+				suite.Require().NoError(err, tc.name)
+				suite.Require().Equal(pair, expPair)
 			} else {
 				suite.Require().Error(err, tc.name)
 			}
