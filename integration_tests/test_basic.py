@@ -1,5 +1,3 @@
-from pystarport import cluster
-
 def test_simple(cluster):
     """
     - check number of validators
