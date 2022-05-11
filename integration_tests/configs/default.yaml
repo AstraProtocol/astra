@@ -9,15 +9,6 @@ astra_777-1:
   accounts:
     - name: community
       coins: 100astra
-    - name: ecosystem
-      coins: 200astra
     - name: reserve
       coins: 200astra
       vesting: "1d"
-    - name: launch
-      coins: 100astra
-  genesis:
-    app_state:
-      staking:
-        params:
-          unbonding_time: "1d"
