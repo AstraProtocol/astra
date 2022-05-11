@@ -1,0 +1,53 @@
+dotenv: .env
+astra_777-1:
+  cmd: astrad
+  start-flags: "--trace"
+  app-config:
+    minimum-gas-prices: 0aastra
+    index-events:
+      - ethereum_tx.ethereumTxHash
+    json-rpc:
+      address: "0.0.0.0:8545"
+      ws-address: "0.0.0.0:8546"
+      api: "eth,net,web3,debug,astra"
+  validators:
+    - coins: 10000astra
+      staked: 1000astra
+    - coins: 10000astra
+      staked: 1000astra
+  accounts:
+    - name: community
+      coins: 10000000000000000000000aastra
+    - name: signer1
+      coins: 20000000000000000000000aastra
+    - name: signer2
+      coins: 30000000000000000000000aastra
+
+  genesis:
+    consensus_params:
+      block:
+        max_bytes: "1048576"
+        max_gas: "81500000"
+    app_state:
+      evm:
+        params:
+          evm_denom: aastra
+      gov:
+        voting_params:
+          voting_period: "10s"
+        deposit_params:
+          max_deposit_period: "10s"
+          min_deposit:
+            - denom: "aastra"
+              amount: "1"
+      transfer:
+        params:
+          receive_enabled: true
+          send_enabled: true
+      mint:
+        params:
+          mint_denom: "aastra"
+      staking:
+        params:
+          bond_denom: "aastra"
+
