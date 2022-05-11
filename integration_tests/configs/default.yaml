@@ -1,0 +1,14 @@
+astra_777-1:
+  cmd: astrad
+  start-flags: "--trace"
+  validators:
+    - coins: 10astra
+      staked: 10astra
+    - coins: 10astra
+      staked: 10astra
+  accounts:
+    - name: community
+      coins: 100astra
+    - name: reserve
+      coins: 200astra
+      vesting: "1d"
