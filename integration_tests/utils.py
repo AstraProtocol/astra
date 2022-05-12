@@ -63,6 +63,9 @@ GRANTS = "grants"
 # QUerying commands for distribution module
 REWARDS = "rewards"
 
+# Default base port
+DEFAULT_BASE_PORT = 26650
+
 
 def wait_for_block(cli, height, timeout=240):
     for i in range(timeout * 2):
@@ -125,16 +128,20 @@ def cluster_fixture(
     """
     init a single devnet
     """
+
     if enable_cov is None:
         enable_cov = os.environ.get("GITHUB_ACTIONS") == "true"
     base_port = gen_base_port(worker_index)
     print("init cluster at", data, ", base port:", base_port)
-    cluster.init_cluster(data, config_path, base_port, cmd=cmd)
+    #cluster.init_cluster(data, config_path, base_port, cmd=cmd)
 
     config = yaml.safe_load(open(config_path))
     clis = {}
     for key in config:
         if key == "relayer":
+            continue
+
+        if key == "dotenv":
             continue
 
         chain_id = key
@@ -148,15 +155,15 @@ def cluster_fixture(
             ini = chain_data / cluster.SUPERVISOR_CONFIG_FILE
             ini.write_text(
                 re.sub(
-                    r"^command = (.*/)?chain-maind",
-                    "command = chain-maind-inst "
+                    r"^command = (.*/)?astrad",
+                    "command = astrad-inst "
                     "-test.coverprofile=%(here)s/coverage.txt",
                     ini.read_text(),
                     count=1,
                     flags=re.M,
                 )
             )
-        clis[chain_id] = cluster.ClusterCLI(data, chain_id=chain_id)
+        clis[chain_id] = cluster.ClusterCLI(data, chain_id=chain_id, cmd=cmd)
 
     supervisord = cluster.start_cluster(data)
 
@@ -219,7 +226,7 @@ _next_unique = 0
 
 def gen_base_port(worker_index):
     global _next_unique
-    base_port = 26650 + (worker_index * 10 + _next_unique) * 100
+    base_port = DEFAULT_BASE_PORT + (worker_index * 10 + _next_unique) * 100
     _next_unique += 1
     return base_port
 
@@ -506,3 +513,7 @@ def withdraw_all_rewards(cli, from_delegator, *k_options, i=0, **kv_options):
             **kv_options,
         )
     )
+
+
+def astra_to_aastra(amount):
+    return amount * 10**18

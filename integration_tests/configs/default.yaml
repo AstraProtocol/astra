@@ -18,6 +18,9 @@ astra_777-1:
   accounts:
     - name: community
       coins: 10000000000000000000000aastra
+    - name: reserve
+      coins: 20000000000000000000000aastra
+      vesting: "60s"
     - name: signer1
       coins: 20000000000000000000000aastra
     - name: signer2
