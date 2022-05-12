@@ -125,6 +125,7 @@ def cluster_fixture(
     """
     init a single devnet
     """
+
     if enable_cov is None:
         enable_cov = os.environ.get("GITHUB_ACTIONS") == "true"
     base_port = gen_base_port(worker_index)
@@ -139,8 +140,6 @@ def cluster_fixture(
 
         if key == "dotenv":
             continue
-
-        print("CHECK!!!!" + str(key))
 
         chain_id = key
         chain_data = data / chain_id
@@ -161,7 +160,7 @@ def cluster_fixture(
                     flags=re.M,
                 )
             )
-        clis[chain_id] = cluster.ClusterCLI(data, chain_id=chain_id)
+        clis[chain_id] = cluster.ClusterCLI(data, chain_id=chain_id, cmd=cmd)
 
     supervisord = cluster.start_cluster(data)
 
