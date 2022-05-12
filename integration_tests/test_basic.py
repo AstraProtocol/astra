@@ -20,7 +20,7 @@ def test_simple(cluster):
 def test_transfer(cluster):
     """
     check simple transfer tx success
-    - send 1aastra from community to reserve
+    - send 1astra from community to reserve
     """
     community_addr = cluster.address("community")
     reserve_addr = cluster.address("reserve")
