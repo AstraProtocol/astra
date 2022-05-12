@@ -1,10 +1,3 @@
-import pytest
-
-from .utils import wait_for_block
-
-pytestmark = pytest.mark.normal
-
-
 def test_simple(cluster):
     """
     - check number of validators

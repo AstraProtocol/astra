@@ -137,6 +137,11 @@ def cluster_fixture(
         if key == "relayer":
             continue
 
+        if key == "dotenv":
+            continue
+
+        print("CHECK!!!!" + str(key))
+
         chain_id = key
         chain_data = data / chain_id
 
@@ -148,8 +153,8 @@ def cluster_fixture(
             ini = chain_data / cluster.SUPERVISOR_CONFIG_FILE
             ini.write_text(
                 re.sub(
-                    r"^command = (.*/)?chain-maind",
-                    "command = chain-maind-inst "
+                    r"^command = (.*/)?astrad",
+                    "command = astrad-inst "
                     "-test.coverprofile=%(here)s/coverage.txt",
                     ini.read_text(),
                     count=1,
