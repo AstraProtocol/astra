@@ -1,3 +1,10 @@
+import pytest
+
+from .utils import wait_for_block
+
+pytestmark = pytest.mark.normal
+
+
 def test_simple(cluster):
     """
     - check number of validators
@@ -21,9 +28,10 @@ def test_transfer(cluster):
     """
     community_addr = cluster.address("community")
     reserve_addr = cluster.address("reserve")
-
     community_balance = cluster.balance(community_addr)
     reserve_balance = cluster.balance(reserve_addr)
+    initial_community_addr_tx_count = len(cluster.query_all_txs(community_addr)["txs"])
+    initial_reserve_addr_tx_count = len(cluster.query_all_txs(reserve_addr)["txs"])
 
     tx = cluster.transfer(community_addr, reserve_addr, "1cro")
     print("transfer tx", tx["txhash"])
@@ -32,7 +40,21 @@ def test_transfer(cluster):
             "events": [
                 {
                     "attributes": [
-                        {"key": "action", "value": "send"},
+                        {"key": "receiver", "value": reserve_addr},
+                        {"key": "amount", "value": "100000000basecro"},
+                    ],
+                    "type": "coin_received",
+                },
+                {
+                    "attributes": [
+                        {"key": "spender", "value": community_addr},
+                        {"key": "amount", "value": "100000000basecro"},
+                    ],
+                    "type": "coin_spent",
+                },
+                {
+                    "attributes": [
+                        {"key": "action", "value": "/cosmos.bank.v1beta1.MsgSend"},
                         {"key": "sender", "value": community_addr},
                         {"key": "module", "value": "bank"},
                     ],
@@ -54,3 +76,7 @@ def test_transfer(cluster):
 
     assert cluster.balance(community_addr) == community_balance - 100000000
     assert cluster.balance(reserve_addr) == reserve_balance + 100000000
+    updated_community_addr_tx_count = len(cluster.query_all_txs(community_addr)["txs"])
+    assert updated_community_addr_tx_count == initial_community_addr_tx_count + 1
+    updated_reserve_addr_tx_count = len(cluster.query_all_txs(reserve_addr)["txs"])
+    assert updated_reserve_addr_tx_count == initial_reserve_addr_tx_count + 1
