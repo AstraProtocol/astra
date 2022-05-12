@@ -63,6 +63,9 @@ GRANTS = "grants"
 # QUerying commands for distribution module
 REWARDS = "rewards"
 
+# Default base port
+DEFAULT_BASE_PORT = 26650
+
 
 def wait_for_block(cli, height, timeout=240):
     for i in range(timeout * 2):
@@ -223,7 +226,7 @@ _next_unique = 0
 
 def gen_base_port(worker_index):
     global _next_unique
-    base_port = 26650 + (worker_index * 10 + _next_unique) * 100
+    base_port = DEFAULT_BASE_PORT + (worker_index * 10 + _next_unique) * 100
     _next_unique += 1
     return base_port
 
