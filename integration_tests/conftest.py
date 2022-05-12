@@ -13,12 +13,13 @@ def worker_index():
 
 
 @pytest.fixture(scope="session")
-def cluster(worker_index, pytestconfig, tmp_path_factory):
+def cluster(worker_index):
     "default cluster fixture"
     yield from cluster_fixture(
         Path(__file__).parent / "configs/default.yaml",
         worker_index,
-        tmp_path_factory.mktemp("data"),
+        #tmp_path_factory.mktemp("data"),
+        Path(__file__).parent.parent / "data",
         None,
         None,
         "astrad"
