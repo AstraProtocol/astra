@@ -17,7 +17,7 @@ from supervisor.compat import xmlrpclib
 from . import ports
 from .utils import interact, local_ip, write_ini
 
-CHAIN = "chain-maind"  # edit by nix-build
+CHAIN = "astrad"  # edit by nix-build
 
 
 def home_dir(data_dir, i):
@@ -29,7 +29,7 @@ class ChainCommand:
         self._cmd = cmd or CHAIN
 
     def __call__(self, cmd, *args, **kwargs):
-        "execute chain-maind"
+        "execute astrad"
         args = [cmd] + list(args)
         for k, v in kwargs.items():
             args.append("--" + k.strip("_").replace("_", "-"))
@@ -120,7 +120,7 @@ class ClusterCLI:
                 "query", "bank", "balances", addr, output="json", node=self.node_rpc(i)
             )
         )["balances"][0]
-        assert coin["denom"] == "basecro"
+        assert coin["denom"] == "aastra"
         return int(coin["amount"])
 
     def address(self, name, i=0, bech="acc"):
