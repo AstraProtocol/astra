@@ -18,6 +18,8 @@ astra_777-1:
   accounts:
     - name: community
       coins: 10000000000000000000000aastra
+    - name: ecosystem
+      coins: 20000000000000000000000aastra
     - name: reserve
       coins: 20000000000000000000000aastra
       vesting: "60s"
@@ -53,3 +55,4 @@ astra_777-1:
       staking:
         params:
           bond_denom: "aastra"
+          unbonding_time: "10s"

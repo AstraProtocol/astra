@@ -4,6 +4,8 @@ import pytest
 
 from .utils import cluster_fixture
 
+#import re
+
 
 @pytest.fixture(scope="session")
 def worker_index():
