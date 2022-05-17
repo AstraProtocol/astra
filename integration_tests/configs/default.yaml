@@ -26,6 +26,10 @@ astra_777-1:
       coins: 1111100000astra
     - name: treasury
       coins: 1111100000astra
+    - name: signer1
+      coins: 100000astra
+    - name: signer2
+      coins: 200000astra
 
   genesis:
     consensus_params:
