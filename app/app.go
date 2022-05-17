@@ -700,7 +700,6 @@ func (app *Astra) Name() string { return app.BaseApp.Name() }
 
 // BeginBlocker updates every begin block
 func (app *Astra) BeginBlocker(ctx sdk.Context, req abci.RequestBeginBlock) abci.ResponseBeginBlock {
-	BeginBlockForks(ctx, app)
 	return app.mm.BeginBlock(ctx, req)
 }
 
@@ -709,7 +708,7 @@ func (app *Astra) EndBlocker(ctx sdk.Context, req abci.RequestEndBlock) abci.Res
 	return app.mm.EndBlock(ctx, req)
 }
 
-// We are intentionally decomposing the DeliverTx method so as to calculate the transactions per second.
+// DeliverTx We are intentionally decomposing the DeliverTx method so as to calculate the transactions per second.
 func (app *Astra) DeliverTx(req abci.RequestDeliverTx) (res abci.ResponseDeliverTx) {
 	defer func() {
 		// TODO: Record the count along with the code and or reason so as to display
