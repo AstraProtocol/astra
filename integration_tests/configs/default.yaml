@@ -16,23 +16,22 @@ astra_777-1:
     - coins: 10000astra
       staked: 1000astra
   accounts:
+    - name: team
+      coins: 2222200000astra
+    - name: genesis_partner
+      coins: 2222200000astra
+    - name: other_partner
+      coins: 2222200000astra
     - name: community
-      coins: 10000000000000000000000aastra
-    - name: ecosystem
-      coins: 20000000000000000000000aastra
-    - name: reserve
-      coins: 20000000000000000000000aastra
-      vesting: "60s"
-    - name: signer1
-      coins: 20000000000000000000000aastra
-    - name: signer2
-      coins: 30000000000000000000000aastra
+      coins: 1111100000astra
+    - name: treasury
+      coins: 1111100000astra
 
   genesis:
     consensus_params:
       block:
-        max_bytes: "1048576"
-        max_gas: "81500000"
+        max_bytes: "22020096"
+        max_gas: "20000000"
     app_state:
       evm:
         params:
@@ -43,7 +42,7 @@ astra_777-1:
         deposit_params:
           max_deposit_period: "10s"
           min_deposit:
-            - denom: "aastra"
+            - denom: "astra"
               amount: "1"
       transfer:
         params:
@@ -55,4 +54,3 @@ astra_777-1:
       staking:
         params:
           bond_denom: "aastra"
-          unbonding_time: "10s"

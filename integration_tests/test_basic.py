@@ -1,51 +1,35 @@
 from integration_tests.utils import astra_to_aastra
 
 
-def test_simple(cluster):
-    """
-    - check number of validators
-    - check vesting account status
-    """
-    assert len(cluster.validators()) == 2
-
-    # check vesting account
-    addr = cluster.address("reserve")
-    account = cluster.account(addr)
-    assert account["@type"] == "/cosmos.vesting.v1beta1.DelayedVestingAccount"
-    assert account["base_vesting_account"]["original_vesting"] == [
-        {"denom": "aastra", "amount": "20000000000000000000000"}
-    ]
-
-
 def test_transfer(cluster):
     """
     check simple transfer tx success
-    - send 1astra from community to reserve
+    - send 1astra from team to treasury
     """
-    community_addr = cluster.address("community")
-    reserve_addr = cluster.address("reserve")
+    team_addr = cluster.address("team")
+    treasury_addr = cluster.address("treasury")
 
-    community_balance = cluster.balance(community_addr)
-    reserve_balance = cluster.balance(reserve_addr)
+    team_balance = cluster.balance(team_addr)
+    treasury_balance = cluster.balance(treasury_addr)
 
-    amount_astra = 2
+    amount_astra = 1
     amount_aastra = astra_to_aastra(amount_astra)
 
-    tx = cluster.transfer(community_addr, reserve_addr, str(amount_astra) + "astra")
+    tx = cluster.transfer(team_addr, treasury_addr, str(amount_astra) + "astra")
     print("transfer tx", tx["txhash"])
     assert tx["logs"] == [
         {
             "events": [
                 {
                     "attributes": [
-                        {"key": "receiver", "value": reserve_addr},
+                        {"key": "receiver", "value": treasury_addr},
                         {"key": "amount", "value": str(amount_aastra) + "aastra"},
                     ],
                     "type": "coin_received",
                 },
                 {
                     "attributes": [
-                        {"key": "spender", "value": community_addr},
+                        {"key": "spender", "value": team_addr},
                         {"key": "amount", "value": str(amount_aastra) + "aastra"},
                     ],
                     "type": "coin_spent",
@@ -53,15 +37,15 @@ def test_transfer(cluster):
                 {
                     "attributes": [
                         {"key": "action", "value": "/cosmos.bank.v1beta1.MsgSend"},
-                        {"key": "sender", "value": community_addr},
+                        {"key": "sender", "value": team_addr},
                         {"key": "module", "value": "bank"},
                     ],
                     "type": "message",
                 },
                 {
                     "attributes": [
-                        {"key": "recipient", "value": reserve_addr},
-                        {"key": "sender", "value": community_addr},
+                        {"key": "recipient", "value": treasury_addr},
+                        {"key": "sender", "value": team_addr},
                         {"key": "amount", "value": str(amount_aastra) + "aastra"},
                     ],
                     "type": "transfer",
@@ -72,5 +56,5 @@ def test_transfer(cluster):
         }
     ]
 
-    assert cluster.balance(community_addr) == community_balance - amount_aastra
-    assert cluster.balance(reserve_addr) == reserve_balance + amount_aastra
+    assert cluster.balance(team_addr) == team_balance - amount_aastra
+    assert cluster.balance(treasury_addr) == treasury_balance + amount_aastra

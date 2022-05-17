@@ -23,4 +23,13 @@ For prerequisites and detailed build instructions please read the Installation i
 make install
 ```
 
+## Integration test
+### Start chain
+    pystarport serve --data=./data --config=./integration_tests/configs/default.yaml
+
+### Run test
+    cd integration_tests
+    pytest -s -vv
+
+
 Or check out the latest [release](https://github.com/AstraProtocol/astra/releases).
