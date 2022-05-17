@@ -19,8 +19,8 @@ from pystarport.ports import rpc_port
 SUCCESS_CODE = 0
 
 # Denomination
-CRO_DENOM = "cro"
-BASECRO_DENOM = "basecro"
+ASTRA_DENOM = "astra"
+AASTRA_DENOM = "aastra"
 
 # Command Line Options
 GENERATE_ONLY = "--generate-only"
@@ -474,7 +474,7 @@ def query_delegation_amount(cluster, delegator_address, validator_address):
             cluster, STAKING, DELEGATION, delegator_address, validator_address
         )
     except AssertionError:
-        return {"denom": BASECRO_DENOM, "amount": "0"}
+        return {"denom": AASTRA_DENOM, "amount": "0"}
 
     return delegation_amount["balance"]
 
