@@ -60,8 +60,8 @@ class TestAuthzModule:
         spend_limit = 200
         transaction_coins = 100
         granter_address = cluster.address("community")
-        grantee_address = cluster.address("ecosystem")
-        receiver_address = cluster.address("reserve")
+        grantee_address = cluster.address("other_partner")
+        receiver_address = cluster.address("treasury")
         granter_initial_balance = cluster.balance(granter_address)
         receiver_initial_balance = cluster.balance(receiver_address)
 
@@ -119,8 +119,8 @@ class TestAuthzModule:
         spend_limit = 50
         transaction_coins = 100
         granter_address = cluster.address("community")
-        grantee_address = cluster.address("ecosystem")
-        receiver_address = cluster.address("reserve")
+        grantee_address = cluster.address("other_partner")
+        receiver_address = cluster.address("treasury")
         granter_initial_balance = cluster.balance(granter_address)
         receiver_initial_balance = cluster.balance(receiver_address)
 
@@ -169,8 +169,8 @@ class TestAuthzModule:
         spend_limit = 200
         transaction_coins = 100
         granter_address = cluster.address("community")
-        grantee_address = cluster.address("ecosystem")
-        receiver_address = cluster.address("reserve")
+        grantee_address = cluster.address("other_partner")
+        receiver_address = cluster.address("treasury")
         granter_initial_balance = cluster.balance(granter_address)
         receiver_initial_balance = cluster.balance(receiver_address)
 
@@ -231,7 +231,7 @@ class TestAuthzModule:
         delegate_coins = 1000000
         validator_address = cluster.validators()[0]["operator_address"]
         granter_address = cluster.address("community")
-        grantee_address = cluster.address("ecosystem")
+        grantee_address = cluster.address("other_partner")
         granter_initial_reward_amount = query_total_reward_amount(
             cluster, granter_address, validator_address
         )
@@ -304,7 +304,7 @@ class TestAuthzModule:
         allowed_validator_address = cluster.validators()[0]["operator_address"]
         another_validator_address = cluster.validators()[1]["operator_address"]
         granter_address = cluster.address("community")
-        grantee_address = cluster.address("ecosystem")
+        grantee_address = cluster.address("other_partner")
         validator_initial_delegation_amount = int(
             query_delegation_amount(
                 cluster, granter_address, allowed_validator_address
@@ -384,7 +384,7 @@ class TestAuthzModule:
         delegate_coins = 100
         deny_validator_address = cluster.validators()[0]["operator_address"]
         granter_address = cluster.address("community")
-        grantee_address = cluster.address("ecosystem")
+        grantee_address = cluster.address("other_partner")
 
         # test execute delegate to deny validator should fail
         grant_authorization(
@@ -433,7 +433,7 @@ class TestAuthzModule:
         validator1_address = cluster.validators()[0]["operator_address"]
         validator2_address = cluster.validators()[1]["operator_address"]
         granter_address = cluster.address("community")
-        grantee_address = cluster.address("ecosystem")
+        grantee_address = cluster.address("other_partner")
         validator1_initial_deligation_amount = int(
             query_delegation_amount(cluster, granter_address, validator1_address)[
                 "amount"
