@@ -13,7 +13,6 @@ astra_777-1:
   validators:
     - coins: 10000astra
       staked: 1000astra
-      mnemonic: ${VALIDATOR1_MNEMONIC}
     - coins: 10000astra
       staked: 1000astra
       mnemonic: ${VALIDATOR2_MNEMONIC}
