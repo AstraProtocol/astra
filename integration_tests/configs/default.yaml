@@ -58,3 +58,4 @@ astra_777-1:
       staking:
         params:
           bond_denom: "aastra"
+          unbonding_time: "10s"
