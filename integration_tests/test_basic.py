@@ -1,6 +1,19 @@
 from integration_tests.utils import astra_to_aastra
 
 
+def test_simple(cluster):
+    """
+    - check number of validators
+    - check vesting account status
+    """
+    assert len(cluster.validators()) == 2
+
+    # check vesting account
+    addr = cluster.address("team")
+    account = cluster.account(addr)
+    assert account["@type"] == "/ethermint.types.v1.EthAccount"
+
+
 def test_transfer(cluster):
     """
     check simple transfer tx success
