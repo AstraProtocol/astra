@@ -15,9 +15,11 @@ astra_777-1:
       staked: 1000astra
     - coins: 10000astra
       staked: 1000astra
+      mnemonic: ${VALIDATOR2_MNEMONIC}
   accounts:
     - name: team
       coins: 2222200000astra
+      mnemonic: ${TEAM_MNEMONIC}
     - name: genesis_partner
       coins: 2222200000astra
     - name: other_partner
