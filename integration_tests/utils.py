@@ -7,10 +7,16 @@ import socket
 import sys
 import time
 import uuid
+from pathlib import Path
+
+import web3
+from web3._utils.transactions import fill_nonce, fill_transaction_defaults
 
 import yaml
 from dateutil.parser import isoparse
-from pystarport import cluster, ledger
+from dotenv import load_dotenv
+from eth_account import Account
+from pystarport import cluster, ledger, ports
 from pystarport.ports import rpc_port
 
 #################
@@ -66,6 +72,41 @@ REWARDS = "rewards"
 # Default base port
 DEFAULT_BASE_PORT = 26650
 
+load_dotenv(Path(__file__).parent.parent / "scripts/.env")
+Account.enable_unaudited_hdwallet_features()
+ACCOUNTS = {
+    "validator": Account.from_mnemonic(os.getenv("VALIDATOR1_MNEMONIC")),
+    "team": Account.from_mnemonic(os.getenv("TEAM_MNEMONIC")),
+    "signer1": Account.from_mnemonic(os.getenv("SIGNER1_MNEMONIC")),
+    "signer2": Account.from_mnemonic(os.getenv("SIGNER2_MNEMONIC")),
+}
+KEYS = {name: account.key for name, account in ACCOUNTS.items()}
+ADDRS = {name: account.address for name, account in ACCOUNTS.items()}
+ASTRA_ADDRESS_PREFIX = "astra"
+TEST_CONTRACTS = {
+    "Greeter": "Greeter.sol",
+    "TestERC20A": "TestERC20A.sol",
+    "TestRevert": "TestRevert.sol",
+    "TestERC20Utility": "TestERC20Utility.sol",
+    "TestMessageCall": "TestMessageCall.sol",
+}
+
+
+def contract_path(name, filename):
+    return (
+            Path(__file__).parent
+            / "contracts/artifacts/contracts"
+            / filename
+            / (name + ".json")
+    )
+
+
+CONTRACTS = {
+    **{
+        name: contract_path(name, filename) for name, filename in TEST_CONTRACTS.items()
+    },
+}
+
 
 def wait_for_block(cli, height, timeout=240):
     for i in range(timeout * 2):
@@ -118,12 +159,12 @@ def wait_for_port(port, host="127.0.0.1", timeout=40.0):
 
 
 def cluster_fixture(
-    config_path,
-    worker_index,
-    data,
-    post_init=None,
-    enable_cov=None,
-    cmd=None,
+        config_path,
+        worker_index,
+        data,
+        post_init=None,
+        enable_cov=None,
+        cmd=None,
 ):
     """
     init a single devnet
@@ -133,7 +174,7 @@ def cluster_fixture(
         enable_cov = os.environ.get("GITHUB_ACTIONS") == "true"
     base_port = gen_base_port(worker_index)
     print("init cluster at", data, ", base port:", base_port)
-    #cluster.init_cluster(data, config_path, base_port, cmd=cmd)
+    # cluster.init_cluster(data, config_path, base_port, cmd=cmd)
 
     config = yaml.safe_load(open(config_path))
     clis = {}
@@ -232,7 +273,7 @@ def gen_base_port(worker_index):
 
 
 def sign_single_tx_with_options(
-    cli, tx_file, singer_name, *k_options, i=0, **kv_options
+        cli, tx_file, singer_name, *k_options, i=0, **kv_options
 ):
     return json.loads(
         cli.cosmos_cli(i).raw(
@@ -348,7 +389,7 @@ def exec_tx_by_grantee(cli, tx_file, grantee, *k_options, i=0, **kv_options):
 
 @throw_error_for_non_success_code
 def grant_authorization(
-    cli, grantee, authorization_type, granter, *k_options, i=0, **kv_options
+        cli, grantee, authorization_type, granter, *k_options, i=0, **kv_options
 ):
     return json.loads(
         cli.cosmos_cli(i).raw(
@@ -368,7 +409,7 @@ def grant_authorization(
 
 @throw_error_for_non_success_code
 def revoke_authorization(
-    cli, grantee, msg_type, granter, *k_options, i=0, **kv_options
+        cli, grantee, msg_type, granter, *k_options, i=0, **kv_options
 ):
     return json.loads(
         cli.cosmos_cli(i).raw(
@@ -411,7 +452,7 @@ def query_block_info(cli, height, i=0):
 
 @throw_error_for_non_success_code
 def delegate_amount(
-    cli, validator_address, amount, from_, *k_options, i=0, **kv_options
+        cli, validator_address, amount, from_, *k_options, i=0, **kv_options
 ):
     return json.loads(
         cli.cosmos_cli(i).raw(
@@ -449,7 +490,7 @@ def unbond_amount(cli, validator_address, amount, from_, *k_options, i=0, **kv_o
 
 @throw_error_for_non_success_code
 def redelegate_amount(
-    cli, src_validator, dst_validator, amount, from_, *k_options, i=0, **kv_options
+        cli, src_validator, dst_validator, amount, from_, *k_options, i=0, **kv_options
 ):
     return json.loads(
         cli.cosmos_cli(i).raw(
@@ -516,4 +557,39 @@ def withdraw_all_rewards(cli, from_delegator, *k_options, i=0, **kv_options):
 
 
 def astra_to_aastra(amount):
-    return amount * 10**18
+    return amount * 10 ** 18
+
+
+def get_w3():
+    port = 8545
+    w3_http_endpoint = f"http://localhost:{port}"
+    return web3.Web3(web3.providers.HTTPProvider(w3_http_endpoint))
+
+
+def deploy_contract(w3, jsonfile, args=(), key=KEYS["validator"]):
+    """
+    deploy contract and return the deployed contract instance
+    """
+    acct = Account.from_key(key)
+    info = json.loads(jsonfile.read_text())
+    contract = w3.eth.contract(abi=info["abi"], bytecode=info["bytecode"])
+    tx = contract.constructor(*args).buildTransaction({"from": acct.address})
+    txreceipt = send_transaction(w3, tx, key)
+    assert txreceipt.status == 1
+    address = txreceipt.contractAddress
+    return w3.eth.contract(address=address, abi=info["abi"])
+
+
+def sign_transaction(w3, tx, key=KEYS["validator"]):
+    "fill default fields and sign"
+    acct = Account.from_key(key)
+    tx["from"] = acct.address
+    tx = fill_transaction_defaults(w3, tx)
+    tx = fill_nonce(w3, tx)
+    return acct.sign_transaction(tx)
+
+
+def send_transaction(w3, tx, key=KEYS["validator"]):
+    signed = sign_transaction(w3, tx, key)
+    txhash = w3.eth.send_raw_transaction(signed.rawTransaction)
+    return w3.eth.wait_for_transaction_receipt(txhash)

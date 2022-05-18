@@ -1,4 +1,72 @@
-from integration_tests.utils import astra_to_aastra, wait_for_block
+import pytest
+from eth_bloom import BloomFilter
+from eth_utils import abi, big_endian_to_int
+from hexbytes import HexBytes
+
+from integration_tests.utils import astra_to_aastra, wait_for_block, get_w3, deploy_contract, CONTRACTS, KEYS, ADDRS, send_transaction
+
+
+def test_basic(cluster):
+    w3 = get_w3()
+    assert w3.eth.chain_id == 777
+
+
+def test_events(cluster, suspend_capture):
+    w3 = get_w3()
+    erc20 = deploy_contract(
+        w3,
+        CONTRACTS["TestERC20A"],
+        key=KEYS["validator"],
+    )
+    tx = erc20.functions.transfer(ADDRS["team"], 10).buildTransaction(
+        {"from": ADDRS["validator"]}
+    )
+    txreceipt = send_transaction(w3, tx, KEYS["validator"])
+    assert len(txreceipt.logs) == 1
+    expect_log = {
+        "address": erc20.address,
+        "topics": [
+            HexBytes(
+                abi.event_signature_to_log_topic("Transfer(address,address,uint256)")
+            ),
+            HexBytes(b"\x00" * 12 + HexBytes(ADDRS["validator"])),
+            HexBytes(b"\x00" * 12 + HexBytes(ADDRS["team"])),
+        ],
+        "data": "0x000000000000000000000000000000000000000000000000000000000000000a",
+        "transactionIndex": 0,
+        "logIndex": 0,
+        "removed": False,
+    }
+    assert expect_log.items() <= txreceipt.logs[0].items()
+
+    # check block bloom
+    bloom = BloomFilter(
+        big_endian_to_int(w3.eth.get_block(txreceipt.blockNumber).logsBloom)
+    )
+    assert HexBytes(erc20.address) in bloom
+    for topic in expect_log["topics"]:
+        assert topic in bloom
+
+
+def test_minimal_gas_price():
+    w3 = get_w3()
+    gas_price = w3.eth.gas_price
+    tx = {
+        "to": "0x0000000000000000000000000000000000000000",
+        "value": 10000,
+    }
+    with pytest.raises(ValueError):
+        send_transaction(
+            w3,
+            {**tx, "gasPrice": 1},
+            KEYS["team"],
+        )
+    receipt = send_transaction(
+        w3,
+        {**tx, "gasPrice": gas_price},
+        KEYS["validator"],
+    )
+    assert receipt.status == 1
 
 
 def test_simple(cluster):
