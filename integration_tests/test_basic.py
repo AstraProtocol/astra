@@ -1,4 +1,4 @@
-from integration_tests.utils import astra_to_aastra
+from integration_tests.utils import astra_to_aastra, wait_for_block
 
 
 def test_simple(cluster):
@@ -71,3 +71,20 @@ def test_transfer(cluster):
 
     assert cluster.balance(team_addr) == team_balance - amount_aastra
     assert cluster.balance(treasury_addr) == treasury_balance + amount_aastra
+
+
+def test_statesync(cluster):
+    """
+    - create a new node with statesync enabled
+    - check it works
+    """
+    # wait the first snapshot to be created
+    wait_for_block(cluster, 10)
+
+    # add a statesync node
+    i = cluster.create_node(moniker="statesync", statesync=True)
+    cluster.supervisor.startProcess(f"{cluster.chain_id}-node{i}")
+
+    # discovery_time is set to 5 seconds, add extra seconds for processing
+    wait_for_block(cluster.cosmos_cli(i), 10)
+    print("succesfully syncing")
