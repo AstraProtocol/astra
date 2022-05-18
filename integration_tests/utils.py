@@ -72,7 +72,7 @@ REWARDS = "rewards"
 # Default base port
 DEFAULT_BASE_PORT = 26650
 
-load_dotenv(Path(__file__).parent.parent / "scripts/.env")
+load_dotenv(Path(__file__).parent.parent / "integration_tests/configs/.env")
 Account.enable_unaudited_hdwallet_features()
 ACCOUNTS = {
     "validator": Account.from_mnemonic(os.getenv("VALIDATOR1_MNEMONIC")),

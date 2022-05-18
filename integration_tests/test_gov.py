@@ -8,7 +8,7 @@ from .utils import astra_to_aastra, parse_events, wait_for_block, wait_for_block
 pytestmark = pytest.mark.gov
 
 
-#@pytest.mark.parametrize("vote_option", ["yes", "no", "no_with_veto", "abstain", None])
+# @pytest.mark.parametrize("vote_option", ["yes", "no", "no_with_veto", "abstain", None])
 @pytest.mark.parametrize("vote_option", ["yes"])
 def test_param_proposal(cluster, vote_option):
     """
@@ -18,9 +18,7 @@ def test_param_proposal(cluster, vote_option):
     - check deposit refunded
     """
     max_validators = cluster.staking_params()["max_validators"]
-    vote_amount = 1
-    amount = cluster.balance(cluster.address("community"))
-    
+
     rsp = cluster.gov_propose(
         "community",
         "param-change",
@@ -52,11 +50,14 @@ def test_param_proposal(cluster, vote_option):
         }
     ], proposal
     assert proposal["status"] == "PROPOSAL_STATUS_DEPOSIT_PERIOD", proposal
-    rsp = cluster.gov_deposit("community", proposal_id, str(vote_amount)+"astra")
+
+    amount = cluster.balance(cluster.address("team"))
+    rsp = cluster.gov_deposit("team", proposal_id, "1astra")
     assert rsp["code"] == 0, rsp["raw_log"]
-    assert cluster.balance(cluster.address("community")) == amount - astra_to_aastra(vote_amount)
+    assert cluster.balance(cluster.address("team")) == amount - 10 ** 18
 
     proposal = cluster.query_proposal(proposal_id)
+    print(proposal)
     assert proposal["status"] == "PROPOSAL_STATUS_VOTING_PERIOD", proposal
 
     if vote_option is not None:
@@ -65,8 +66,8 @@ def test_param_proposal(cluster, vote_option):
         rsp = cluster.gov_vote("validator", proposal_id, vote_option, i=1)
         assert rsp["code"] == 0, rsp["raw_log"]
         assert (
-            int(cluster.query_tally(proposal_id, i=1)[vote_option])
-            == cluster.staking_pool()
+                int(cluster.query_tally(proposal_id, i=1)[vote_option])
+                == cluster.staking_pool()
         ), "all voted"
     else:
         assert cluster.query_tally(proposal_id) == {
@@ -94,7 +95,8 @@ def test_param_proposal(cluster, vote_option):
 
     if vote_option in ("no_with_veto", None):
         # not refunded
-        assert cluster.balance(cluster.address("community")) == amount - astra_to_aastra(vote_amount)
+        assert cluster.balance(cluster.address("team")) == amount - 100000000
     else:
         # refunded, no matter passed or rejected
-        assert cluster.balance(cluster.address("community")) == amount
+        assert cluster.balance(cluster.address("team")) == amount
+

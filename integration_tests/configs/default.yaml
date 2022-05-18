@@ -13,6 +13,7 @@ astra_777-1:
   validators:
     - coins: 10000astra
       staked: 1000astra
+      mnemonic: ${VALIDATOR1_MNEMONIC}
     - coins: 10000astra
       staked: 1000astra
       mnemonic: ${VALIDATOR2_MNEMONIC}
@@ -26,6 +27,7 @@ astra_777-1:
       coins: 2222200000astra
     - name: community
       coins: 1111100000astra
+      mnemonic: ${COMMUNITY_MNEMONIC}
     - name: treasury
       coins: 1111100000astra
     - name: signer1
