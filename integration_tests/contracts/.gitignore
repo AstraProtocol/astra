@@ -1,4 +1,5 @@
 /node_modules
 /typechain
-/artifacts
 /cache
+/artifacts/@openzeppelin/*
+/artifacts/build-info
