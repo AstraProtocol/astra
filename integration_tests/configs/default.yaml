@@ -50,8 +50,8 @@ astra_777-1:
         deposit_params:
           max_deposit_period: "10s"
           min_deposit:
-            - denom: "astra"
-              amount: "1"
+            - denom: "aastra"
+              amount: "10000000"
       transfer:
         params:
           receive_enabled: true

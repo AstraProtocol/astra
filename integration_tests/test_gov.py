@@ -52,9 +52,9 @@ def test_param_proposal(cluster, vote_option):
     assert proposal["status"] == "PROPOSAL_STATUS_DEPOSIT_PERIOD", proposal
 
     amount = cluster.balance(cluster.address("team"))
-    rsp = cluster.gov_deposit("team", proposal_id, "1astra")
+    rsp = cluster.gov_deposit("team", proposal_id, "10000000000aastra")
     assert rsp["code"] == 0, rsp["raw_log"]
-    assert cluster.balance(cluster.address("team")) == amount - 10 ** 18
+    assert cluster.balance(cluster.address("team")) == amount - 10000000000
 
     proposal = cluster.query_proposal(proposal_id)
     print(proposal)
