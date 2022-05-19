@@ -3,7 +3,7 @@ from datetime import timedelta
 import pytest
 from dateutil.parser import isoparse
 
-from .utils import DEFAULT_BASE_PORT, astra_to_aastra, delegate_amount, parse_events, wait_for_block, wait_for_block_time, wait_for_port
+from .utils import DEFAULT_BASE_PORT, astra_to_aastra, parse_events, wait_for_block, wait_for_block_time, wait_for_port
 
 pytestmark = pytest.mark.gov
 
