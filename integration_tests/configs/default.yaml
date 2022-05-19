@@ -12,10 +12,10 @@ astra_777-1:
       api: "eth,net,web3,debug,astra"
   validators:
     - coins: 10000astra
-      staked: 1000astra
+      staked: 1001astra
       mnemonic: ${VALIDATOR1_MNEMONIC}
     - coins: 10000astra
-      staked: 1000astra
+      staked: 1002astra
       mnemonic: ${VALIDATOR2_MNEMONIC}
   accounts:
     - name: team
