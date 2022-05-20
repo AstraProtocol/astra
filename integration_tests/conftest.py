@@ -18,8 +18,8 @@ def pytest_configure(config):
 
 @pytest.fixture(scope="session")
 def worker_index():
-    #match = re.search(r"\d+", worker_id)
-    #return int(match[0]) if match is not None else 0
+    # match = re.search(r"\d+", worker_id)
+    # return int(match[0]) if match is not None else 0
     return 0
 
 
@@ -30,7 +30,7 @@ def cluster(worker_index, tmp_path_factory):
         Path(__file__).parent / "configs/default.yaml",
         worker_index,
         tmp_path_factory.mktemp("data"),
-        #Path(__file__).parent.parent / "data",
+        # Path(__file__).parent.parent / "data",
         None,
         None,
         "astrad"
