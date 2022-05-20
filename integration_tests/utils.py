@@ -72,7 +72,7 @@ REWARDS = "rewards"
 # Default base port
 DEFAULT_BASE_PORT = 26650
 
-load_dotenv(Path(__file__).parent.parent / "scripts/.env")
+load_dotenv(Path(__file__).parent.parent / "integration_tests/configs/.env")
 Account.enable_unaudited_hdwallet_features()
 ACCOUNTS = {
     "validator": Account.from_mnemonic(os.getenv("VALIDATOR1_MNEMONIC")),
@@ -135,9 +135,13 @@ def wait_for_new_blocks(cli, n):
 
 def wait_for_block_time(cli, t):
     print("wait for block time", t)
+    now = isoparse("1900-01-01 01:01:01.01+00:00")
     while True:
-        now = isoparse((cli.status())["SyncInfo"]["latest_block_time"])
-        print("block time now:", now)
+        try:
+            now = isoparse((cli.status())["SyncInfo"]["latest_block_time"])
+            print("block time now:", now)
+        except:
+            now = isoparse("1900-01-01 01:01:01.01+00:00")
         if now >= t:
             break
         time.sleep(0.5)

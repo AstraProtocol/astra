@@ -12,9 +12,10 @@ astra_777-1:
       api: "eth,net,web3,debug,astra"
   validators:
     - coins: 10000astra
-      staked: 1000astra
+      staked: 1001astra
+      mnemonic: ${VALIDATOR1_MNEMONIC}
     - coins: 10000astra
-      staked: 1000astra
+      staked: 1002astra
       mnemonic: ${VALIDATOR2_MNEMONIC}
   accounts:
     - name: team
@@ -26,8 +27,13 @@ astra_777-1:
       coins: 2222200000astra
     - name: community
       coins: 1111100000astra
+      mnemonic: ${COMMUNITY_MNEMONIC}
     - name: treasury
       coins: 1111100000astra
+    - name: signer1
+      coins: 100000astra
+    - name: signer2
+      coins: 200000astra
 
   genesis:
     consensus_params:
@@ -44,8 +50,8 @@ astra_777-1:
         deposit_params:
           max_deposit_period: "10s"
           min_deposit:
-            - denom: "astra"
-              amount: "1"
+            - denom: "aastra"
+              amount: "10000000"
       transfer:
         params:
           receive_enabled: true
@@ -56,3 +62,4 @@ astra_777-1:
       staking:
         params:
           bond_denom: "aastra"
+          unbonding_time: "10s"
