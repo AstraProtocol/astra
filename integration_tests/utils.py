@@ -178,7 +178,7 @@ def cluster_fixture(
         enable_cov = os.environ.get("GITHUB_ACTIONS") == "true"
     base_port = gen_base_port(worker_index)
     print("init cluster at", data, ", base port:", base_port)
-    cluster.init_cluster(data, config_path, base_port, cmd=cmd)
+    # cluster.init_cluster(data, config_path, base_port, cmd=cmd)
 
     config = yaml.safe_load(open(config_path))
     clis = {}

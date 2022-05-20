@@ -29,8 +29,8 @@ def cluster(worker_index, tmp_path_factory):
     yield from cluster_fixture(
         Path(__file__).parent / "configs/default.yaml",
         worker_index,
-        tmp_path_factory.mktemp("data"),
-        # Path(__file__).parent.parent / "data",
+        # tmp_path_factory.mktemp("data"),
+        Path(__file__).parent.parent / "data",
         None,
         None,
         "astrad"
