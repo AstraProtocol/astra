@@ -36,18 +36,6 @@
         "url": "https://github.com/tweag/gomod2nix/archive/fc5adcc53031c5a3934500a57896a840a2bd073d.tar.gz",
         "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
     },
-    "gravity-bridge": {
-        "branch": "v0.3.8-cronos",
-        "description": "A CosmosSDK application for moving assets on and off of EVM based, POW chains",
-        "homepage": "",
-        "owner": "crypto-org-chain",
-        "repo": "gravity-bridge",
-        "rev": "9f78dd2e4a57deaf4a886c5a2fb3f7796402647e",
-        "sha256": "0xmv46l1b9bfcp8ym6mf7d3dszh7yqgqlklf98wvp21viv26ci91",
-        "type": "tarball",
-        "url": "https://github.com/crypto-org-chain/gravity-bridge/archive/9f78dd2e4a57deaf4a886c5a2fb3f7796402647e.tar.gz",
-        "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
-    },
     "niv": {
         "branch": "master",
         "description": "Easy dependency management for Nix projects",

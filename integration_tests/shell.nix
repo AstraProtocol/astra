@@ -4,7 +4,7 @@ pkgs.mkShell {
     pkgs.jq
     pkgs.go
     pkgs.gomod2nix
-    (pkgs.callPackage ../. { }) # cronosd
+    (pkgs.callPackage ../. { })
     pkgs.start-scripts
     pkgs.go-ethereum
     pkgs.pystarport
