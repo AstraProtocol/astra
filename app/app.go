@@ -94,7 +94,7 @@ import (
 	ibctesting "github.com/cosmos/ibc-go/v3/testing"
 
 	// unnamed import of statik for swagger UI support
-	_ "github.com/tharsis/ethermint/client/docs/statik"
+	_ "github.com/AstraProtocol/astra/v1/client/docs/statik"
 	"github.com/tharsis/ethermint/encoding"
 
 	srvflags "github.com/tharsis/ethermint/server/flags"
