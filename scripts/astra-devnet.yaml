@@ -1,0 +1,65 @@
+dotenv: .env
+astra_777-1:
+  cmd: astrad
+  start-flags: "--trace"
+  app-config:
+    minimum-gas-prices: 0aastra
+    index-events:
+      - ethereum_tx.ethereumTxHash
+    json-rpc:
+      address: "0.0.0.0:8545"
+      ws-address: "0.0.0.0:8546"
+      api: "eth,net,web3,debug,astra"
+  validators:
+    - coins: 10000astra
+      staked: 1001astra
+      mnemonic: ${VALIDATOR1_MNEMONIC}
+    - coins: 10000astra
+      staked: 1002astra
+      mnemonic: ${VALIDATOR2_MNEMONIC}
+  accounts:
+    - name: team
+      coins: 2222200000astra
+      mnemonic: ${TEAM_MNEMONIC}
+    - name: genesis_partner
+      coins: 2222200000astra
+    - name: other_partner
+      coins: 2222200000astra
+    - name: community
+      coins: 1111100000astra
+      mnemonic: ${COMMUNITY_MNEMONIC}
+    - name: treasury
+      coins: 1111100000astra
+    - name: signer1
+      coins: 100000astra
+    - name: signer2
+      coins: 200000astra
+
+  genesis:
+    consensus_params:
+      block:
+        max_bytes: "22020096"
+        max_gas: "20000000"
+    app_state:
+      evm:
+        params:
+          evm_denom: aastra
+      gov:
+        voting_params:
+          voting_period: "10s"
+        deposit_params:
+          max_deposit_period: "10s"
+          min_deposit:
+            - denom: "aastra"
+              amount: "10000000"
+      transfer:
+        params:
+          receive_enabled: true
+          send_enabled: true
+      mint:
+        params:
+          mint_denom: "aastra"
+      staking:
+        params:
+          bond_denom: "aastra"
+          unbonding_time: "10s"
