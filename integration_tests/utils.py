@@ -72,6 +72,9 @@ REWARDS = "rewards"
 # Default base port
 DEFAULT_BASE_PORT = 26650
 
+# Default gas price
+DEFAULT_GAS_PRICE = "0000000000aastra"
+
 load_dotenv(Path(__file__).parent.parent / "integration_tests/configs/.env")
 Account.enable_unaudited_hdwallet_features()
 ACCOUNTS = {
@@ -135,13 +138,14 @@ def wait_for_new_blocks(cli, n):
 
 def wait_for_block_time(cli, t):
     print("wait for block time", t)
-    now = isoparse("1900-01-01 01:01:01.01+00:00")
     while True:
         try:
             now = isoparse((cli.status())["SyncInfo"]["latest_block_time"])
             print("block time now:", now)
         except:
-            now = isoparse("1900-01-01 01:01:01.01+00:00")
+            wait_for_port(DEFAULT_BASE_PORT)
+            now = isoparse((cli.status())["SyncInfo"]["latest_block_time"])
+            print("block time now:", now)
         if now >= t:
             break
         time.sleep(0.5)
