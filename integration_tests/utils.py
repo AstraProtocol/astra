@@ -597,3 +597,18 @@ def send_transaction(w3, tx, key=KEYS["validator"]):
     signed = sign_transaction(w3, tx, key)
     txhash = w3.eth.send_raw_transaction(signed.rawTransaction)
     return w3.eth.wait_for_transaction_receipt(txhash)
+
+
+def w3_wait_for_block(w3, height, timeout=240):
+    for i in range(timeout * 2):
+        try:
+            current_height = w3.eth.block_number
+        except AssertionError as e:
+            print(f"get current block number failed: {e}", file=sys.stderr)
+        else:
+            if current_height >= height:
+                break
+            print("current block height", current_height)
+        time.sleep(0.5)
+    else:
+        raise TimeoutError(f"wait for block {height} timeout")
