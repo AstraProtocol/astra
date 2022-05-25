@@ -51,9 +51,8 @@ func DefaultParams() Params {
 			MaxVariance:   sdk.ZeroDec(),             // 0%
 		},
 		InflationDistribution: InflationDistribution{
-			StakingRewards:  sdk.NewDecWithPrec(1000000000, 9), // 0.53 = 40% / (1 - 25%)
-			UsageIncentives: sdk.NewDecWithPrec(0, 9),          // 0.33 = 25% / (1 - 25%)
-			CommunityPool:   sdk.NewDecWithPrec(0, 9),          // 0.13 = 10% / (1 - 25%)
+			StakingRewards: sdk.NewDecWithPrec(1000000000, 9), // 0.53 = 40% / (1 - 25%)
+			CommunityPool:  sdk.NewDecWithPrec(0, 9),          // 0.13 = 10% / (1 - 25%)
 		},
 		EnableInflation: true,
 	}
@@ -137,15 +136,11 @@ func validateInflationDistribution(i interface{}) error {
 		return errors.New("staking distribution ratio must not be negative")
 	}
 
-	if v.UsageIncentives.IsNegative() {
-		return errors.New("pool incentives distribution ratio must not be negative")
-	}
-
 	if v.CommunityPool.IsNegative() {
 		return errors.New("community pool distribution ratio must not be negative")
 	}
 
-	totalProportions := v.StakingRewards.Add(v.UsageIncentives).Add(v.CommunityPool)
+	totalProportions := v.StakingRewards.Add(v.CommunityPool)
 	if !totalProportions.Equal(sdk.NewDec(1)) {
 		return errors.New("total distributions ratio should be 1")
 	}

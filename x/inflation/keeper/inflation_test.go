@@ -9,20 +9,18 @@ import (
 
 func (suite *KeeperTestSuite) TestMintAndAllocateInflation() {
 	testCases := []struct {
-		name                  string
-		mintCoin              sdk.Coin
-		malleate              func()
-		expStakingRewardAmt   sdk.Coin
-		expUsageIncentivesAmt sdk.Coin
-		expCommunityPoolAmt   sdk.DecCoins
-		expPass               bool
+		name                string
+		mintCoin            sdk.Coin
+		malleate            func()
+		expStakingRewardAmt sdk.Coin
+		expCommunityPoolAmt sdk.DecCoins
+		expPass             bool
 	}{
 		{
 			"pass",
 			sdk.NewCoin(denomMint, sdk.NewInt(1_000_000)),
 			func() {},
 			sdk.NewCoin(denomMint, sdk.NewInt(1_000_000)),
-			sdk.NewCoin(denomMint, sdk.NewInt(0)),
 			sdk.NewDecCoins(sdk.NewDecCoin(denomMint, sdk.NewInt(0))),
 			true,
 		},
@@ -30,7 +28,6 @@ func (suite *KeeperTestSuite) TestMintAndAllocateInflation() {
 			"pass - no coins minted ",
 			sdk.NewCoin(denomMint, sdk.ZeroInt()),
 			func() {},
-			sdk.NewCoin(denomMint, sdk.ZeroInt()),
 			sdk.NewCoin(denomMint, sdk.ZeroInt()),
 			sdk.DecCoins(nil),
 			true,
@@ -118,10 +115,9 @@ func (suite *KeeperTestSuite) TestGetCirculatingSupplyAndInflationRate() {
 			decCoin := sdk.NewDecCoinFromCoin(coin)
 			suite.app.InflationKeeper.MintCoins(suite.ctx, coin)
 
-			teamAlloc := sdk.NewDecCoin(types.DefaultInflationDenom, sdk.TokensFromConsensusPower(int64(200_000_000), sdk.DefaultPowerReduction))
 			circulatingSupply := s.app.InflationKeeper.GetCirculatingSupply(suite.ctx)
 
-			suite.Require().Equal(decCoin.Sub(teamAlloc).Amount, circulatingSupply)
+			suite.Require().Equal(decCoin.Amount, circulatingSupply)
 
 			inflationRate := s.app.InflationKeeper.GetInflationRate(suite.ctx)
 			suite.Require().Equal(tc.expInflationRate, inflationRate)

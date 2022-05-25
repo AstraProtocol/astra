@@ -27,7 +27,7 @@ func TestAstraExport(t *testing.T) {
 	// Initialize the chain
 	app.InitChain(
 		abci.RequestInitChain{
-			ChainId:       "astra_11110-1",
+			ChainId:       "astra_11112-1",
 			Validators:    []abci.ValidatorUpdate{},
 			AppStateBytes: stateBytes,
 		},

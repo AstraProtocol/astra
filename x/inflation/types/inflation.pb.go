@@ -35,12 +35,9 @@ type InflationDistribution struct {
 	// staking_rewards defines the proportion of the minted minted_denom that is
 	// to be allocated as staking rewards
 	StakingRewards github_com_cosmos_cosmos_sdk_types.Dec `protobuf:"bytes,1,opt,name=staking_rewards,json=stakingRewards,proto3,customtype=github.com/cosmos/cosmos-sdk/types.Dec" json:"staking_rewards"`
-	// usage_incentives defines the proportion of the minted minted_denom that is
-	// to be allocated to the incentives module address
-	UsageIncentives github_com_cosmos_cosmos_sdk_types.Dec `protobuf:"bytes,2,opt,name=usage_incentives,json=usageIncentives,proto3,customtype=github.com/cosmos/cosmos-sdk/types.Dec" json:"usage_incentives"`
 	// community_pool defines the proportion of the minted minted_denom that is to
 	// be allocated to the community pool
-	CommunityPool github_com_cosmos_cosmos_sdk_types.Dec `protobuf:"bytes,3,opt,name=community_pool,json=communityPool,proto3,customtype=github.com/cosmos/cosmos-sdk/types.Dec" json:"community_pool"`
+	CommunityPool github_com_cosmos_cosmos_sdk_types.Dec `protobuf:"bytes,2,opt,name=community_pool,json=communityPool,proto3,customtype=github.com/cosmos/cosmos-sdk/types.Dec" json:"community_pool"`
 }
 
 func (m *InflationDistribution) Reset()         { *m = InflationDistribution{} }
@@ -195,16 +192,6 @@ func (m *InflationDistribution) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i--
 	dAtA[i] = 0x1a
 	{
-		size := m.UsageIncentives.Size()
-		i -= size
-		if _, err := m.UsageIncentives.MarshalTo(dAtA[i:]); err != nil {
-			return 0, err
-		}
-		i = encodeVarintInflation(dAtA, i, uint64(size))
-	}
-	i--
-	dAtA[i] = 0x12
-	{
 		size := m.StakingRewards.Size()
 		i -= size
 		if _, err := m.StakingRewards.MarshalTo(dAtA[i:]); err != nil {
@@ -308,8 +295,6 @@ func (m *InflationDistribution) Size() (n int) {
 	var l int
 	_ = l
 	l = m.StakingRewards.Size()
-	n += 1 + l + sovInflation(uint64(l))
-	l = m.UsageIncentives.Size()
 	n += 1 + l + sovInflation(uint64(l))
 	l = m.CommunityPool.Size()
 	n += 1 + l + sovInflation(uint64(l))
@@ -433,9 +418,6 @@ func (m *InflationDistribution) Unmarshal(dAtA []byte) error {
 			}
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
-			}
-			if err := m.UsageIncentives.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
-				return err
 			}
 			iNdEx = postIndex
 		case 3:
