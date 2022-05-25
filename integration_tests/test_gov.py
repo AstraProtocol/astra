@@ -152,7 +152,7 @@ def test_deposit_period_expires(astra):
 
     # wait for deposit period passed
     wait_for_block_time(
-        astra, isoparse(proposal["submit_time"]) + timedelta(seconds=15)
+        astra.cosmos_cli(0), isoparse(proposal["submit_time"]) + timedelta(seconds=15)
     )
 
     # proposal deleted
