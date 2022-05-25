@@ -2,7 +2,6 @@ from pathlib import Path
 
 import pytest
 
-from .network import setup_astra, setup_geth
 from .utils import cluster_fixture
 
 
@@ -18,42 +17,24 @@ def pytest_configure(config):
 
 
 @pytest.fixture(scope="session")
-def astra(tmp_path_factory):
-    path = tmp_path_factory.mktemp("astra")
-    yield from setup_astra(path, 26650)
+def worker_index():
+    # match = re.search(r"\d+", worker_id)
+    # return int(match[0]) if match is not None else 0
+    return 0
 
 
 @pytest.fixture(scope="session")
-def geth(tmp_path_factory):
-    path = tmp_path_factory.mktemp("geth")
-    yield from setup_geth(path, 8545)
-
-
-@pytest.fixture(scope="session", params=["astra", "geth"])
-def cluster(request, astra, geth):
-    """
-    run on both cronos and geth
-    """
-    provider = request.param
-    if provider == "astra":
-        yield astra
-    elif provider == "geth":
-        yield geth
-    else:
-        raise NotImplementedError
-
-# @pytest.fixture(scope="session")
-# def cluster(worker_index, tmp_path_factory):
-#     "default cluster fixture"
-#     yield from cluster_fixture(
-#         Path(__file__).parent / "configs/astra-devnet.yaml",
-#         worker_index,
-#         # tmp_path_factory.mktemp("data"),
-#         Path(__file__).parent.parent / "data",
-#         None,
-#         None,
-#         "astrad"
-#     )
+def cluster(worker_index, tmp_path_factory):
+    "default cluster fixture"
+    yield from cluster_fixture(
+        Path(__file__).parent / "configs/default.yaml",
+        worker_index,
+        # tmp_path_factory.mktemp("data"),
+        Path(__file__).parent.parent / "data",
+        None,
+        None,
+        "astrad"
+    )
 
 
 @pytest.fixture(scope="session")

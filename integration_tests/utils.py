@@ -76,6 +76,7 @@ load_dotenv(Path(__file__).parent.parent / "integration_tests/configs/.env")
 Account.enable_unaudited_hdwallet_features()
 ACCOUNTS = {
     "validator": Account.from_mnemonic(os.getenv("VALIDATOR1_MNEMONIC")),
+    "validator2": Account.from_mnemonic(os.getenv("VALIDATOR2_MNEMONIC")),
     "team": Account.from_mnemonic(os.getenv("TEAM_MNEMONIC")),
     "signer1": Account.from_mnemonic(os.getenv("SIGNER1_MNEMONIC")),
     "signer2": Account.from_mnemonic(os.getenv("SIGNER2_MNEMONIC")),
@@ -556,6 +557,17 @@ def withdraw_all_rewards(cli, from_delegator, *k_options, i=0, **kv_options):
             from_=from_delegator,
             home=cli.cosmos_cli(i).data_dir,
             **kv_options,
+        )
+    )
+
+
+def get_supply(cli, i=0):
+    return json.loads(
+        cli.cosmos_cli(i).raw(
+            "q",
+            "bank",
+            "total",
+            output="json"
         )
     )
 
