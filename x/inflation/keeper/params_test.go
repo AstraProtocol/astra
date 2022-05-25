@@ -1,18 +1,16 @@
 package keeper_test
 
 import (
-	"testing"
-
-	testkeeper "github.com/AstraProtocol/astra/v1/testutil/keeper"
 	"github.com/AstraProtocol/astra/v1/x/inflation/types"
-	"github.com/stretchr/testify/require"
 )
 
-func TestGetParams(t *testing.T) {
-	k, ctx := testkeeper.InflationKeeper(t)
-	params := types.DefaultParams()
+func (suite *KeeperTestSuite) TestParams() {
+	params := suite.app.InflationKeeper.GetParams(suite.ctx)
+	expParams := types.DefaultParams()
 
-	k.SetParams(ctx, params)
+	suite.Require().Equal(expParams, params)
 
-	require.EqualValues(t, params, k.GetParams(ctx))
+	suite.app.InflationKeeper.SetParams(suite.ctx, params)
+	newParams := suite.app.InflationKeeper.GetParams(suite.ctx)
+	suite.Require().Equal(newParams, params)
 }
