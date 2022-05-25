@@ -9,7 +9,6 @@ import time
 import uuid
 from pathlib import Path
 
-import web3
 from web3._utils.transactions import fill_nonce, fill_transaction_defaults
 
 import yaml
@@ -566,12 +565,6 @@ def withdraw_all_rewards(cli, from_delegator, *k_options, i=0, **kv_options):
 
 def astra_to_aastra(amount):
     return amount * 10 ** 18
-
-
-def get_w3():
-    port = 8545
-    w3_http_endpoint = f"http://localhost:{port}"
-    return web3.Web3(web3.providers.HTTPProvider(w3_http_endpoint))
 
 
 def deploy_contract(w3, jsonfile, args=(), key=KEYS["validator"]):

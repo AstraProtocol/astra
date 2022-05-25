@@ -3,7 +3,7 @@ from eth_bloom import BloomFilter
 from eth_utils import abi, big_endian_to_int
 from hexbytes import HexBytes
 
-from integration_tests.utils import astra_to_aastra, wait_for_block, get_w3, deploy_contract, CONTRACTS, KEYS, ADDRS, send_transaction
+from integration_tests.utils import astra_to_aastra, deploy_contract, CONTRACTS, KEYS, ADDRS, send_transaction
 
 
 def test_basic(astra):

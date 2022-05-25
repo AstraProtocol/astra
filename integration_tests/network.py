@@ -87,8 +87,8 @@ def setup_custom_astra(path, base_port, config, post_init=None, chain_binary=Non
         preexec_fn=os.setsid,
     )
     try:
-        # wait_for_port(ports.evmrpc_port(base_port))
-        # wait_for_port(ports.evmrpc_ws_port(base_port))
+        wait_for_port(ports.evmrpc_port(base_port))
+        wait_for_port(ports.evmrpc_ws_port(base_port))
 
         cluster = Astra(path / "astra_777-1")
         wait_for_port(ports.rpc_port(base_port))
