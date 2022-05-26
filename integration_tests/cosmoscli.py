@@ -7,8 +7,7 @@ from time import sleep
 import bech32
 from dateutil.parser import isoparse
 from pystarport.utils import build_cli_args_safe, format_doc_string, interact
-from .utils import DEFAULT_BASE_PORT, DEFAULT_GAS_PRICE, wait_for_port
-from pystarport import ports
+from .utils import DEFAULT_GAS_PRICE
 
 
 class ModuleAccount(enum.Enum):
