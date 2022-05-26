@@ -33,9 +33,9 @@ cat $HOME/.astrad/config/genesis.json | jq '.app_state["gov"]["deposit_params"][
 cat $HOME/.astrad/config/genesis.json | jq '.app_state["evm"]["params"]["evm_denom"]="aastra"' > $HOME/.astrad/config/tmp_genesis.json && mv $HOME/.astrad/config/tmp_genesis.json $HOME/.astrad/config/genesis.json
 cat $HOME/.astrad/config/genesis.json | jq '.app_state["mint"]["params"]["mint_denom"]="aastra"' > $HOME/.astrad/config/tmp_genesis.json && mv $HOME/.astrad/config/tmp_genesis.json $HOME/.astrad/config/genesis.json
 
-# cat $HOME/.astrad/config/genesis.json | jq '.app_state["epochs"]["epochs"][0]["identifier"]="hour"' > $HOME/.astrad/config/tmp_genesis.json && mv $HOME/.astrad/config/tmp_genesis.json $HOME/.astrad/config/genesis.json
-# cat $HOME/.astrad/config/genesis.json | jq '.app_state["epochs"]["epochs"][0]["duration"]="3600s"' > $HOME/.astrad/config/tmp_genesis.json && mv $HOME/.astrad/config/tmp_genesis.json $HOME/.astrad/config/genesis.json
-# cat $HOME/.astrad/config/genesis.json | jq '.app_state["inflation"]["epoch_identifier"]="hour"' > $HOME/.astrad/config/tmp_genesis.json && mv $HOME/.astrad/config/tmp_genesis.json $HOME/.astrad/config/genesis.json
+ cat $HOME/.astrad/config/genesis.json | jq '.app_state["epochs"]["epochs"][0]["identifier"]="hour"' > $HOME/.astrad/config/tmp_genesis.json && mv $HOME/.astrad/config/tmp_genesis.json $HOME/.astrad/config/genesis.json
+ cat $HOME/.astrad/config/genesis.json | jq '.app_state["epochs"]["epochs"][0]["duration"]="3600s"' > $HOME/.astrad/config/tmp_genesis.json && mv $HOME/.astrad/config/tmp_genesis.json $HOME/.astrad/config/genesis.json
+ cat $HOME/.astrad/config/genesis.json | jq '.app_state["inflation"]["epoch_identifier"]="hour"' > $HOME/.astrad/config/tmp_genesis.json && mv $HOME/.astrad/config/tmp_genesis.json $HOME/.astrad/config/genesis.json
 
 # increase block time (?)
 cat $HOME/.astrad/config/genesis.json | jq '.consensus_params["block"]["time_iota_ms"]="1000"' > $HOME/.astrad/config/tmp_genesis.json && mv $HOME/.astrad/config/tmp_genesis.json $HOME/.astrad/config/genesis.json

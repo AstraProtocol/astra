@@ -5,12 +5,12 @@ import (
 	"fmt"
 	"strings"
 
+	"github.com/AstraProtocol/astra/v1/cmd/config"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
-	evm "github.com/tharsis/ethermint/x/evm/types"
 )
 
-var DefaultInflationDenom = evm.DefaultEVMDenom
+var DefaultInflationDenom = config.BaseDenom
 
 // Parameter store keys
 var (
