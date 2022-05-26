@@ -6,7 +6,7 @@ import pytest
 
 from integration_tests.network import setup_astra
 
-from .utils import DEFAULT_BASE_PORT, cluster_fixture
+from .utils import DEFAULT_BASE_PORT
 
 MAX_SLEEP_SEC = 600
 
