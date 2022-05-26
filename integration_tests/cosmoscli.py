@@ -2,11 +2,13 @@ import enum
 import hashlib
 import json
 import tempfile
+from time import sleep
 
 import bech32
 from dateutil.parser import isoparse
 from pystarport.utils import build_cli_args_safe, format_doc_string, interact
-from .utils import DEFAULT_GAS_PRICE
+from .utils import DEFAULT_BASE_PORT, DEFAULT_GAS_PRICE, wait_for_port
+from pystarport import ports
 
 
 class ModuleAccount(enum.Enum):
@@ -40,9 +42,21 @@ class ChainCommand:
         self.cmd = cmd
 
     def __call__(self, cmd, *args, stdin=None, **kwargs):
-        "execute chain-maind"
+        "execute astrad"
         args = " ".join(build_cli_args_safe(cmd, *args, **kwargs))
-        return interact(f"{self.cmd} {args}", input=stdin)
+        result = ""
+        tried = 0
+        # trying to interact with chain 10 times when socket error occurs
+        while result == "":
+            tried+=1
+            if tried == 5:
+                return interact(f"{self.cmd} {args}", input=stdin)
+            try:
+                result = interact(f"{self.cmd} {args}", input=stdin)
+            except:
+                result = ""    
+                sleep(0.5)
+        return result
 
 
 class CosmosCLI:
