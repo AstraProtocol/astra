@@ -1,13 +1,16 @@
 import enum
 import hashlib
 import json
+from pathlib import Path
+import subprocess
+import sys
 import tempfile
 from time import sleep
 
 import bech32
 from dateutil.parser import isoparse
 from pystarport.utils import build_cli_args_safe, format_doc_string, interact
-from .utils import DEFAULT_GAS_PRICE
+from .utils import DEFAULT_GAS_PRICE, SUPERVISOR_CONFIG_FILE
 
 
 class ModuleAccount(enum.Enum):
@@ -1065,3 +1068,40 @@ class CosmosCLI:
                 **kwargs,
             )
         )   
+
+    def start_node(self, i):
+        subprocess.run(
+            [
+                sys.executable,
+                "-msupervisor.supervisorctl",
+                "-c",
+                Path(self.data_dir / "../") / SUPERVISOR_CONFIG_FILE,
+                "start",
+                "{}-node{}".format(self.chain_id, i),
+            ]
+        )    
+
+    def stop_node(self, i):
+        subprocess.run(
+            [
+                sys.executable,
+                "-msupervisor.supervisorctl",
+                "-c",
+                Path(self.data_dir / "../") / SUPERVISOR_CONFIG_FILE,
+                "stop",
+                "{}-node{}".format(self.chain_id, i),
+            ]
+        )    
+
+    def copy_validator_key(self, from_node, to_node):
+        "Copy the validtor file in from_node to to_node"
+        from_key_file = "{}/node{}/config/priv_validator_key.json".format(
+            Path(self.data_dir / "../"), from_node
+        )
+        to_key_file = "{}/node{}/config/priv_validator_key.json".format(
+            Path(self.data_dir / "../"), to_node
+        )
+        with open(from_key_file, "r") as f:
+            key = f.read()
+        with open(to_key_file, "w") as f:
+            f.write(key)    

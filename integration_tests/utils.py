@@ -65,7 +65,7 @@ DISTRIBUTION = "distribution"
 # Querying commands for authz module
 GRANTS = "grants"
 
-# QUerying commands for distribution module
+# Querying commands for distribution module
 REWARDS = "rewards"
 
 # Default base port
@@ -73,6 +73,9 @@ DEFAULT_BASE_PORT = 26650
 
 # Default gas price
 DEFAULT_GAS_PRICE = "0000000000aastra"
+
+# Supervisor config file
+SUPERVISOR_CONFIG_FILE = "tasks.ini"
 
 load_dotenv(Path(__file__).parent.parent / "integration_tests/configs/.env")
 Account.enable_unaudited_hdwallet_features()

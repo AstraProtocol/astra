@@ -59,8 +59,9 @@ class Astra:
         self._use_websockets = use
 
 
-def setup_astra(path, base_port, enable_auto_deployment=True):
-    cfg = Path(__file__).parent / "configs/default.yaml"
+def setup_astra(path, base_port, cfg=None, enable_auto_deployment=True):
+    if cfg == None:
+        cfg = Path(__file__).parent / "configs/default.yaml"
     yield from setup_custom_astra(path, base_port, cfg)     
 
 
