@@ -49,7 +49,7 @@ class ChainCommand:
         # trying to interact with chain 10 times when socket error occurs
         while result == "":
             tried+=1
-            if tried == 5:
+            if tried == 10:
                 return interact(f"{self.cmd} {args}", input=stdin)
             try:
                 result = interact(f"{self.cmd} {args}", input=stdin)
