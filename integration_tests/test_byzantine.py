@@ -8,7 +8,7 @@ from .utils import DEFAULT_BASE_PORT
 
 MAX_SLEEP_SEC = 600
 
-@pytest.mark.byzantine
+pytestmark = pytest.mark.byzantine
 
 
 @pytest.fixture(scope="class")
