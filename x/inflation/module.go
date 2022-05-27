@@ -34,7 +34,7 @@ var (
 	_ module.AppModuleSimulation = AppModule{}
 )
 
-// app module Basics object
+// AppModuleBasic object
 type AppModuleBasic struct{}
 
 // Name returns the inflation module's name.
