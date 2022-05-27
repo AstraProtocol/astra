@@ -18,7 +18,7 @@ from .utils import (
     wait_for_port,
 )
 
-pytestmark = pytest.mark.normal
+pytestmark = pytest.mark.stake
 
 
 @pytest.fixture(scope="module")
