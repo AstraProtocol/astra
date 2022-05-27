@@ -9,7 +9,6 @@ import time
 import uuid
 from pathlib import Path
 
-import web3
 from web3._utils.transactions import fill_nonce, fill_transaction_defaults
 
 import yaml
@@ -66,11 +65,17 @@ DISTRIBUTION = "distribution"
 # Querying commands for authz module
 GRANTS = "grants"
 
-# QUerying commands for distribution module
+# Querying commands for distribution module
 REWARDS = "rewards"
 
 # Default base port
 DEFAULT_BASE_PORT = 26650
+
+# Default gas price
+DEFAULT_GAS_PRICE = "0000000000aastra"
+
+# Supervisor config file
+SUPERVISOR_CONFIG_FILE = "tasks.ini"
 
 load_dotenv(Path(__file__).parent.parent / "integration_tests/configs/.env")
 Account.enable_unaudited_hdwallet_features()
@@ -142,7 +147,9 @@ def wait_for_block_time(cli, t):
             now = isoparse((cli.status())["SyncInfo"]["latest_block_time"])
             print("block time now:", now)
         except:
-            now = isoparse("1900-01-01 01:01:01.01+00:00")
+            wait_for_port(DEFAULT_BASE_PORT)
+            now = isoparse((cli.status())["SyncInfo"]["latest_block_time"])
+            print("block time now:", now)
         if now >= t:
             break
         time.sleep(0.5)
@@ -574,12 +581,6 @@ def get_supply(cli, i=0):
 
 def astra_to_aastra(amount):
     return amount * 10 ** 18
-
-
-def get_w3():
-    port = 8545
-    w3_http_endpoint = f"http://localhost:{port}"
-    return web3.Web3(web3.providers.HTTPProvider(w3_http_endpoint))
 
 
 def deploy_contract(w3, jsonfile, args=(), key=KEYS["validator"]):
