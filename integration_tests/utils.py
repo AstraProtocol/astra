@@ -568,17 +568,6 @@ def withdraw_all_rewards(cli, from_delegator, *k_options, i=0, **kv_options):
     )
 
 
-def get_supply(cli, i=0):
-    return json.loads(
-        cli.cosmos_cli(i).raw(
-            "q",
-            "bank",
-            "total",
-            output="json"
-        )
-    )
-
-
 def astra_to_aastra(amount):
     return amount * 10 ** 18
 
