@@ -5,6 +5,8 @@ from hexbytes import HexBytes
 
 from integration_tests.utils import astra_to_aastra, deploy_contract, CONTRACTS, KEYS, ADDRS, send_transaction
 
+pytestmark = pytest.mark.normal
+
 
 def test_basic(astra):
     w3 = astra.w3

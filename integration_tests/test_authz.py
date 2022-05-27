@@ -3,7 +3,6 @@ from datetime import timedelta
 
 import pytest
 from dateutil.parser import isoparse
-
 from integration_tests.network import setup_astra
 
 from .utils import (
@@ -38,6 +37,8 @@ from .utils import (
     wait_for_new_blocks,
     withdraw_all_rewards,
 )
+
+pytestmark = pytest.mark.normal
 
 
 @pytest.fixture(scope="class")
