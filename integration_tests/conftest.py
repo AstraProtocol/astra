@@ -15,7 +15,7 @@ def pytest_configure(config):
     config.addinivalue_line("markers", "ibc: marks ibc tests")
     config.addinivalue_line("markers", "byzantine: marks byzantine tests")
     config.addinivalue_line("markers", "gov: marks gov tests")
-    config.addinivalue_line("markers", "stake: marks stake tests")
+    config.addinivalue_line("markers", "staking: marks staking tests")
 
 
 @pytest.fixture(scope="session")

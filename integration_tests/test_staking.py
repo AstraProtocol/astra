@@ -18,7 +18,7 @@ from .utils import (
     wait_for_port,
 )
 
-pytestmark = pytest.mark.stake
+pytestmark = pytest.mark.staking
 
 
 @pytest.fixture(scope="module")
@@ -26,6 +26,7 @@ def astra(tmp_path_factory):
     path = tmp_path_factory.mktemp("astra")
     cfg = Path(__file__).parent / "configs/staking.yaml"
     yield from setup_astra(path, DEFAULT_BASE_PORT, cfg)
+
 
 def test_staking_delegate(astra):
     signer1_address = astra.cosmos_cli(0).address("signer1")
@@ -83,3 +84,49 @@ def test_staking_unbond(astra):
     )
 
     assert astra.cosmos_cli(0).balance(signer1_address) == old_amount - 5
+
+
+def test_staking_redelegate(astra):
+    signer1_address = astra.cosmos_cli(0).address("signer1")
+    validators = astra.cosmos_cli(0).validators()
+    validator1_operator_address = validators[0]["operator_address"]
+    validator2_operator_address = validators[1]["operator_address"]
+    staking_validator1 = astra.cosmos_cli(0).validator(validator1_operator_address)
+    assert validator1_operator_address == staking_validator1["operator_address"]
+    staking_validator2 = astra.cosmos_cli(1).validator(validator2_operator_address)
+    assert validator2_operator_address == staking_validator2["operator_address"]
+    rsp = astra.cosmos_cli(0).delegate_amount(
+        validator1_operator_address, "3aastra", signer1_address
+    )
+    assert rsp["code"] == 0, rsp["raw_log"]
+    rsp = astra.cosmos_cli(0).delegate_amount(
+        validator2_operator_address, "4aastra", signer1_address
+    )
+    assert rsp["code"] == 0, rsp["raw_log"]
+    delegation_info = astra.cosmos_cli(0).get_delegated_amount(signer1_address)
+    old_output = delegation_info["delegation_responses"][0]["balance"]["amount"]
+    cli = astra.cosmos_cli(0)
+    rsp = json.loads(
+        cli.raw(
+            "tx",
+            "staking",
+            "redelegate",
+            validator2_operator_address,
+            validator1_operator_address,
+            "2aastra",
+            "-y",
+            "--gas",
+            "300000",
+            home=cli.data_dir,
+            from_=signer1_address,
+            keyring_backend="test",
+            chain_id=cli.chain_id,
+            node=cli.node_rpc,
+        )
+    )
+    assert rsp["code"] == 0, rsp["raw_log"]
+    delegation_info = astra.cosmos_cli(0).get_delegated_amount(signer1_address)
+    output = delegation_info["delegation_responses"][0]["balance"]["amount"]
+    assert int(old_output) + 2 == int(output)    
+
+
