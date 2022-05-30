@@ -1,4 +1,5 @@
 from datetime import timedelta
+from time import sleep
 
 import pytest
 from dateutil.parser import isoparse
@@ -16,6 +17,7 @@ def test_param_proposal(astra, vote_option):
     - check the result
     - check deposit refunded
     """
+    sleep(1)
     max_validators = astra.cosmos_cli(0).staking_params()["max_validators"]
 
     rsp = astra.cosmos_cli(0).gov_propose(
@@ -104,6 +106,7 @@ def test_param_proposal(astra, vote_option):
     else:
         # refunded, no matter passed or rejected
         assert astra.cosmos_cli(0).balance(astra.cosmos_cli(0).address("team")) == amount   
+    sleep(1)    
 
 
 def test_deposit_period_expires(astra):
