@@ -130,3 +130,47 @@ def test_staking_redelegate(astra):
     assert int(old_output) + 2 == int(output)    
 
 
+def test_join_validator(astra):
+    i = astra.cosmos_cli(0).create_node(moniker="new joined")
+    addr = astra.cosmos_cli(i).address("validator")
+    # transfer 1astra from community account
+    assert astra.cosmos_cli(0).transfer(astra.cosmos_cli(0).address("community"), addr, "1astra")["code"] == 0
+    assert astra.cosmos_cli(0).balance(addr) == 10 ** 18
+
+    # start the node
+    print("START NEW NODE...")
+    astra.cosmos_cli(0).start_node(i)
+    wait_for_port(rpc_port(astra.cosmos_cli(0).base_port(i)))
+
+    count1 = len(astra.cosmos_cli(0).validators())
+
+    # wait for the new node to sync
+    wait_for_block(astra.cosmos_cli(i), astra.cosmos_cli(0).block_height())
+
+    # wait for the new node to sync
+    wait_for_block(astra.cosmos_cli(i), astra.cosmos_cli(0).block_height())
+    # create validator tx
+    assert astra.cosmos_cli(i).create_validator("1astra")["code"] == 0
+    time.sleep(2)
+
+    count2 = len(astra.cosmos_cli(0).validators())
+    assert count2 == count1 + 1, "new validator should joined successfully"
+
+    val_addr = astra.cosmos_cli(i).address("validator", bech="val")
+    val = astra.cosmos_cli(0).validator(val_addr)
+    assert not val["jailed"]
+    assert val["status"] == "BOND_STATUS_BONDED"
+    assert val["tokens"] == str(10 ** 18)
+    assert val["description"]["moniker"] == "new joined"
+    assert val["commission"]["commission_rates"] == {
+        "rate": "0.100000000000000000",
+        "max_rate": "0.200000000000000000",
+        "max_change_rate": "0.010000000000000000",
+    }
+    assert (
+        astra.cosmos_cli(i).edit_validator(commission_rate="0.2")["code"] == 12
+    ), "commission cannot be changed more than once in 24h"
+    assert astra.cosmos_cli(i).edit_validator(moniker="awesome node")["code"] == 0
+    assert astra.cosmos_cli(0).validator(val_addr)["description"]["moniker"] == "awesome node"    
+
+
