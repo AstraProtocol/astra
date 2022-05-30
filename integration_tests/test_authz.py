@@ -21,7 +21,7 @@ from .utils import (AASTRA_DENOM, AUTHORIZATION_DELEGATE,
                     wait_for_block_time, wait_for_new_blocks,
                     withdraw_all_rewards)
 
-pytestmark = pytest.mark.normal
+pytestmark = pytest.mark.authz
 
 
 @pytest.fixture(scope="module")
@@ -94,6 +94,7 @@ def test_execute_tx_beyond_authorization_spend_limit(astra_temp, tmp_path):
     """
     test execute transaction beyond send authorization spend limit
     """
+    sleep(1)
     spend_limit = 50
     transaction_coins = 100
     granter_address = astra_temp.cosmos_cli(0).address("community")
@@ -144,6 +145,7 @@ def test_revoke_authorization(astra_temp, tmp_path):
     """
     test unable to execute transaction once grant is revoked
     """
+    sleep(1)
     spend_limit = 200
     transaction_coins = 100
     granter_address = astra_temp.cosmos_cli(0).address("community")
@@ -204,6 +206,7 @@ def test_generic_authorization_grant(astra_temp, tmp_path):
     """
     test grant authorization with generic authorization with send msg type
     """
+    sleep(1)
     delegate_coins = 1000000
     validator_address = astra_temp.cosmos_cli(
         0).validators()[0]["operator_address"]
@@ -274,6 +277,7 @@ def test_execute_delegate_to_allowed_validator(astra_temp, tmp_path):
     test execute delegate to other validators should fail
     """
     # test execute delegate to allowed validator should succeed
+    sleep(1)
     spend_limit = 200
     delegate_coins = 100
     allowed_validator_address = astra_temp.cosmos_cli(0).validators()[
@@ -350,6 +354,7 @@ def test_unable_to_execute_delegate_to_deny_validator(astra_temp, tmp_path):
     """
     test execute delegate to deny validator should fail
     """
+    sleep(1)
     spend_limit = 200
     delegate_coins = 100
     deny_validator_address = astra_temp.cosmos_cli(
@@ -394,6 +399,7 @@ def test_execute_all_staking_operations(astra_temp, tmp_path):
     """
     test execute delegate, unbond, redelegate by grantee
     """
+    sleep(1)
     spend_limit = 200
     delegate_coins = 100
     unbond_coins = 50

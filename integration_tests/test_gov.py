@@ -116,6 +116,7 @@ def test_deposit_period_expires(astra):
     - proposal deleted
     - no refund
     """
+    sleep(1)
     amount1 = astra.cosmos_cli(0).balance(astra.cosmos_cli(0).address("team"))
     # deposit_amount < gov:min_deposit
     deposit_amount = 10000
@@ -172,6 +173,7 @@ def test_community_pool_spend_proposal(astra):
     - proposal a community pool spend
     - pass it
     """
+    sleep(1)
     # need at least several blocks to populate community pool
     wait_for_block(astra.cosmos_cli(0), 3)
 
@@ -230,6 +232,7 @@ def test_change_vote(astra):
     - change vote
     - check tally
     """
+    sleep(1)
     deposit_amount = 10000000
     rsp = astra.cosmos_cli(0).gov_propose(
         "community",
@@ -287,6 +290,7 @@ def test_inherit_vote(astra):
     - A vote No
     - change tally: {yes: v, no: a}
     """
+    sleep(1)
     deposit_amount = 10000000
     rsp = astra.cosmos_cli(0).gov_propose(
         "community",

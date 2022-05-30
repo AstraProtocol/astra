@@ -1,5 +1,5 @@
 import json
-import time
+from time import sleep
 from datetime import timedelta
 from pathlib import Path
 
@@ -27,7 +27,7 @@ def astra(tmp_path_factory):
 
 
 def test_staking_delegate(astra):
-    time.sleep(1)
+    sleep(1)
     signer1_address = astra.cosmos_cli(0).address("signer1")
     validators = astra.cosmos_cli(0).validators()
     validator1_operator_address = validators[0]["operator_address"]
@@ -48,6 +48,7 @@ def test_staking_delegate(astra):
 
 
 def test_staking_unbond(astra):
+    sleep(1)
     signer1_address = astra.cosmos_cli(0).address("signer1")
     validators = astra.cosmos_cli(0).validators()
     validator1_operator_address = validators[0]["operator_address"]
@@ -86,6 +87,7 @@ def test_staking_unbond(astra):
 
 
 def test_staking_redelegate(astra):
+    sleep(1)
     signer1_address = astra.cosmos_cli(0).address("signer1")
     validators = astra.cosmos_cli(0).validators()
     validator1_operator_address = validators[0]["operator_address"]
@@ -130,6 +132,7 @@ def test_staking_redelegate(astra):
 
 
 def test_join_validator(astra):
+    sleep(1)
     i = astra.cosmos_cli(0).create_node(moniker="new joined")
     addr = astra.cosmos_cli(i).address("validator")
     # transfer 1astra from community account
@@ -150,7 +153,7 @@ def test_join_validator(astra):
     wait_for_block(astra.cosmos_cli(i), astra.cosmos_cli(0).block_height())
     # create validator tx
     assert astra.cosmos_cli(i).create_validator("1astra")["code"] == 0
-    time.sleep(2)
+    sleep(1)
 
     count2 = len(astra.cosmos_cli(0).validators())
     assert count2 == count1 + 1, "new validator should joined successfully"
@@ -178,6 +181,7 @@ def test_min_self_delegation(astra):
     - validator unbond min_self_delegation
     - check not in validator set anymore
     """
+    sleep(1)
     assert len(astra.cosmos_cli(0).validators()) == 4, "wrong validator set"
 
     oper_addr = astra.cosmos_cli(2).address("validator", bech="val")
