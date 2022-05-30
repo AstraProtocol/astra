@@ -1,3 +1,4 @@
+from time import sleep
 import pytest
 from eth_bloom import BloomFilter
 from eth_utils import abi, big_endian_to_int
@@ -14,6 +15,7 @@ def test_basic(astra):
 
 
 def test_events(astra, suspend_capture):
+    sleep(1)
     w3 = astra.w3
     erc20 = deploy_contract(
         w3,

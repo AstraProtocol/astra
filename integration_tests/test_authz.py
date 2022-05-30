@@ -1,5 +1,6 @@
 import json
 from datetime import timedelta
+from time import sleep
 
 import pytest
 from dateutil.parser import isoparse
@@ -33,6 +34,7 @@ def test_execute_tx_within_authorization_spend_limit(astra_temp, tmp_path):
     """
     test execute transaction within send authorization spend limit
     """
+    sleep(1)
     spend_limit = 200
     transaction_coins = 100
     granter_address = astra_temp.cosmos_cli(0).address("community")
