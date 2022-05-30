@@ -203,7 +203,7 @@ class CosmosCLI:
 
     def home(self, i):
         "home directory of i-th node"
-        return home_dir(self.data_dir / "../", i)
+        return home_dir(Path(self.data_dir).parent, i)
 
     def validate_genesis(self):
         return self.raw("validate-genesis", home=self.data_dir)
@@ -1247,13 +1247,13 @@ class CosmosCLI:
                 doc["statesync"].update(
                     {
                         "enable": True,
-                        "rpc_servers": ",".join(self.node_rpc(i) for i in range(2)),
+                        "rpc_servers": ",".join(self.get_node_rpc(i) for i in range(2)),
                         "trust_height": int(info["latest_block_height"]),
                         "trust_hash": info["latest_block_hash"],
-                        "temp_dir": str(self.data_dir),
+                        "temp_dir": str(Path(self.data_dir).parent),
                         "discovery_time": "5s",
                     }
-                )
+                )   
 
         edit_tm_cfg(
             home / "config/config.toml",
@@ -1268,7 +1268,7 @@ class CosmosCLI:
         self.create_account_specific_node("validator", mnemonic, i)
 
         # add process config into supervisor
-        path = self.data_dir / "../" / SUPERVISOR_CONFIG_FILE
+        path = Path(self.data_dir).parent / SUPERVISOR_CONFIG_FILE
         ini = configparser.RawConfigParser()
         ini.read_file(path.open())
         chain_id = self.chain_id
