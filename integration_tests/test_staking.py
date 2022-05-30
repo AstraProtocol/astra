@@ -10,11 +10,9 @@ from integration_tests.network import setup_astra
 
 from .utils import (
     DEFAULT_BASE_PORT,
-    cluster_fixture,
     parse_events,
     wait_for_block,
     wait_for_block_time,
-    wait_for_new_blocks,
     wait_for_port,
 )
 
@@ -29,6 +27,7 @@ def astra(tmp_path_factory):
 
 
 def test_staking_delegate(astra):
+    time.sleep(1)
     signer1_address = astra.cosmos_cli(0).address("signer1")
     validators = astra.cosmos_cli(0).validators()
     validator1_operator_address = validators[0]["operator_address"]
@@ -174,3 +173,27 @@ def test_join_validator(astra):
     assert astra.cosmos_cli(0).validator(val_addr)["description"]["moniker"] == "awesome node"    
 
 
+def test_min_self_delegation(astra):
+    """
+    - validator unbond min_self_delegation
+    - check not in validator set anymore
+    """
+    assert len(astra.cosmos_cli(0).validators()) == 4, "wrong validator set"
+
+    oper_addr = astra.cosmos_cli(2).address("validator", bech="val")
+    acct_addr = astra.cosmos_cli(2).address("validator")
+    rsp = astra.cosmos_cli(2).unbond_amount(oper_addr, "90000000aastra", acct_addr)
+    assert rsp["code"] == 0, rsp["raw_log"]
+
+    def find_validator():
+        return next(
+            iter(
+                val
+                for val in astra.cosmos_cli(0).validators()
+                if val["operator_address"] == oper_addr
+            )
+        )
+
+    assert (
+        find_validator()["status"] == "BOND_STATUS_UNBONDING"
+    ), "validator get removed"
