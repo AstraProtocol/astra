@@ -103,7 +103,7 @@ def test_param_proposal(astra, vote_option):
         assert astra.cosmos_cli(0).balance(astra.cosmos_cli(0).address("team")) == amount - deposit_amount
     else:
         # refunded, no matter passed or rejected
-        assert astra.cosmos_cli(0).balance(astra.cosmos_cli(0).address("team")) == amount   
+        assert astra.cosmos_cli(0).balance(astra.cosmos_cli(0).address("team")) == amount
 
 
 def test_deposit_period_expires(astra):
@@ -256,23 +256,9 @@ def test_change_vote(astra):
     rsp = astra.cosmos_cli(0).gov_vote("validator", proposal_id, "yes")
     assert rsp["code"] == 0, rsp["raw_log"]
 
-    astra.cosmos_cli(0).query_tally(proposal_id) == {
-        "yes": str(voting_power),
-        "no": "0",
-        "abstain": "0",
-        "no_with_veto": "0",
-    }
-
     # change vote to no
     rsp = astra.cosmos_cli(0).gov_vote("validator", proposal_id, "no")
     assert rsp["code"] == 0, rsp["raw_log"]
-
-    astra.cosmos_cli(0).query_tally(proposal_id) == {
-        "no": str(voting_power),
-        "yes": "0",
-        "abstain": "0",
-        "no_with_veto": "0",
-    }
 
 
 def test_inherit_vote(astra):
@@ -307,11 +293,11 @@ def test_inherit_vote(astra):
     delegate_amount = 10
 
     staked_amount_val1 = 1001
-    
+
     voter1 = astra.cosmos_cli(0).address("community")
     astra.cosmos_cli(0).delegate_amount(
         # to_addr       amount      from_addr
-        astra.cosmos_cli(0).address("validator", bech="val"), "%daastra" % delegate_amount, voter1      # delegate to validator #2
+        astra.cosmos_cli(0).address("validator", bech="val"), "%daastra" % delegate_amount, voter1  # delegate to validator #2
     )
 
     rsp = astra.cosmos_cli(0).gov_vote("validator", proposal_id, "yes")
@@ -325,12 +311,10 @@ def test_inherit_vote(astra):
 
     rsp = astra.cosmos_cli(0).gov_vote(voter1, proposal_id, "no")
     assert rsp["code"] == 0, rsp["raw_log"]
-    
+
     assert astra.cosmos_cli(0).query_tally(proposal_id) == {
         "yes": str(astra_to_aastra(staked_amount_val1)),
         "no": str(delegate_amount),
         "abstain": "0",
         "no_with_veto": "0",
     }
-
-
