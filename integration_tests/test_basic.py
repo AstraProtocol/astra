@@ -8,7 +8,6 @@ from integration_tests.utils import astra_to_aastra, deploy_contract, CONTRACTS,
 
 pytestmark = pytest.mark.normal
 
-
 def test_basic(astra):
     w3 = astra.w3
     assert w3.eth.chain_id == 777
