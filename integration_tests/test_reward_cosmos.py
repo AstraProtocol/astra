@@ -1,51 +1,51 @@
 import pytest
 
-from .utils import wait_for_block, wait_for_new_blocks
+from .utils import wait_for_block, wait_for_new_blocks, ADDRS
 
 pytestmark = pytest.mark.normal
 
 
-def test_reward(cluster):
-    # starts with cro1
-    signer1_address = cluster.address("signer1", i=0)
-    signer2_address = cluster.address("signer2", i=0)
-    validator1_address = cluster.address("validator", i=0)
-    validator2_address = cluster.address("validator", i=1)
-    # starts with crocncl1
-    validator1_operator_address = cluster.address("validator", i=0, bech="val")
-    validator2_operator_address = cluster.address("validator", i=1, bech="val")
-    signer1_old_balance = cluster.balance(signer1_address)
+def test_reward_when_execute_tx(astra):
+    # starts with astra
+    signer1_address = astra.cosmos_cli(0).address("signer1")
+    signer2_address = astra.cosmos_cli(0).address("signer2")
+    validator1_address = astra.cosmos_cli(0).address("validator")
+    validator2_address = astra.cosmos_cli(1).address("validator")
+    # starts with astraval
+    validator1_operator_address = astra.cosmos_cli(0).address("validator", bech="val")
+    validator2_operator_address = astra.cosmos_cli(1).address("validator", bech="val")
+    signer1_old_balance = astra.cosmos_cli(0).balance(signer1_address)
     amount_to_send = 2 * 10 ** 18
     fees = 100_000
     # wait for initial reward processed, so that distribution values can be read
-    wait_for_block(cluster, 2)
-    old_commission_amount = cluster.distribution_commission(validator1_operator_address)
-    old_commission_amount2 = cluster.distribution_commission(
+    wait_for_block(astra.cosmos_cli(0), 2)
+    old_commission_amount = astra.cosmos_cli(0).distribution_commission(validator1_operator_address)
+    old_commission_amount2 = astra.cosmos_cli(0).distribution_commission(
         validator2_operator_address,
     )
-    old_community_amount = cluster.distribution_community()
-    old_reward_amount = cluster.distribution_reward(validator1_address)
-    old_reward_amount2 = cluster.distribution_reward(validator2_address)
+    old_community_amount = astra.cosmos_cli(0).distribution_community()
+    old_reward_amount = astra.cosmos_cli(0).distribution_reward(validator1_address)
+    old_reward_amount2 = astra.cosmos_cli(0).distribution_reward(validator2_address)
     # transfer with fees
-    cluster.transfer(
+    astra.cosmos_cli(0).transfer(
         signer1_address,
         signer2_address,
         f"{amount_to_send}aastra",
         fees=f"{fees}aastra",
     )
     # wait for fee reward receive
-    wait_for_new_blocks(cluster, 2)
-    signer1_balance = cluster.balance(signer1_address)
+    wait_for_new_blocks(astra.cosmos_cli(0), 2)
+    signer1_balance = astra.cosmos_cli(0).balance(signer1_address)
     assert signer1_balance + fees + amount_to_send == signer1_old_balance
-    commission_amount = cluster.distribution_commission(validator1_operator_address)
-    commission_amount2 = cluster.distribution_commission(validator2_operator_address)
+    commission_amount = astra.cosmos_cli(0).distribution_commission(validator1_operator_address)
+    commission_amount2 = astra.cosmos_cli(0).distribution_commission(validator2_operator_address)
     commission_amount_diff = (commission_amount - old_commission_amount) + (
             commission_amount2 - old_commission_amount2
     )
-    community_amount = cluster.distribution_community()
+    community_amount = astra.cosmos_cli(0).distribution_community()
     community_amount_diff = community_amount - old_community_amount
-    reward_amount = cluster.distribution_reward(validator1_address)
-    reward_amount2 = cluster.distribution_reward(validator2_address)
+    reward_amount = astra.cosmos_cli(0).distribution_reward(validator1_address)
+    reward_amount2 = astra.cosmos_cli(0).distribution_reward(validator2_address)
     reward_amount_diff = (reward_amount - old_reward_amount) + (
             reward_amount2 - old_reward_amount2
     )
@@ -57,4 +57,53 @@ def test_reward(cluster):
     # commission = proposerReward * proposerCommissionRate
     # communityFunding = feesCollectedDec * communityTax
     # poolReceived = feesCollectedDec - proposerReward - communityFunding
-    assert 77000.0 <= minted_value <= 233937.0
+    assert 77000.0 <= minted_value <= 222450928793525
+
+
+def test_reward_block_proposal(astra):
+    print("test_reward_block_proposal")
+    # starts with astra
+    validator1_address = astra.cosmos_cli(0).address("validator")
+    validator2_address = astra.cosmos_cli(1).address("validator")
+    total_supply_before = int(astra.cosmos_cli(0).total_supply()["supply"][0]["amount"])
+    # starts with astraval
+    validator1_operator_address = astra.cosmos_cli(0).address("validator", bech="val")
+    validator2_operator_address = astra.cosmos_cli(1).address("validator", bech="val")
+    # wait for initial reward processed, so that distribution values can be read
+    wait_for_block(astra.cosmos_cli(0), 2)
+    old_commission_amount = astra.cosmos_cli(0).distribution_commission(validator1_operator_address)
+    old_commission_amount2 = astra.cosmos_cli(0).distribution_commission(
+        validator2_operator_address,
+    )
+    old_community_amount = astra.cosmos_cli(0).distribution_community()
+    old_reward_amount = astra.cosmos_cli(0).distribution_reward(validator1_address)
+    old_reward_amount2 = astra.cosmos_cli(0).distribution_reward(validator2_address)
+    # wait for fee reward receive
+    wait_for_new_blocks(astra.cosmos_cli(0), 2)
+    total_supply_after = int(astra.cosmos_cli(0).total_supply()["supply"][0]["amount"])
+    commission_amount = astra.cosmos_cli(0).distribution_commission(validator1_operator_address)
+    commission_amount2 = astra.cosmos_cli(0).distribution_commission(validator2_operator_address)
+    commission_amount_diff = (commission_amount - old_commission_amount) + (
+            commission_amount2 - old_commission_amount2
+    )
+    community_amount = astra.cosmos_cli(0).distribution_community()
+    community_amount_diff = community_amount - old_community_amount
+    reward_amount = astra.cosmos_cli(0).distribution_reward(validator1_address)
+    reward_amount2 = astra.cosmos_cli(0).distribution_reward(validator2_address)
+    reward_amount_diff = (reward_amount - old_reward_amount) + (
+            reward_amount2 - old_reward_amount2
+    )
+    supply_diff = total_supply_after - total_supply_before
+    print("supply_diff", supply_diff)
+    print(commission_amount_diff, community_amount_diff, reward_amount_diff)
+    total_diff = commission_amount_diff + community_amount_diff + reward_amount_diff
+    print(total_diff)
+    assert community_amount_diff <= supply_diff * 2.0 / 100 + 1
+    assert reward_amount_diff + commission_amount_diff <= supply_diff * 98.0 / 100 + 1
+    # these values are generated by minting
+    # if there is system-overload, minted_value can be larger than expected
+    # fee is computed at EndBlock, AllocateTokens
+    # commission = proposerReward * proposerCommissionRate
+    # communityFunding = feesCollectedDec * communityTax
+    # poolReceived = feesCollectedDec - proposerReward - communityFunding
+    assert total_diff <= supply_diff + 1

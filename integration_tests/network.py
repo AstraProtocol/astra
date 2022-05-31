@@ -63,7 +63,7 @@ class Astra:
 
 
 def setup_astra(path, base_port, cfg=None, enable_auto_deployment=True):
-    if cfg == None:
+    if cfg is None:
         cfg = Path(__file__).parent / "configs/default.yaml"
     yield from setup_custom_astra(path, base_port, cfg)     
 
