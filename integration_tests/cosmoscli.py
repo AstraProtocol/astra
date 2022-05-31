@@ -1,16 +1,29 @@
+import configparser
 import enum
 import hashlib
 import json
 from pathlib import Path
+import re
 import subprocess
 import sys
 import tempfile
 from time import sleep
 
 import bech32
+import jsonmerge
 from dateutil.parser import isoparse
 from pystarport.utils import build_cli_args_safe, format_doc_string, interact
+from pystarport import ports
+import tomlkit
 from .utils import DEFAULT_GAS_PRICE, SUPERVISOR_CONFIG_FILE
+
+COMMON_PROG_OPTIONS = {
+    # redirect to supervisord's stdout, easier to collect all logs
+    "autostart": "true",
+    "autorestart": "true",
+    "redirect_stderr": "true",
+    "startsecs": "3",
+}
 
 
 class ModuleAccount(enum.Enum):
@@ -76,14 +89,35 @@ class CosmosCLI:
         )
         self.chain_id = self._genesis["chain_id"]
         self.node_rpc = node_rpc
+        self.cmd = cmd
         self.raw = ChainCommand(cmd)
+        self.config = json.load((self.data_dir / "../" / "config.json").open())
         self.output = None
         self.error = None
+
+    def reload_supervisor(self):
+        subprocess.run(
+            [
+                sys.executable,
+                "-msupervisor.supervisorctl",
+                "-c",
+                Path(self.data_dir / "../../") / SUPERVISOR_CONFIG_FILE,
+                "update",
+            ],
+            check=True,
+        )    
 
     def node_id(self):
         "get tendermint node id"
         output = self.raw("tendermint", "show-node-id", home=self.data_dir)
         return output.decode().strip()
+
+    def base_port(self, i):
+        return self.config["validators"][i]["base_port"]    
+
+    def get_node_rpc(self, i):
+        "rpc url of i-th node"
+        return "tcp://127.0.0.1:%d" % ports.rpc_port(self.base_port(i))    
 
     def delete_account(self, name):
         "delete wallet account in node's keyring"
@@ -122,6 +156,32 @@ class CosmosCLI:
             )
         return json.loads(output)
 
+    def create_account_specific_node(self, name, mnemonic=None, i=0):
+        "create new keypair in node's keyring"
+        data_path = self.data_dir / "../"
+        if mnemonic is None:
+            output = self.raw(
+                "keys",
+                "add",
+                name,
+                home=data_path / str("node" + str(i)),
+                output="json",
+                keyring_backend="test",
+            )
+        else:
+            output = self.raw(
+                "keys",
+                "add",
+                name,
+                "--recover",
+                home=data_path / str("node" + str(i)),
+                output="json",
+                keyring_backend="test",
+                stdin=mnemonic.encode() + b"\n",
+            )
+        return json.loads(output)
+    
+
     def init(self, moniker):
         "the node's config is already added"
         return self.raw(
@@ -130,6 +190,20 @@ class CosmosCLI:
             chain_id=self.chain_id,
             home=self.data_dir,
         )
+
+    def init_new_node(self, moniker, i):
+        "the node's config is already added"
+        data_path = self.data_dir / "../"
+        return self.raw(
+            "init",
+            moniker,
+            chain_id=self.chain_id,
+            home=data_path / str("node" + str(i)),
+        )    
+
+    def home(self, i):
+        "home directory of i-th node"
+        return home_dir(Path(self.data_dir).parent, i)
 
     def validate_genesis(self):
         return self.raw("validate-genesis", home=self.data_dir)
@@ -1075,7 +1149,7 @@ class CosmosCLI:
                 sys.executable,
                 "-msupervisor.supervisorctl",
                 "-c",
-                Path(self.data_dir / "../") / SUPERVISOR_CONFIG_FILE,
+                Path(self.data_dir / "../../") / SUPERVISOR_CONFIG_FILE,
                 "start",
                 "{}-node{}".format(self.chain_id, i),
             ]
@@ -1087,7 +1161,7 @@ class CosmosCLI:
                 sys.executable,
                 "-msupervisor.supervisorctl",
                 "-c",
-                Path(self.data_dir / "../") / SUPERVISOR_CONFIG_FILE,
+                Path(self.data_dir / "../../") / SUPERVISOR_CONFIG_FILE,
                 "stop",
                 "{}-node{}".format(self.chain_id, i),
             ]
@@ -1105,3 +1179,189 @@ class CosmosCLI:
             key = f.read()
         with open(to_key_file, "w") as f:
             f.write(key)    
+
+
+    def nodes_len(self):
+        "find how many 'node{i}' sub-directories"
+        data_path = Path(self.data_dir / "../")
+        return len(
+            [p for p in data_path.iterdir() if re.match(r"^node\d+$", p.name)]
+        )
+
+    def create_node(
+        self,
+        base_port=None,
+        moniker=None,
+        hostname="localhost",
+        statesync=False,
+        mnemonic=None,
+    ):
+        """create new node in the data directory,
+        process information is written into supervisor config
+        start it manually with supervisor commands
+        :return: new node index and config
+        """
+        i = self.nodes_len()
+
+        # default configs
+        if base_port is None:
+            # use the node0's base_port + i * 10 as default base port for new ndoe
+            base_port = self.config["validators"][0]["base_port"] + i * 10
+        if moniker is None:
+            moniker = f"node{i}"
+
+        # add config
+        assert len(self.config["validators"]) == i
+        self.config["validators"].append(
+            {
+                "base_port": base_port,
+                "hostname": hostname,
+                "moniker": moniker,
+            }
+        )
+        (Path(self.data_dir).parent / "config.json").write_text(json.dumps(self.config))
+
+        # init home directory
+        self.init_new_node(self.config["validators"][i]["moniker"], i)
+        home = self.home(i)
+        (home / "config/genesis.json").unlink()
+        (home / "config/genesis.json").symlink_to("../../genesis.json")
+        (home / "config/client.toml").write_text(
+            tomlkit.dumps(
+                {
+                    "chain-id": self.chain_id,
+                    "keyring-backend": "test",
+                    "output": "json",
+                    "node": self.get_node_rpc(i),
+                    "broadcast-mode": "block",
+                }
+            )
+        )
+        # use p2p peers from node0's config
+        node0 = tomlkit.parse((self.data_dir / "../node0/config/config.toml").read_text())
+
+        def custom_edit_tm(doc):
+            if statesync:
+                info = self.status()["SyncInfo"]
+                doc["statesync"].update(
+                    {
+                        "enable": True,
+                        "rpc_servers": ",".join(self.get_node_rpc(i) for i in range(2)),
+                        "trust_height": int(info["latest_block_height"]),
+                        "trust_hash": info["latest_block_hash"],
+                        "temp_dir": str(Path(self.data_dir).parent),
+                        "discovery_time": "5s",
+                    }
+                )   
+
+        edit_tm_cfg(
+            home / "config/config.toml",
+            base_port,
+            node0["p2p"]["persistent_peers"],
+            {},
+            custom_edit=custom_edit_tm,
+        )
+        edit_app_cfg(home / "config/app.toml", base_port, {})
+
+        # create validator account
+        self.create_account_specific_node("validator", mnemonic, i)
+
+        # add process config into supervisor
+        path = Path(self.data_dir).parent / SUPERVISOR_CONFIG_FILE
+        ini = configparser.RawConfigParser()
+        ini.read_file(path.open())
+        chain_id = self.chain_id
+        prgname = f"{chain_id}-node{i}"
+        section = f"program:{prgname}"
+        ini.add_section(section)
+        ini[section].update(
+            dict(
+                COMMON_PROG_OPTIONS,
+                command=f"{self.cmd} start --home %(here)s/node{i}",
+                autostart="false",
+                stdout_logfile=f"%(here)s/node{i}.log",
+            )
+        )
+        with path.open("w") as fp:
+            ini.write(fp)
+        self.reload_supervisor()
+        return i      
+
+
+def edit_tm_cfg(path, base_port, peers, config, *, custom_edit=None):
+    "field name changed after tendermint 0.35, support both flavours."
+    doc = tomlkit.parse(open(path).read())
+    doc["mode"] = "validator"
+    # tendermint is start in process, not needed
+    # doc['proxy_app'] = 'tcp://127.0.0.1:%d' % abci_port(base_port)
+    rpc = doc["rpc"]
+    rpc["laddr"] = "tcp://0.0.0.0:%d" % ports.rpc_port(base_port)
+    rpc["pprof_laddr"] = rpc["pprof-laddr"] = "localhost:%d" % (
+        ports.pprof_port(base_port),
+    )
+    rpc["timeout_broadcast_tx_commit"] = rpc["timeout-broadcast-tx-commit"] = "30s"
+    rpc["grpc_laddr"] = rpc["grpc-laddr"] = "tcp://0.0.0.0:%d" % (
+        ports.grpc_port_tx_only(base_port),
+    )
+    p2p = doc["p2p"]
+    # p2p["use-legacy"] = True
+    p2p["laddr"] = "tcp://0.0.0.0:%d" % ports.p2p_port(base_port)
+    p2p["persistent_peers"] = p2p["persistent-peers"] = peers
+    p2p["addr_book_strict"] = p2p["addr-book-strict"] = False
+    p2p["allow_duplicate_ip"] = p2p["allow-duplicate-ip"] = True
+    doc["consensus"]["timeout_commit"] = doc["consensus"]["timeout-commit"] = "1s"
+    patch_toml_doc(doc, config)
+    if custom_edit is not None:
+        custom_edit(doc)
+    open(path, "w").write(tomlkit.dumps(doc))    
+
+
+def edit_app_cfg(path, base_port, app_config):
+    default_patch = {
+        "api": {
+            "enable": True,
+            "swagger": True,
+            "enable-unsafe-cors": True,
+            "address": "tcp://0.0.0.0:%d" % ports.api_port(base_port),
+        },
+        "grpc": {
+            "address": "0.0.0.0:%d" % ports.grpc_port(base_port),
+        },
+        "pruning": "nothing",
+        "state-sync": {
+            "snapshot-interval": 5,
+            "snapshot-keep-recent": 10,
+        },
+        "minimum-gas-prices": "0basecro",
+    }
+
+    app_config = format_value(
+        app_config,
+        {
+            "EVMRPC_PORT": ports.evmrpc_port(base_port),
+            "EVMRPC_PORT_WS": ports.evmrpc_ws_port(base_port),
+        },
+    )
+
+    doc = tomlkit.parse(open(path).read())
+    doc["grpc-web"] = {}
+    doc["grpc-web"]["address"] = "0.0.0.0:%d" % ports.grpc_web_port(base_port)
+    patch_toml_doc(doc, jsonmerge.merge(default_patch, app_config))
+    open(path, "w").write(tomlkit.dumps(doc))       
+
+
+def patch_toml_doc(doc, patch):
+    for k, v in patch.items():
+        if isinstance(v, dict):
+            patch_toml_doc(doc[k], v)
+        else:
+            doc[k] = v     
+
+
+def format_value(v, ctx):
+    if isinstance(v, str):
+        return v.format(**ctx)
+    elif isinstance(v, dict):
+        return {k: format_value(vv, ctx) for k, vv in v.items()}
+    else:
+        return v
