@@ -26,7 +26,7 @@ make install
 ## Integration test
 ### Run test
     cd integration_tests
-    pytest -s -vv
+    ./test.sh
 
 ### Run single test
     pytest -k test_gov

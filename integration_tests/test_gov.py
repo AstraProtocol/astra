@@ -1,4 +1,5 @@
 from datetime import timedelta
+from time import sleep
 
 import pytest
 from dateutil.parser import isoparse
@@ -16,6 +17,7 @@ def test_param_proposal(astra, vote_option):
     - check the result
     - check deposit refunded
     """
+    sleep(1)
     max_validators = astra.cosmos_cli(0).staking_params()["max_validators"]
 
     rsp = astra.cosmos_cli(0).gov_propose(
@@ -104,6 +106,7 @@ def test_param_proposal(astra, vote_option):
     else:
         # refunded, no matter passed or rejected
         assert astra.cosmos_cli(0).balance(astra.cosmos_cli(0).address("team")) == amount
+    sleep(1)
 
 
 def test_deposit_period_expires(astra):
@@ -113,6 +116,7 @@ def test_deposit_period_expires(astra):
     - proposal deleted
     - no refund
     """
+    sleep(1)
     amount1 = astra.cosmos_cli(0).balance(astra.cosmos_cli(0).address("team"))
     # deposit_amount < gov:min_deposit
     deposit_amount = 10000
@@ -169,6 +173,7 @@ def test_community_pool_spend_proposal(astra):
     - proposal a community pool spend
     - pass it
     """
+    sleep(1)
     # need at least several blocks to populate community pool
     wait_for_block(astra.cosmos_cli(0), 3)
 
@@ -227,6 +232,7 @@ def test_change_vote(astra):
     - change vote
     - check tally
     """
+    sleep(1)
     deposit_amount = 10000000
     rsp = astra.cosmos_cli(0).gov_propose(
         "community",
@@ -270,6 +276,7 @@ def test_inherit_vote(astra):
     - A vote No
     - change tally: {yes: v, no: a}
     """
+    sleep(1)
     deposit_amount = 10000000
     rsp = astra.cosmos_cli(0).gov_propose(
         "community",
@@ -293,11 +300,11 @@ def test_inherit_vote(astra):
     delegate_amount = 10
 
     staked_amount_val1 = 1001
-
+    
     voter1 = astra.cosmos_cli(0).address("community")
     astra.cosmos_cli(0).delegate_amount(
         # to_addr       amount      from_addr
-        astra.cosmos_cli(0).address("validator", bech="val"), "%daastra" % delegate_amount, voter1  # delegate to validator #2
+        astra.cosmos_cli(0).address("validator", bech="val"), "%daastra" % delegate_amount, voter1      # delegate to validator #2
     )
 
     rsp = astra.cosmos_cli(0).gov_vote("validator", proposal_id, "yes")
@@ -311,7 +318,7 @@ def test_inherit_vote(astra):
 
     rsp = astra.cosmos_cli(0).gov_vote(voter1, proposal_id, "no")
     assert rsp["code"] == 0, rsp["raw_log"]
-
+    
     assert astra.cosmos_cli(0).query_tally(proposal_id) == {
         "yes": str(astra_to_aastra(staked_amount_val1)),
         "no": str(delegate_amount),

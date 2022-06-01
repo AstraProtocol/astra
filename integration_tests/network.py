@@ -15,7 +15,6 @@ class Astra:
     def __init__(self, base_dir):
         self._w3 = None
         self.base_dir = base_dir
-        self.config = json.loads((base_dir / "config.json").read_text())
         self.enable_auto_deployment = True
         self._use_websockets = False
 
@@ -46,7 +45,8 @@ class Astra:
         return self._w3
 
     def base_port(self, i):
-        return self.config["validators"][i]["base_port"]
+        config = json.loads((self.base_dir / "config.json").read_text())
+        return config["validators"][i]["base_port"]
 
     def node_rpc(self, i):
         return "tcp://127.0.0.1:%d" % ports.rpc_port(self.base_port(i))
