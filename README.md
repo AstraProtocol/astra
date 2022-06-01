@@ -29,7 +29,7 @@ make install
     ./test.sh
 
 ### Run single test
-    pytest -k test_gov
+    pytest -m staking -vv
 
 
 Or check out the latest [release](https://github.com/AstraProtocol/astra/releases).

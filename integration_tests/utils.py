@@ -133,7 +133,7 @@ def wait_for_block(cli, height, timeout=240):
 def wait_for_new_blocks(cli, n):
     begin_height = int((cli.status())["SyncInfo"]["latest_block_height"])
     while True:
-        time.sleep(0.5)
+        time.sleep(0.2)
         cur_height = int((cli.status())["SyncInfo"]["latest_block_height"])
         if cur_height - begin_height >= n:
             break
