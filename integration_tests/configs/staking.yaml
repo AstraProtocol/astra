@@ -1,0 +1,49 @@
+astra_777-1:
+  cmd: astrad
+  start-flags: "--trace"
+  app-config:
+    minimum-gas-prices: 0aastra
+    index-events:
+      - ethereum_tx.ethereumTxHash
+    json-rpc:
+      address: "0.0.0.0:26651"
+      ws-address: "0.0.0.0:26652"
+      api: "eth,net,web3,debug,astra"
+  validators:
+    - coins: 10astra
+      staked: 10astra
+    - coins: 10astra
+      staked: 10astra
+    - coins: 1astra
+      staked: 1astra
+      min_self_delegation: 100000000000000000 # 0.1astra
+  accounts:
+    - name: community
+      coins: 100astra
+    - name: team
+      coins: 200astra
+      vesting: "3600s"
+    - name: genesis_partner
+      coins: 200astra
+    - name: other_partner
+      coins: 200astra
+    - name: treasury
+      coins: 100astra
+    - name: signer1
+      coins: 100000astra
+    - name: signer2
+      coins: 20000astra
+  genesis:
+    app_state:
+      staking:
+        params:
+          bond_denom: "aastra"
+          unbonding_time: "10s"
+      gov:
+        voting_params:
+          voting_period: "10s"
+        deposit_params:
+          max_deposit_period: "10s"
+          min_deposit:
+            - denom: "aastra"
+              amount: "100000000000000000"
