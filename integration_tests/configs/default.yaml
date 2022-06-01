@@ -11,29 +11,29 @@ astra_777-1:
       ws-address: "0.0.0.0:26652"
       api: "eth,net,web3,debug,astra"
   validators:
-    - coins: 1000astra
-      staked: 100astra
+    - coins: 10000astra
+      staked: 1001astra
       mnemonic: ${VALIDATOR1_MNEMONIC}
-    - coins: 1000astra
-      staked: 100astra
+    - coins: 10000astra
+      staked: 1002astra
       mnemonic: ${VALIDATOR2_MNEMONIC}
   accounts:
     - name: team
-      coins: 100astra
+      coins: 2222200000astra
       mnemonic: ${TEAM_MNEMONIC}
     - name: genesis_partner
-      coins: 100astra
+      coins: 2222200000astra
     - name: other_partner
       coins: 100astra
     - name: community
-      coins: 100astra
+      coins: 1111100000astra
       mnemonic: ${COMMUNITY_MNEMONIC}
     - name: treasury
       coins: 100astra
     - name: signer1
-      coins: 100astra
+      coins: 100000astra
     - name: signer2
-      coins: 100astra
+      coins: 200000astra
 
   genesis:
     consensus_params:
