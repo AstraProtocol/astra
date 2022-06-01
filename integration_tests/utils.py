@@ -81,6 +81,7 @@ load_dotenv(Path(__file__).parent.parent / "integration_tests/configs/.env")
 Account.enable_unaudited_hdwallet_features()
 ACCOUNTS = {
     "validator": Account.from_mnemonic(os.getenv("VALIDATOR1_MNEMONIC")),
+    "validator2": Account.from_mnemonic(os.getenv("VALIDATOR2_MNEMONIC")),
     "team": Account.from_mnemonic(os.getenv("TEAM_MNEMONIC")),
     "signer1": Account.from_mnemonic(os.getenv("SIGNER1_MNEMONIC")),
     "signer2": Account.from_mnemonic(os.getenv("SIGNER2_MNEMONIC")),
@@ -132,7 +133,7 @@ def wait_for_block(cli, height, timeout=240):
 def wait_for_new_blocks(cli, n):
     begin_height = int((cli.status())["SyncInfo"]["latest_block_height"])
     while True:
-        time.sleep(0.5)
+        time.sleep(0.2)
         cur_height = int((cli.status())["SyncInfo"]["latest_block_height"])
         if cur_height - begin_height >= n:
             break
@@ -598,3 +599,18 @@ def send_transaction(w3, tx, key=KEYS["validator"]):
     signed = sign_transaction(w3, tx, key)
     txhash = w3.eth.send_raw_transaction(signed.rawTransaction)
     return w3.eth.wait_for_transaction_receipt(txhash)
+
+
+def w3_wait_for_block(w3, height, timeout=240):
+    for i in range(timeout * 2):
+        try:
+            current_height = w3.eth.block_number
+        except AssertionError as e:
+            print(f"get current block number failed: {e}", file=sys.stderr)
+        else:
+            if current_height >= height:
+                break
+            print("current block height", current_height)
+        time.sleep(0.5)
+    else:
+        raise TimeoutError(f"wait for block {height} timeout")

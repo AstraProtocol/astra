@@ -24,9 +24,15 @@ make install
 ```
 
 ## Integration test
-### Run test
     cd integration_tests
+### Install dependencies
+    pip3 install -r requirements.txt 
+### Run test
     ./test.sh
+
+### Run single test
+    example:
+        pytest -m staking -vv
 
 
 Or check out the latest [release](https://github.com/AstraProtocol/astra/releases).

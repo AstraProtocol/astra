@@ -58,9 +58,12 @@ class Astra:
         self._w3 = None
         self._use_websockets = use
 
+    def address(self, name, i=0, bech="acc"):
+        return self.cosmos_cli(i).address(name, bech)
+
 
 def setup_astra(path, base_port, cfg=None, enable_auto_deployment=True):
-    if cfg == None:
+    if cfg is None:
         cfg = Path(__file__).parent / "configs/default.yaml"
     yield from setup_custom_astra(path, base_port, cfg)     
 

@@ -105,8 +105,8 @@ def test_param_proposal(astra, vote_option):
         assert astra.cosmos_cli(0).balance(astra.cosmos_cli(0).address("team")) == amount - deposit_amount
     else:
         # refunded, no matter passed or rejected
-        assert astra.cosmos_cli(0).balance(astra.cosmos_cli(0).address("team")) == amount   
-    sleep(1)    
+        assert astra.cosmos_cli(0).balance(astra.cosmos_cli(0).address("team")) == amount
+    sleep(1)
 
 
 def test_deposit_period_expires(astra):
@@ -262,23 +262,9 @@ def test_change_vote(astra):
     rsp = astra.cosmos_cli(0).gov_vote("validator", proposal_id, "yes")
     assert rsp["code"] == 0, rsp["raw_log"]
 
-    astra.cosmos_cli(0).query_tally(proposal_id) == {
-        "yes": str(voting_power),
-        "no": "0",
-        "abstain": "0",
-        "no_with_veto": "0",
-    }
-
     # change vote to no
     rsp = astra.cosmos_cli(0).gov_vote("validator", proposal_id, "no")
     assert rsp["code"] == 0, rsp["raw_log"]
-
-    astra.cosmos_cli(0).query_tally(proposal_id) == {
-        "no": str(voting_power),
-        "yes": "0",
-        "abstain": "0",
-        "no_with_veto": "0",
-    }
 
 
 def test_inherit_vote(astra):

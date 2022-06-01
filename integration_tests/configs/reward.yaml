@@ -11,29 +11,17 @@ astra_777-1:
       ws-address: "0.0.0.0:26652"
       api: "eth,net,web3,debug,astra"
   validators:
-    - coins: 1000astra
-      staked: 100astra
+    - coins: 5astra
+      staked: 1astra
       mnemonic: ${VALIDATOR1_MNEMONIC}
-    - coins: 1000astra
-      staked: 100astra
+    - coins: 5astra
+      staked: 1astra
       mnemonic: ${VALIDATOR2_MNEMONIC}
   accounts:
-    - name: team
-      coins: 100astra
-      mnemonic: ${TEAM_MNEMONIC}
-    - name: genesis_partner
-      coins: 100astra
-    - name: other_partner
-      coins: 100astra
-    - name: community
-      coins: 100astra
-      mnemonic: ${COMMUNITY_MNEMONIC}
-    - name: treasury
-      coins: 100astra
     - name: signer1
-      coins: 100astra
+      coins: 5astra
     - name: signer2
-      coins: 100astra
+      coins: 5astra
 
   genesis:
     consensus_params:
@@ -63,6 +51,3 @@ astra_777-1:
         params:
           bond_denom: "aastra"
           unbonding_time: "10s"
-#      feemarket:
-#        params:
-#          "no_base_fee": true

@@ -128,7 +128,7 @@ def test_staking_redelegate(astra):
     assert rsp["code"] == 0, rsp["raw_log"]
     delegation_info = astra.cosmos_cli(0).get_delegated_amount(signer1_address)
     output = delegation_info["delegation_responses"][0]["balance"]["amount"]
-    assert int(old_output) + 2 == int(output)    
+    assert int(old_output) + 2 == int(output)
 
 
 def test_join_validator(astra):
@@ -170,10 +170,10 @@ def test_join_validator(astra):
         "max_change_rate": "0.010000000000000000",
     }
     assert (
-        astra.cosmos_cli(i).edit_validator(commission_rate="0.2")["code"] == 12
+            astra.cosmos_cli(i).edit_validator(commission_rate="0.2")["code"] == 12
     ), "commission cannot be changed more than once in 24h"
     assert astra.cosmos_cli(i).edit_validator(moniker="awesome node")["code"] == 0
-    assert astra.cosmos_cli(0).validator(val_addr)["description"]["moniker"] == "awesome node"    
+    assert astra.cosmos_cli(0).validator(val_addr)["description"]["moniker"] == "awesome node"
 
 
 def test_min_self_delegation(astra):
@@ -199,5 +199,5 @@ def test_min_self_delegation(astra):
         )
 
     assert (
-        find_validator()["status"] == "BOND_STATUS_UNBONDING"
+            find_validator()["status"] == "BOND_STATUS_UNBONDING"
     ), "validator get removed"
