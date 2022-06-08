@@ -26,8 +26,8 @@ import (
 
 	astrakr "github.com/AstraProtocol/astra/v1/crypto/keyring"
 
-	vestingcli "github.com/tharsis/evmos/v4/x/vesting/client/cli"
-	vestingtypes "github.com/tharsis/evmos/v4/x/vesting/types"
+	vestingcli "github.com/tharsis/evmos/v5/x/vesting/client/cli"
+	vestingtypes "github.com/tharsis/evmos/v5/x/vesting/types"
 )
 
 const (
