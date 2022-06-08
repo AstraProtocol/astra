@@ -174,7 +174,7 @@ message TxResult {
   // any). If the state transition is an evm.Call, the contract address will be
   // empty.
   string contract_address = 1
-      [ (gogoproto.moretags) = "yaml:\"contract_address\"" ];
+  [ (gogoproto.moretags) = "yaml:\"contract_address\"" ];
   // bloom represents the bloom filter bytes
   bytes bloom = 2;
   // tx_logs contains the transaction hash and the proto-compatible ethereum

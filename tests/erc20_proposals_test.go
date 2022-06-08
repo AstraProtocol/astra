@@ -9,8 +9,8 @@ import (
 	"github.com/stretchr/testify/suite"
 	"github.com/tharsis/ethermint/tests"
 	evmtypes "github.com/tharsis/ethermint/x/evm/types"
-	"github.com/tharsis/evmos/v4/x/erc20/keeper"
-	"github.com/tharsis/evmos/v4/x/erc20/types"
+	"github.com/tharsis/evmos/v5/x/erc20/keeper"
+	"github.com/tharsis/evmos/v5/x/erc20/types"
 	"testing"
 )
 
