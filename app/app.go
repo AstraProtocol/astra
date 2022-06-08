@@ -36,7 +36,6 @@ import (
 	"github.com/cosmos/cosmos-sdk/version"
 	"github.com/cosmos/cosmos-sdk/x/auth"
 	authkeeper "github.com/cosmos/cosmos-sdk/x/auth/keeper"
-	authsims "github.com/cosmos/cosmos-sdk/x/auth/simulation"
 	authtx "github.com/cosmos/cosmos-sdk/x/auth/tx"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	"github.com/cosmos/cosmos-sdk/x/authz"
@@ -81,6 +80,7 @@ import (
 	upgradeclient "github.com/cosmos/cosmos-sdk/x/upgrade/client"
 	upgradekeeper "github.com/cosmos/cosmos-sdk/x/upgrade/keeper"
 	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
+	ethermintapp "github.com/tharsis/ethermint/app"
 
 	"github.com/cosmos/ibc-go/v3/modules/apps/transfer"
 	ibctransferkeeper "github.com/cosmos/ibc-go/v3/modules/apps/transfer/keeper"
@@ -109,16 +109,16 @@ import (
 	feemarkettypes "github.com/tharsis/ethermint/x/feemarket/types"
 
 	"github.com/AstraProtocol/astra/v1/app/ante"
-	"github.com/tharsis/evmos/v4/x/epochs"
-	epochskeeper "github.com/tharsis/evmos/v4/x/epochs/keeper"
-	epochstypes "github.com/tharsis/evmos/v4/x/epochs/types"
-	"github.com/tharsis/evmos/v4/x/erc20"
-	erc20client "github.com/tharsis/evmos/v4/x/erc20/client"
-	erc20keeper "github.com/tharsis/evmos/v4/x/erc20/keeper"
-	erc20types "github.com/tharsis/evmos/v4/x/erc20/types"
-	"github.com/tharsis/evmos/v4/x/vesting"
-	vestingkeeper "github.com/tharsis/evmos/v4/x/vesting/keeper"
-	vestingtypes "github.com/tharsis/evmos/v4/x/vesting/types"
+	"github.com/tharsis/evmos/v5/x/epochs"
+	epochskeeper "github.com/tharsis/evmos/v5/x/epochs/keeper"
+	epochstypes "github.com/tharsis/evmos/v5/x/epochs/types"
+	"github.com/tharsis/evmos/v5/x/erc20"
+	erc20client "github.com/tharsis/evmos/v5/x/erc20/client"
+	erc20keeper "github.com/tharsis/evmos/v5/x/erc20/keeper"
+	erc20types "github.com/tharsis/evmos/v5/x/erc20/types"
+	"github.com/tharsis/evmos/v5/x/vesting"
+	vestingkeeper "github.com/tharsis/evmos/v5/x/vesting/keeper"
+	vestingtypes "github.com/tharsis/evmos/v5/x/vesting/types"
 )
 
 func init() {
@@ -492,7 +492,7 @@ func NewAstraApp(
 			app.AccountKeeper, app.StakingKeeper, app.BaseApp.DeliverTx,
 			encodingConfig.TxConfig,
 		),
-		auth.NewAppModule(appCodec, app.AccountKeeper, authsims.RandomGenesisAccounts),
+		auth.NewAppModule(appCodec, app.AccountKeeper, ethermintapp.RandomGenesisAccounts),
 		bank.NewAppModule(appCodec, app.BankKeeper, app.AccountKeeper),
 		capability.NewAppModule(appCodec, *app.CapabilityKeeper),
 		crisis.NewAppModule(&app.CrisisKeeper, skipGenesisInvariants),
@@ -594,6 +594,9 @@ func NewAstraApp(
 		govtypes.ModuleName,
 		minttypes.ModuleName,
 		ibchost.ModuleName,
+		// Ethermint modules
+		evmtypes.ModuleName,
+		feemarkettypes.ModuleName,
 		genutiltypes.ModuleName,
 		evidencetypes.ModuleName,
 		ibctransfertypes.ModuleName,
@@ -601,8 +604,7 @@ func NewAstraApp(
 		feegrant.ModuleName,
 		paramstypes.ModuleName,
 		upgradetypes.ModuleName,
-		// Ethermint modules
-		evmtypes.ModuleName, feemarkettypes.ModuleName,
+
 		// Astra modules
 		vestingtypes.ModuleName,
 		erc20types.ModuleName,
@@ -624,7 +626,7 @@ func NewAstraApp(
 	// NOTE: this is not required apps that don't use the simulator for fuzz testing
 	// transactions
 	app.sm = module.NewSimulationManager(
-		auth.NewAppModule(appCodec, app.AccountKeeper, authsims.RandomGenesisAccounts),
+		auth.NewAppModule(appCodec, app.AccountKeeper, ethermintapp.RandomGenesisAccounts),
 		bank.NewAppModule(appCodec, app.BankKeeper, app.AccountKeeper),
 		capability.NewAppModule(appCodec, *app.CapabilityKeeper),
 		gov.NewAppModule(appCodec, app.GovKeeper, app.AccountKeeper, app.BankKeeper),
@@ -653,7 +655,7 @@ func NewAstraApp(
 	// initialize BaseApp
 	app.SetInitChainer(app.InitChainer)
 	app.SetBeginBlocker(app.BeginBlocker)
-
+	maxGasWanted := cast.ToUint64(appOpts.Get(srvflags.EVMMaxTxGasWanted))
 	options := ante.HandlerOptions{
 		AccountKeeper:   app.AccountKeeper,
 		BankKeeper:      app.BankKeeper,
@@ -665,6 +667,7 @@ func NewAstraApp(
 		SignModeHandler: encodingConfig.TxConfig.SignModeHandler(),
 		SigGasConsumer:  SigVerificationGasConsumer,
 		Cdc:             appCodec,
+		MaxTxGasWanted:  maxGasWanted,
 	}
 
 	if err := options.Validate(); err != nil {
