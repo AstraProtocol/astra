@@ -1,9 +1,9 @@
-module github.com/AstraProtocol/astra/v1
+module github.com/AstraProtocol/astra/v2
 
 go 1.17
 
 require (
-	github.com/cosmos/cosmos-sdk v0.45.5-0.20220523154235-2921a1c3c918
+	github.com/cosmos/cosmos-sdk v0.45.5
 	github.com/cosmos/go-bip39 v1.0.0
 	github.com/cosmos/ibc-go/v3 v3.0.0
 	github.com/ethereum/go-ethereum v1.10.16

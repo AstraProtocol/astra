@@ -7,7 +7,7 @@ import (
 	transfertypes "github.com/cosmos/ibc-go/v3/modules/apps/transfer/types"
 	channeltypes "github.com/cosmos/ibc-go/v3/modules/core/04-channel/types"
 
-	astra "github.com/AstraProtocol/astra/v1/types"
+	astra "github.com/AstraProtocol/astra/v2/types"
 )
 
 // GetTransferSenderRecipient returns the sender and recipient sdk.AccAddresses

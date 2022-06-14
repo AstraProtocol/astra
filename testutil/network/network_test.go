@@ -14,7 +14,7 @@ import (
 	"github.com/tharsis/ethermint/server/config"
 	"github.com/tharsis/ethermint/testutil/network"
 
-	astranetwork "github.com/AstraProtocol/astra/v1/testutil/network"
+	astranetwork "github.com/AstraProtocol/astra/v2/testutil/network"
 )
 
 type IntegrationTestSuite struct {
