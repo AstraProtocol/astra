@@ -94,7 +94,7 @@ import (
 	ibctesting "github.com/cosmos/ibc-go/v3/testing"
 
 	// unnamed import of statik for swagger UI support
-	_ "github.com/AstraProtocol/astra/v1/client/docs/statik"
+	_ "github.com/AstraProtocol/astra/v2/client/docs/statik"
 	"github.com/tharsis/ethermint/encoding"
 
 	srvflags "github.com/tharsis/ethermint/server/flags"
@@ -108,7 +108,7 @@ import (
 	feemarketkeeper "github.com/tharsis/ethermint/x/feemarket/keeper"
 	feemarkettypes "github.com/tharsis/ethermint/x/feemarket/types"
 
-	"github.com/AstraProtocol/astra/v1/app/ante"
+	"github.com/AstraProtocol/astra/v2/app/ante"
 	"github.com/tharsis/evmos/v5/x/epochs"
 	epochskeeper "github.com/tharsis/evmos/v5/x/epochs/keeper"
 	epochstypes "github.com/tharsis/evmos/v5/x/epochs/types"

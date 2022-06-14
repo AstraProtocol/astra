@@ -48,8 +48,8 @@ import (
 	evm "github.com/tharsis/ethermint/x/evm/types"
 	feemarkettypes "github.com/tharsis/ethermint/x/feemarket/types"
 
-	"github.com/AstraProtocol/astra/v1/app"
-	"github.com/AstraProtocol/astra/v1/contracts"
+	"github.com/AstraProtocol/astra/v2/app"
+	"github.com/AstraProtocol/astra/v2/contracts"
 	"github.com/tharsis/evmos/v5/x/erc20/types"
 )
 

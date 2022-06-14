@@ -16,7 +16,7 @@ import (
 	"github.com/tharsis/ethermint/encoding"
 	feemarkettypes "github.com/tharsis/ethermint/x/feemarket/types"
 
-	"github.com/AstraProtocol/astra/v1/cmd/config"
+	"github.com/AstraProtocol/astra/v2/cmd/config"
 )
 
 func init() {
