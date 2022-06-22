@@ -109,9 +109,6 @@ import (
 	feemarkettypes "github.com/tharsis/ethermint/x/feemarket/types"
 
 	"github.com/AstraProtocol/astra/v2/app/ante"
-	"github.com/tharsis/evmos/v5/x/epochs"
-	epochskeeper "github.com/tharsis/evmos/v5/x/epochs/keeper"
-	epochstypes "github.com/tharsis/evmos/v5/x/epochs/types"
 	"github.com/tharsis/evmos/v5/x/erc20"
 	erc20client "github.com/tharsis/evmos/v5/x/erc20/client"
 	erc20keeper "github.com/tharsis/evmos/v5/x/erc20/keeper"
@@ -177,7 +174,6 @@ var (
 		evm.AppModuleBasic{},
 		feemarket.AppModuleBasic{},
 		erc20.AppModuleBasic{},
-		epochs.AppModuleBasic{},
 	)
 
 	// module account permissions
@@ -251,7 +247,6 @@ type Astra struct {
 
 	// Astra keepers
 	Erc20Keeper   erc20keeper.Keeper
-	EpochsKeeper  epochskeeper.Keeper
 	VestingKeeper vestingkeeper.Keeper
 
 	// the module manager
@@ -309,7 +304,6 @@ func NewAstraApp(
 		evmtypes.StoreKey, feemarkettypes.StoreKey,
 		// astra keys
 		erc20types.StoreKey,
-		epochstypes.StoreKey,
 		vestingtypes.StoreKey,
 	)
 
@@ -425,11 +419,6 @@ func NewAstraApp(
 		app.AccountKeeper, app.BankKeeper, app.EvmKeeper,
 	)
 
-	epochsKeeper := epochskeeper.NewKeeper(appCodec, keys[epochstypes.StoreKey])
-	app.EpochsKeeper = *epochsKeeper.SetHooks(
-		epochskeeper.NewMultiEpochHooks(),
-	)
-
 	app.GovKeeper = *govKeeper.SetHooks(
 		govtypes.NewMultiGovHooks(),
 	)
@@ -515,7 +504,6 @@ func NewAstraApp(
 		feemarket.NewAppModule(app.FeeMarketKeeper),
 		// Astra app modules
 		erc20.NewAppModule(app.Erc20Keeper, app.AccountKeeper),
-		epochs.NewAppModule(appCodec, app.EpochsKeeper),
 		vesting.NewAppModule(app.VestingKeeper, app.AccountKeeper, app.BankKeeper, app.StakingKeeper),
 	)
 
@@ -528,7 +516,6 @@ func NewAstraApp(
 	app.mm.SetOrderBeginBlockers(
 		upgradetypes.ModuleName,
 		capabilitytypes.ModuleName,
-		epochstypes.ModuleName,
 		feemarkettypes.ModuleName,
 		evmtypes.ModuleName,
 		minttypes.ModuleName,
@@ -558,7 +545,6 @@ func NewAstraApp(
 		stakingtypes.ModuleName,
 		evmtypes.ModuleName,
 		feemarkettypes.ModuleName,
-		epochstypes.ModuleName,
 		ibchost.ModuleName,
 		ibctransfertypes.ModuleName,
 		capabilitytypes.ModuleName,
@@ -608,7 +594,6 @@ func NewAstraApp(
 		// Astra modules
 		vestingtypes.ModuleName,
 		erc20types.ModuleName,
-		epochstypes.ModuleName,
 		// NOTE: crisis module must go at the end to check for invariants on each module
 		crisistypes.ModuleName,
 	)
@@ -641,7 +626,6 @@ func NewAstraApp(
 		ibc.NewAppModule(app.IBCKeeper),
 		transferModule,
 		evm.NewAppModule(app.EvmKeeper, app.AccountKeeper),
-		epochs.NewAppModule(appCodec, app.EpochsKeeper),
 		feemarket.NewAppModule(app.FeeMarketKeeper),
 	)
 
