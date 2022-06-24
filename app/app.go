@@ -6,6 +6,9 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/mint"
 	mintkeeper "github.com/cosmos/cosmos-sdk/x/mint/keeper"
 	minttypes "github.com/cosmos/cosmos-sdk/x/mint/types"
+	"github.com/evmos/evmos/v5/x/fees"
+	feeskeeper "github.com/evmos/evmos/v5/x/fees/keeper"
+	feestypes "github.com/evmos/evmos/v5/x/fees/types"
 	"io"
 	"net/http"
 	"os"
@@ -174,6 +177,7 @@ var (
 		evm.AppModuleBasic{},
 		feemarket.AppModuleBasic{},
 		erc20.AppModuleBasic{},
+		fees.AppModuleBasic{},
 	)
 
 	// module account permissions
@@ -248,6 +252,7 @@ type Astra struct {
 	// Astra keepers
 	Erc20Keeper   erc20keeper.Keeper
 	VestingKeeper vestingkeeper.Keeper
+	FeesKeeper    feeskeeper.Keeper
 
 	// the module manager
 	mm *module.Manager
@@ -305,6 +310,7 @@ func NewAstraApp(
 		// astra keys
 		erc20types.StoreKey,
 		vestingtypes.StoreKey,
+		feestypes.StoreKey,
 	)
 
 	// Add the EVM transient store key
@@ -419,6 +425,12 @@ func NewAstraApp(
 		app.AccountKeeper, app.BankKeeper, app.EvmKeeper,
 	)
 
+	app.FeesKeeper = feeskeeper.NewKeeper(
+		keys[feestypes.StoreKey], appCodec, app.GetSubspace(feestypes.ModuleName),
+		app.BankKeeper, app.EvmKeeper,
+		authtypes.FeeCollectorName,
+	)
+
 	app.GovKeeper = *govKeeper.SetHooks(
 		govtypes.NewMultiGovHooks(),
 	)
@@ -426,6 +438,7 @@ func NewAstraApp(
 	app.EvmKeeper = app.EvmKeeper.SetHooks(
 		evmkeeper.NewMultiEvmHooks(
 			app.Erc20Keeper.Hooks(),
+			app.FeesKeeper.Hooks(),
 		),
 	)
 
@@ -505,6 +518,7 @@ func NewAstraApp(
 		// Astra app modules
 		erc20.NewAppModule(app.Erc20Keeper, app.AccountKeeper),
 		vesting.NewAppModule(app.VestingKeeper, app.AccountKeeper, app.BankKeeper, app.StakingKeeper),
+		fees.NewAppModule(app.FeesKeeper, app.AccountKeeper),
 	)
 
 	// During begin block slashing happens after distr.BeginBlocker so that
@@ -536,6 +550,7 @@ func NewAstraApp(
 		paramstypes.ModuleName,
 		vestingtypes.ModuleName,
 		erc20types.ModuleName,
+		feestypes.ModuleName,
 	)
 
 	// NOTE: fee market module must go last in order to retrieve the block gas used.
@@ -562,6 +577,7 @@ func NewAstraApp(
 		// Astra modules
 		vestingtypes.ModuleName,
 		erc20types.ModuleName,
+		feestypes.ModuleName,
 	)
 
 	// NOTE: The genutils module must occur after staking so that pools are
@@ -594,6 +610,7 @@ func NewAstraApp(
 		// Astra modules
 		vestingtypes.ModuleName,
 		erc20types.ModuleName,
+		feestypes.ModuleName,
 		// NOTE: crisis module must go at the end to check for invariants on each module
 		crisistypes.ModuleName,
 	)
@@ -903,6 +920,7 @@ func initParamsKeeper(
 	paramsKeeper.Subspace(feemarkettypes.ModuleName)
 	// astra subspaces
 	paramsKeeper.Subspace(erc20types.ModuleName)
+	paramsKeeper.Subspace(feestypes.ModuleName)
 	return paramsKeeper
 }
 
