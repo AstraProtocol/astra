@@ -13,7 +13,7 @@ import (
 	channeltypes "github.com/cosmos/ibc-go/v3/modules/core/04-channel/types"
 	ibcgotesting "github.com/cosmos/ibc-go/v3/testing"
 
-	erc20types "github.com/tharsis/evmos/v5/x/erc20/types"
+	erc20types "github.com/evmos/evmos/v5/x/erc20/types"
 )
 
 type IBCTestingSuite struct {
