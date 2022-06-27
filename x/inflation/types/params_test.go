@@ -21,17 +21,9 @@ func (suite *ParamsTestSuite) TestParamKeyTable() {
 }
 
 func (suite *ParamsTestSuite) TestParamsValidate() {
-	validExponentialCalculation := ExponentialCalculation{
-		A:             sdk.NewDec(int64(300_000_000)),
-		R:             sdk.NewDecWithPrec(5, 1),
-		C:             sdk.NewDec(int64(9_375_000)),
-		BondingTarget: sdk.NewDecWithPrec(50, 2),
-		MaxVariance:   sdk.NewDecWithPrec(20, 2),
-	}
-
-	validInflationDistribution := InflationDistribution{
-		StakingRewards: sdk.NewDecWithPrec(1000000, 6),
-		CommunityPool:  sdk.NewDecWithPrec(0, 6),
+	validInflationParameters := InflationParameters{
+		MaxStakingRewards: sdk.NewDec(2222200000),
+		R:                 sdk.NewDecWithPrec(5, 1),
 	}
 
 	testCases := []struct {
@@ -48,8 +40,7 @@ func (suite *ParamsTestSuite) TestParamsValidate() {
 			"valid",
 			NewParams(
 				"aastra",
-				validExponentialCalculation,
-				validInflationDistribution,
+				validInflationParameters,
 				true,
 			),
 			false,
@@ -57,10 +48,9 @@ func (suite *ParamsTestSuite) TestParamsValidate() {
 		{
 			"valid param literal",
 			Params{
-				MintDenom:              "aastra",
-				ExponentialCalculation: validExponentialCalculation,
-				InflationDistribution:  validInflationDistribution,
-				EnableInflation:        true,
+				MintDenom:           "aastra",
+				InflationParameters: validInflationParameters,
+				EnableInflation:     true,
 			},
 			false,
 		},
@@ -68,8 +58,7 @@ func (suite *ParamsTestSuite) TestParamsValidate() {
 			"invalid - denom",
 			NewParams(
 				"/aastra",
-				validExponentialCalculation,
-				validInflationDistribution,
+				validInflationParameters,
 				true,
 			),
 			true,
@@ -77,172 +66,55 @@ func (suite *ParamsTestSuite) TestParamsValidate() {
 		{
 			"invalid - denom",
 			Params{
-				MintDenom:              "",
-				ExponentialCalculation: validExponentialCalculation,
-				InflationDistribution:  validInflationDistribution,
-				EnableInflation:        true,
+				MintDenom:           "",
+				InflationParameters: validInflationParameters,
+				EnableInflation:     true,
 			},
 			true,
 		},
 		{
-			"invalid - exponential calculation - negative A",
+			"invalid - inflation parameters - R greater than 1",
 			Params{
 				MintDenom: "aastra",
-				ExponentialCalculation: ExponentialCalculation{
-					A:             sdk.NewDec(int64(-1)),
-					R:             sdk.NewDecWithPrec(5, 1),
-					C:             sdk.NewDec(int64(9_375_000)),
-					BondingTarget: sdk.NewDecWithPrec(50, 2),
-					MaxVariance:   sdk.NewDecWithPrec(20, 2),
-				},
-				InflationDistribution: validInflationDistribution,
-				EnableInflation:       true,
-			},
-			true,
-		},
-		{
-			"invalid - exponential calculation - R greater than 1",
-			Params{
-				MintDenom: "aastra",
-				ExponentialCalculation: ExponentialCalculation{
-					A:             sdk.NewDec(int64(300_000_000)),
-					R:             sdk.NewDecWithPrec(5, 0),
-					C:             sdk.NewDec(int64(9_375_000)),
-					BondingTarget: sdk.NewDecWithPrec(50, 2),
-					MaxVariance:   sdk.NewDecWithPrec(20, 2),
-				},
-				InflationDistribution: validInflationDistribution,
-				EnableInflation:       true,
-			},
-			true,
-		},
-		{
-			"invalid - exponential calculation - negative R",
-			Params{
-				MintDenom: "aastra",
-				ExponentialCalculation: ExponentialCalculation{
-					A:             sdk.NewDec(int64(300_000_000)),
-					R:             sdk.NewDecWithPrec(-5, 1),
-					C:             sdk.NewDec(int64(9_375_000)),
-					BondingTarget: sdk.NewDecWithPrec(50, 2),
-					MaxVariance:   sdk.NewDecWithPrec(20, 2),
-				},
-				InflationDistribution: validInflationDistribution,
-				EnableInflation:       true,
-			},
-			true,
-		},
-		{
-			"invalid - exponential calculation - negative C",
-			Params{
-				MintDenom: "aastra",
-				ExponentialCalculation: ExponentialCalculation{
-					A:             sdk.NewDec(int64(300_000_000)),
-					R:             sdk.NewDecWithPrec(5, 1),
-					C:             sdk.NewDec(int64(-9_375_000)),
-					BondingTarget: sdk.NewDecWithPrec(50, 2),
-					MaxVariance:   sdk.NewDecWithPrec(20, 2),
-				},
-				InflationDistribution: validInflationDistribution,
-				EnableInflation:       true,
-			},
-			true,
-		},
-		{
-			"invalid - exponential calculation - BondingTarget greater than 1",
-			Params{
-				MintDenom: "aastra",
-				ExponentialCalculation: ExponentialCalculation{
-					A:             sdk.NewDec(int64(300_000_000)),
-					R:             sdk.NewDecWithPrec(5, 1),
-					C:             sdk.NewDec(int64(9_375_000)),
-					BondingTarget: sdk.NewDecWithPrec(50, 1),
-					MaxVariance:   sdk.NewDecWithPrec(20, 2),
-				},
-				InflationDistribution: validInflationDistribution,
-				EnableInflation:       true,
-			},
-			true,
-		},
-		{
-			"invalid - exponential calculation - negative BondingTarget",
-			Params{
-				MintDenom: "aastra",
-				ExponentialCalculation: ExponentialCalculation{
-					A:             sdk.NewDec(int64(300_000_000)),
-					R:             sdk.NewDecWithPrec(5, 1),
-					C:             sdk.NewDec(int64(9_375_000)),
-					BondingTarget: sdk.NewDecWithPrec(50, 2).Neg(),
-					MaxVariance:   sdk.NewDecWithPrec(20, 2),
-				},
-				InflationDistribution: validInflationDistribution,
-				EnableInflation:       true,
-			},
-			true,
-		},
-		{
-			"invalid - exponential calculation - negative max Variance",
-			Params{
-				MintDenom: "aastra",
-				ExponentialCalculation: ExponentialCalculation{
-					A:             sdk.NewDec(int64(300_000_000)),
-					R:             sdk.NewDecWithPrec(5, 1),
-					C:             sdk.NewDec(int64(9_375_000)),
-					BondingTarget: sdk.NewDecWithPrec(50, 2),
-					MaxVariance:   sdk.NewDecWithPrec(20, 2).Neg(),
-				},
-				InflationDistribution: validInflationDistribution,
-				EnableInflation:       true,
-			},
-			true,
-		},
-		{
-			"invalid - inflation distribution - negative staking rewards",
-			Params{
-				MintDenom:              "aastra",
-				ExponentialCalculation: validExponentialCalculation,
-				InflationDistribution: InflationDistribution{
-					StakingRewards: sdk.OneDec().Neg(),
-					CommunityPool:  sdk.NewDecWithPrec(133333, 6),
+				InflationParameters: InflationParameters{
+					MaxStakingRewards: validInflationParameters.MaxStakingRewards,
+					R:                 sdk.NewDecWithPrec(5, 0),
 				},
 				EnableInflation: true,
 			},
 			true,
 		},
 		{
-			"invalid - inflation distribution - negative usage incentives",
+			"invalid - inflation parameters - negative R",
 			Params{
-				MintDenom:              "aastra",
-				ExponentialCalculation: validExponentialCalculation,
-				InflationDistribution: InflationDistribution{
-					StakingRewards: sdk.NewDecWithPrec(533334, 6),
-					CommunityPool:  sdk.NewDecWithPrec(133333, 6),
+				MintDenom: "aastra",
+				InflationParameters: InflationParameters{
+					MaxStakingRewards: validInflationParameters.MaxStakingRewards,
+					R:                 sdk.NewDecWithPrec(-5, 1),
 				},
 				EnableInflation: true,
 			},
 			true,
 		},
 		{
-			"invalid - inflation distribution - negative community pool rewards",
+			"invalid - inflation parameters - negative maximum staking rewards < -1",
 			Params{
-				MintDenom:              "aastra",
-				ExponentialCalculation: validExponentialCalculation,
-				InflationDistribution: InflationDistribution{
-					StakingRewards: sdk.NewDecWithPrec(533334, 6),
-					CommunityPool:  sdk.OneDec().Neg(),
+				MintDenom: "aastra",
+				InflationParameters: InflationParameters{
+					MaxStakingRewards: sdk.NewDec(-100101010101),
+					R:                 sdk.NewDecWithPrec(-5, 1),
 				},
 				EnableInflation: true,
 			},
 			true,
 		},
 		{
-			"invalid - inflation distribution - total distribution ratio unequal 1",
+			"invalid - inflation parameters - maximum staking rewards == 0",
 			Params{
-				MintDenom:              "aastra",
-				ExponentialCalculation: validExponentialCalculation,
-				InflationDistribution: InflationDistribution{
-					StakingRewards: sdk.NewDecWithPrec(533333, 6),
-					CommunityPool:  sdk.NewDecWithPrec(133333, 6),
+				MintDenom: "aastra",
+				InflationParameters: InflationParameters{
+					MaxStakingRewards: sdk.NewDec(0),
+					R:                 sdk.NewDecWithPrec(-5, 1),
 				},
 				EnableInflation: true,
 			},

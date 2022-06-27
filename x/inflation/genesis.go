@@ -1,8 +1,8 @@
 package inflation
 
 import (
-	"github.com/AstraProtocol/astra/v1/x/inflation/keeper"
-	"github.com/AstraProtocol/astra/v1/x/inflation/types"
+	"github.com/AstraProtocol/astra/x/inflation/keeper"
+	"github.com/AstraProtocol/astra/x/inflation/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
@@ -35,15 +35,11 @@ func InitGenesis(
 	skippedEpochs := data.SkippedEpochs
 	k.SetSkippedEpochs(ctx, skippedEpochs)
 
-	// Get bondedRatio
-	bondedRatio := k.BondedRatio(ctx)
-
 	// Calculate epoch mint provision
 	epochMintProvision := types.CalculateEpochMintProvision(
 		params,
 		period,
 		epochsPerPeriod,
-		bondedRatio,
 	)
 	k.SetEpochMintProvision(ctx, epochMintProvision)
 }
