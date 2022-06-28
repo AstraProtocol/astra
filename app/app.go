@@ -400,7 +400,7 @@ func NewAstraApp(
 
 	app.InflationKeeper = inflationkeeper.NewKeeper(
 		keys[inflationtypes.StoreKey], appCodec, app.GetSubspace(inflationtypes.ModuleName),
-		app.AccountKeeper, app.BankKeeper, app.DistrKeeper, &stakingKeeper,
+		app.AccountKeeper, app.BankKeeper, &stakingKeeper,
 		authtypes.FeeCollectorName,
 	)
 

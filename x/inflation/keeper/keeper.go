@@ -7,7 +7,7 @@ import (
 
 	"github.com/tendermint/tendermint/libs/log"
 
-	"github.com/AstraProtocol/astra/x/inflation/types"
+	"github.com/AstraProtocol/astra/v1/x/inflation/types"
 )
 
 // Keeper of the inflation store.

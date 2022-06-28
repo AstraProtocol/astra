@@ -2,10 +2,11 @@ package keeper_test
 
 import (
 	"fmt"
+	"github.com/tendermint/tendermint/libs/rand"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
-	"github.com/AstraProtocol/astra/x/inflation/types"
+	"github.com/AstraProtocol/astra/v1/x/inflation/types"
 )
 
 func (suite *KeeperTestSuite) TestPeriod() {
@@ -167,7 +168,6 @@ func (suite *KeeperTestSuite) TestSkippedEpochs() {
 }
 
 func (suite *KeeperTestSuite) TestQueryCirculatingSupply() {
-	// Team allocation is only set on mainnet
 	ctx := sdk.WrapSDKContext(suite.ctx)
 
 	// Mint coins to increase supply
@@ -176,12 +176,28 @@ func (suite *KeeperTestSuite) TestQueryCirculatingSupply() {
 	err := suite.app.InflationKeeper.MintCoins(suite.ctx, mintCoin)
 	suite.Require().NoError(err)
 
-	// team allocation is zero if not on mainnet
-	expCirculatingSupply := sdk.NewDecCoin(mintDenom, sdk.TokensFromConsensusPower(200_000_000, sdk.DefaultPowerReduction))
+	expCirculatingSupply := sdk.NewDecCoin(mintDenom, mintCoin.Amount)
 
 	res, err := suite.queryClient.CirculatingSupply(ctx, &types.QueryCirculatingSupplyRequest{})
 	suite.Require().NoError(err)
 	suite.Require().Equal(expCirculatingSupply, res.CirculatingSupply)
+
+	// mint a number of new coins and check circulating supply
+	numCoins := rand.Int() % 100
+	for i := 0; i < numCoins; i++ {
+		// create a new coin
+		newCoin := sdk.NewCoin(mintDenom, sdk.TokensFromConsensusPower(int64(1+rand.Uint64()%400_000_000), sdk.DefaultPowerReduction))
+		expCirculatingSupply = expCirculatingSupply.Add(sdk.NewDecCoin(mintDenom, newCoin.Amount))
+
+		// mint this new coin
+		err := suite.app.InflationKeeper.MintCoins(suite.ctx, newCoin)
+		suite.Require().NoError(err)
+
+		res, err := suite.queryClient.CirculatingSupply(ctx, &types.QueryCirculatingSupplyRequest{})
+		suite.Require().NoError(err)
+		suite.Require().Equal(expCirculatingSupply, res.CirculatingSupply)
+	}
+
 }
 
 func (suite *KeeperTestSuite) TestQueryInflationRate() {
@@ -193,7 +209,7 @@ func (suite *KeeperTestSuite) TestQueryInflationRate() {
 	err := suite.app.InflationKeeper.MintCoins(suite.ctx, mintCoin)
 	suite.Require().NoError(err)
 
-	expInflationRate := sdk.MustNewDecFromStr("154.687500000000000000")
+	expInflationRate := sdk.MustNewDecFromStr("55.555000000000000000")
 	res, err := suite.queryClient.InflationRate(ctx, &types.QueryInflationRateRequest{})
 	suite.Require().NoError(err)
 	suite.Require().Equal(expInflationRate, res.InflationRate)

@@ -3,7 +3,7 @@ package keeper_test
 import (
 	"fmt"
 
-	"github.com/AstraProtocol/astra/x/inflation/types"
+	"github.com/AstraProtocol/astra/v1/x/inflation/types"
 	epochstypes "github.com/tharsis/evmos/v4/x/epochs/types"
 )
 
