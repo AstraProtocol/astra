@@ -1,7 +1,7 @@
 package keeper_test
 
 import (
-	"github.com/AstraProtocol/astra/v1/x/inflation/types"
+	"github.com/AstraProtocol/astra/x/inflation/types"
 )
 
 func (suite *KeeperTestSuite) TestParams() {

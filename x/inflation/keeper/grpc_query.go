@@ -3,7 +3,7 @@ package keeper
 import (
 	"context"
 
-	"github.com/AstraProtocol/astra/v1/x/inflation/types"
+	"github.com/AstraProtocol/astra/x/inflation/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -60,7 +60,7 @@ func (k Keeper) InflationRate(
 }
 
 // CirculatingSupply returns the total supply in circulation excluding the team
-// allocation in the first year
+// allocation in the first year.
 func (k Keeper) CirculatingSupply(
 	c context.Context,
 	_ *types.QueryCirculatingSupplyRequest,

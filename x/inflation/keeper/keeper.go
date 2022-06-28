@@ -7,30 +7,28 @@ import (
 
 	"github.com/tendermint/tendermint/libs/log"
 
-	"github.com/AstraProtocol/astra/v1/x/inflation/types"
+	"github.com/AstraProtocol/astra/x/inflation/types"
 )
 
-// Keeper of the inflation store
+// Keeper of the inflation store.
 type Keeper struct {
 	storeKey   sdk.StoreKey
 	cdc        codec.BinaryCodec
-	paramstore paramtypes.Subspace
+	paramStore paramtypes.Subspace
 
 	accountKeeper    types.AccountKeeper
 	bankKeeper       types.BankKeeper
-	distrKeeper      types.DistrKeeper
 	stakingKeeper    types.StakingKeeper
 	feeCollectorName string
 }
 
-// NewKeeper creates a new mint Keeper instance
+// NewKeeper creates a new mint Keeper instance.
 func NewKeeper(
 	storeKey sdk.StoreKey,
 	cdc codec.BinaryCodec,
 	ps paramtypes.Subspace,
 	ak types.AccountKeeper,
 	bk types.BankKeeper,
-	dk types.DistrKeeper,
 	sk types.StakingKeeper,
 	feeCollectorName string,
 ) Keeper {
@@ -47,10 +45,9 @@ func NewKeeper(
 	return Keeper{
 		storeKey:         storeKey,
 		cdc:              cdc,
-		paramstore:       ps,
+		paramStore:       ps,
 		accountKeeper:    ak,
 		bankKeeper:       bk,
-		distrKeeper:      dk,
 		stakingKeeper:    sk,
 		feeCollectorName: feeCollectorName,
 	}

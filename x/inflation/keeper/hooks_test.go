@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/AstraProtocol/astra/v1/x/inflation/types"
+	"github.com/AstraProtocol/astra/x/inflation/types"
 	epochstypes "github.com/tharsis/evmos/v4/x/epochs/types"
 )
 
@@ -59,8 +59,6 @@ func (suite *KeeperTestSuite) TestPeriodChangesSkippedEpochsAfterEpochEnd() {
 	suite.SetupTest()
 
 	currentEpochPeriod := suite.app.InflationKeeper.GetEpochsPerPeriod(suite.ctx)
-	// bondingRatio is zero in tests
-	bondedRatio := suite.app.InflationKeeper.BondedRatio(suite.ctx)
 
 	testCases := []struct {
 		name            string
@@ -215,7 +213,6 @@ func (suite *KeeperTestSuite) TestPeriodChangesSkippedEpochsAfterEpochEnd() {
 					suite.app.InflationKeeper.GetParams(suite.ctx),
 					period,
 					currentEpochPeriod,
-					bondedRatio,
 				)
 				suite.Require().Equal(expectedProvision, newProvision)
 				// mint provisions will change

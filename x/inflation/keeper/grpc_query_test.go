@@ -5,7 +5,7 @@ import (
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
-	"github.com/AstraProtocol/astra/v1/x/inflation/types"
+	"github.com/AstraProtocol/astra/x/inflation/types"
 )
 
 func (suite *KeeperTestSuite) TestPeriod() {
@@ -77,7 +77,6 @@ func (suite *KeeperTestSuite) TestEpochMintProvision() {
 					params,
 					uint64(0),
 					365,
-					sdk.OneDec(),
 				)
 				req = &types.QueryEpochMintProvisionRequest{}
 				expRes = &types.QueryEpochMintProvisionResponse{

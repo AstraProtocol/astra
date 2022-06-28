@@ -1,7 +1,6 @@
 package keeper_test
 
 import (
-	"fmt"
 	"time"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -23,7 +22,7 @@ var _ = Describe("Inflation", Ordered, func() {
 		s.SetupTest()
 	})
 
-	Describe("Commiting a block", func() {
+	Describe("Committing a block", func() {
 
 		Context("with inflation param enabled", func() {
 			BeforeEach(func() {
@@ -63,9 +62,9 @@ var _ = Describe("Inflation", Ordered, func() {
 					BeforeEach(func() {
 						// commit next 3 blocks to trigger afterEpochEnd let EpochStartTime
 						// catch up with BlockTime
-						s.CommitAfter(time.Second * 6)
-						s.CommitAfter(time.Second * 6)
-						s.CommitAfter(time.Second * 6)
+						s.CommitAfter(time.Second * 3)
+						s.CommitAfter(time.Second * 3)
+						s.CommitAfter(time.Second * 3)
 
 						epochInfo, found := s.app.EpochsKeeper.GetEpochInfo(s.ctx, epochstypes.DayEpochID)
 						s.Require().True(found)
@@ -89,10 +88,10 @@ var _ = Describe("Inflation", Ordered, func() {
 					BeforeEach(func() {
 						// commit next 4 blocks to trigger afterEpochEnd hook several times
 						// and let EpochStartTime catch up with BlockTime
-						s.CommitAfter(time.Second * 6)
-						s.CommitAfter(time.Second * 6)
-						s.CommitAfter(time.Second * 6)
-						s.CommitAfter(time.Second * 6)
+						s.CommitAfter(time.Second * 3)
+						s.CommitAfter(time.Second * 3)
+						s.CommitAfter(time.Second * 3)
+						s.CommitAfter(time.Second * 3)
 
 						epochInfo, found := s.app.EpochsKeeper.GetEpochInfo(s.ctx, epochstypes.DayEpochID)
 						s.Require().True(found)
@@ -100,7 +99,7 @@ var _ = Describe("Inflation", Ordered, func() {
 
 						skipped = s.app.InflationKeeper.GetSkippedEpochs(s.ctx)
 
-						s.CommitAfter(time.Second * 6) // commit next block
+						s.CommitAfter(time.Second * 3) // commit next block
 					})
 					It("should not increase the epoch number ", func() {
 						epochInfo, _ := s.app.EpochsKeeper.GetEpochInfo(s.ctx, epochstypes.DayEpochID)
@@ -127,7 +126,6 @@ var _ = Describe("Inflation", Ordered, func() {
 
 							provision, found = s.app.InflationKeeper.GetEpochMintProvision(s.ctx)
 							s.Require().True(found)
-							fmt.Println(provision)
 
 							s.CommitAfter(time.Hour * 23) // commit before next full epoch
 							provisionAfter, _ := s.app.InflationKeeper.GetEpochMintProvision(s.ctx)
@@ -139,7 +137,7 @@ var _ = Describe("Inflation", Ordered, func() {
 						It("should recalculate the EpochMintProvision", func() {
 							provisionAfter, _ := s.app.InflationKeeper.GetEpochMintProvision(s.ctx)
 							Expect(provisionAfter).ToNot(Equal(provision))
-							Expect(provisionAfter).To(Equal(sdk.MustNewDecFromStr("159375000000000000000000000")))
+							Expect(provisionAfter).To(Equal(sdk.MustNewDecFromStr("199998000000000000000000000")))
 						})
 					})
 				})

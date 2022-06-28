@@ -15,12 +15,12 @@ func (suite *KeeperTestSuite) TestSetGetEpochMintProvision() {
 		genesis  bool
 	}{
 		{
-			"default EpochMintProvision",
+			"genesis EpochMintProvision",
 			func() {},
 			true,
 		},
 		{
-			"period EpochMintProvision",
+			"newly set EpochMintProvision",
 			func() {
 				suite.app.InflationKeeper.SetEpochMintProvision(suite.ctx, expEpochMintProvision)
 			},
@@ -28,7 +28,7 @@ func (suite *KeeperTestSuite) TestSetGetEpochMintProvision() {
 		},
 	}
 
-	genesisProvision := sdk.MustNewDecFromStr("847602739726027397260274.000000000000000000")
+	genesisProvision := sdk.MustNewDecFromStr("608821917808219178082192.000000000000000000")
 
 	for _, tc := range testCases {
 		suite.Run(fmt.Sprintf("Case %s", tc.name), func() {

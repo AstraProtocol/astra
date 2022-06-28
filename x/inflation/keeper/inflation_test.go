@@ -2,7 +2,7 @@ package keeper_test
 
 import (
 	"fmt"
-	"github.com/AstraProtocol/astra/v1/x/inflation/types"
+	"github.com/AstraProtocol/astra/x/inflation/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 )
@@ -13,7 +13,6 @@ func (suite *KeeperTestSuite) TestMintAndAllocateInflation() {
 		mintCoin            sdk.Coin
 		malleate            func()
 		expStakingRewardAmt sdk.Coin
-		expCommunityPoolAmt sdk.DecCoins
 		expPass             bool
 	}{
 		{
@@ -21,7 +20,6 @@ func (suite *KeeperTestSuite) TestMintAndAllocateInflation() {
 			sdk.NewCoin(denomMint, sdk.NewInt(1_000_000)),
 			func() {},
 			sdk.NewCoin(denomMint, sdk.NewInt(1_000_000)),
-			sdk.NewDecCoins(sdk.NewDecCoin(denomMint, sdk.NewInt(0))),
 			true,
 		},
 		{
@@ -29,7 +27,6 @@ func (suite *KeeperTestSuite) TestMintAndAllocateInflation() {
 			sdk.NewCoin(denomMint, sdk.ZeroInt()),
 			func() {},
 			sdk.NewCoin(denomMint, sdk.ZeroInt()),
-			sdk.DecCoins(nil),
 			true,
 		},
 	}
@@ -90,16 +87,22 @@ func (suite *KeeperTestSuite) TestGetCirculatingSupplyAndInflationRate() {
 			sdk.ZeroDec(),
 		},
 		{
+			"usual supply",
+			400_000_000,
+			func() {},
+			sdk.MustNewDecFromStr("55.5550000000000000"),
+		},
+		{
 			"high supply",
 			800_000_000,
 			func() {},
-			sdk.MustNewDecFromStr("51.562500000000000000"),
+			sdk.MustNewDecFromStr("27.7775000000000000"),
 		},
 		{
 			"low supply",
-			400_000_000,
+			200_000_000,
 			func() {},
-			sdk.MustNewDecFromStr("154.687500000000000000"),
+			sdk.MustNewDecFromStr("111.110000000000000000"),
 		},
 	}
 	for _, tc := range testCases {
@@ -108,9 +111,8 @@ func (suite *KeeperTestSuite) TestGetCirculatingSupplyAndInflationRate() {
 
 			// Team allocation is only set on mainnet
 			suite.ctx = suite.ctx.WithChainID("astra_11112-1")
-			tc.malleate()
 
-			// Mint coins to increase supply
+			// Mint initial supply
 			coin := sdk.NewCoin(types.DefaultInflationDenom, sdk.TokensFromConsensusPower(tc.bankSupply, sdk.DefaultPowerReduction))
 			decCoin := sdk.NewDecCoinFromCoin(coin)
 			suite.app.InflationKeeper.MintCoins(suite.ctx, coin)
@@ -118,6 +120,8 @@ func (suite *KeeperTestSuite) TestGetCirculatingSupplyAndInflationRate() {
 			circulatingSupply := s.app.InflationKeeper.GetCirculatingSupply(suite.ctx)
 
 			suite.Require().Equal(decCoin.Amount, circulatingSupply)
+
+			tc.malleate()
 
 			inflationRate := s.app.InflationKeeper.GetInflationRate(suite.ctx)
 			suite.Require().Equal(tc.expInflationRate, inflationRate)

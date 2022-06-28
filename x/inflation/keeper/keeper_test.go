@@ -19,8 +19,8 @@ import (
 
 	evm "github.com/tharsis/ethermint/x/evm/types"
 
-	"github.com/AstraProtocol/astra/v1/app"
-	"github.com/AstraProtocol/astra/v1/x/inflation/types"
+	"github.com/AstraProtocol/astra/app"
+	"github.com/AstraProtocol/astra/x/inflation/types"
 	epochstypes "github.com/tharsis/evmos/v4/x/epochs/types"
 )
 

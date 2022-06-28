@@ -3,7 +3,7 @@ package keeper
 import (
 	"fmt"
 
-	"github.com/AstraProtocol/astra/v1/x/inflation/types"
+	"github.com/AstraProtocol/astra/x/inflation/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	epochstypes "github.com/tharsis/evmos/v4/x/epochs/types"
 )
@@ -70,12 +70,10 @@ func (k Keeper) AfterEpochEnd(ctx sdk.Context, epochIdentifier string, epochNumb
 		period++
 		k.SetPeriod(ctx, period)
 		period = k.GetPeriod(ctx)
-		bondedRatio := k.BondedRatio(ctx)
 		newProvision = types.CalculateEpochMintProvision(
 			params,
 			period,
 			epochsPerPeriod,
-			bondedRatio,
 		)
 		k.SetEpochMintProvision(ctx, newProvision)
 	}

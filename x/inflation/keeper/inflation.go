@@ -1,8 +1,8 @@
 package keeper
 
 import (
-	astra "github.com/AstraProtocol/astra/v1/types"
-	"github.com/AstraProtocol/astra/v1/x/inflation/types"
+	astra "github.com/AstraProtocol/astra/types"
+	"github.com/AstraProtocol/astra/x/inflation/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
@@ -13,8 +13,8 @@ func (k Keeper) MintAndAllocateInflation(ctx sdk.Context, coin sdk.Coin) error {
 		return err
 	}
 
-	// Allocate minted coins according to allocation proportions (staking)
-	return k.AllocateExponentialInflation(ctx, coin)
+	// Allocate minted coins according to the staking module
+	return k.AllocateInflation(ctx, coin)
 }
 
 // MintCoins implements an alias call to the underlying supply keeper's
@@ -30,33 +30,20 @@ func (k Keeper) MintCoins(ctx sdk.Context, newCoin sdk.Coin) error {
 	return k.bankKeeper.MintCoins(ctx, types.ModuleName, newCoins)
 }
 
-// AllocateExponentialInflation allocates coins from the inflation to external
+// AllocateInflation allocates coins from the inflation to external
 // modules according to allocation proportions:
 //   - staking rewards -> sdk `auth` module fee collector
-func (k Keeper) AllocateExponentialInflation(ctx sdk.Context, mintedCoin sdk.Coin) error {
-	params := k.GetParams(ctx)
-	proportions := params.InflationDistribution
-
+func (k Keeper) AllocateInflation(ctx sdk.Context, mintedCoin sdk.Coin) error {
 	// Allocate staking rewards into fee collector account
-	stakingRewardsAmt := sdk.NewCoins(k.GetProportions(ctx, mintedCoin, proportions.StakingRewards))
+	stakingRewardsAmt := sdk.NewCoins(sdk.NewCoin(
+		mintedCoin.Denom,
+		mintedCoin.Amount,
+	))
 	return k.bankKeeper.SendCoinsFromModuleToModule(
 		ctx,
 		types.ModuleName,
 		k.feeCollectorName,
 		stakingRewardsAmt,
-	)
-}
-
-// GetProportions calculates the proportion of coins that is to be
-// allocated during inflation for a given distribution.
-func (k Keeper) GetProportions(
-	ctx sdk.Context,
-	coin sdk.Coin,
-	distribution sdk.Dec,
-) sdk.Coin {
-	return sdk.NewCoin(
-		coin.Denom,
-		coin.Amount.ToDec().Mul(distribution).TruncateInt(),
 	)
 }
 
@@ -103,6 +90,6 @@ func (k Keeper) GetInflationRate(ctx sdk.Context) sdk.Dec {
 		return sdk.ZeroDec()
 	}
 
-	// EpochMintProvision * 365 / circulatingSupply * 100
+	// epochMintProvision * 365 / circulatingSupply * 100
 	return epochMintProvision.Mul(epochsPerPeriod).Quo(circulatingSupply).Mul(sdk.NewDec(100))
 }

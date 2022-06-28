@@ -3,11 +3,11 @@ package keeper
 import (
 	"fmt"
 
-	"github.com/AstraProtocol/astra/v1/x/inflation/types"
+	"github.com/AstraProtocol/astra/x/inflation/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
-// GetEpochMintProvision gets the current EpochMintProvision
+// GetEpochMintProvision gets the current EpochMintProvision.
 func (k Keeper) GetEpochMintProvision(ctx sdk.Context) (sdk.Dec, bool) {
 	store := ctx.KVStore(k.storeKey)
 	bz := store.Get(types.KeyPrefixEpochMintProvision)
@@ -24,7 +24,7 @@ func (k Keeper) GetEpochMintProvision(ctx sdk.Context) (sdk.Dec, bool) {
 	return epochMintProvision, true
 }
 
-// SetEpochMintProvision sets the current EpochMintProvision
+// SetEpochMintProvision sets the current EpochMintProvision.
 func (k Keeper) SetEpochMintProvision(ctx sdk.Context, epochMintProvision sdk.Dec) {
 	bz, err := epochMintProvision.Marshal()
 	if err != nil {
