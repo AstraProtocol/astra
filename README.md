@@ -7,8 +7,11 @@ parent:
   <h1> Astra </h1>
 </div>
 
-<!-- TODO: add banner -->
-<!-- ![banner](docs/ethermint.jpg) -->
+<div align="center">
+  <a href="https://codecov.io/gh/AstraProtocol/astra">
+    <img alt="Code Coverage" src="https://codecov.io/gh/AstraProtocol/astra/branch/main/graph/badge.svg" />
+  </a>
+</div>
 
 Astra is a scalable, high-throughput Proof-of-Stake blockchain that is fully compatible and
 interoperable with Ethereum. It's built using the [Cosmos SDK](https://github.com/cosmos/cosmos-sdk/) which runs on top of [Tendermint Core](https://github.com/tendermint/tendermint) consensus engine.
