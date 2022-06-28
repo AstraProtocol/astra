@@ -21,7 +21,7 @@ import (
 	"github.com/cosmos/ibc-go/v3/testing/simapp"
 
 	astraapp "github.com/AstraProtocol/astra/v2/app"
-	ethermint "github.com/evmos/ethermint/types"
+	ethermint "github.com/tharsis/ethermint/types"
 )
 
 var DefaultTestingAppInit func() (ibcgotesting.TestingApp, map[string]json.RawMessage) = astraapp.SetupTestingApp

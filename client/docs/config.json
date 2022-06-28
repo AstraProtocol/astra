@@ -18,9 +18,6 @@
       "url": "./tmp-swagger-gen/evmos/vesting/v1/query.swagger.json"
     },
     {
-      "url": "./tmp-swagger-gen/evmos/fees/v1/query.swagger.json"
-    },
-    {
       "url": "./tmp-swagger-gen/ethermint/evm/v1/query.swagger.json",
       "operationIds": {
         "rename": {

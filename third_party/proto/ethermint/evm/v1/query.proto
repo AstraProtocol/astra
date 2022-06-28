@@ -8,7 +8,7 @@ import "ethermint/evm/v1/evm.proto";
 import "ethermint/evm/v1/tx.proto";
 import "google/protobuf/timestamp.proto";
 
-option go_package = "github.com/evmos/ethermint/x/evm/types";
+option go_package = "github.com/tharsis/ethermint/x/evm/types";
 
 // Query defines the gRPC querier service.
 service Query {
@@ -285,5 +285,5 @@ message QueryBaseFeeRequest {}
 // BaseFeeResponse returns the EIP1559 base fee.
 message QueryBaseFeeResponse {
   string base_fee = 1
-      [ (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int" ];
+  [ (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int" ];
 }
