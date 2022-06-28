@@ -388,6 +388,412 @@ paths:
           type: string
       tags:
         - Query
+  /evmos/fees/v1/fees:
+    get:
+      summary: Fees retrieves all registered contracts for fee distribution
+      operationId: Fees
+      responses:
+        '200':
+          description: A successful response.
+          schema:
+            type: object
+            properties:
+              fees:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    contract_address:
+                      type: string
+                      title: hex address of registered contract
+                    deployer_address:
+                      type: string
+                      title: bech32 address of contract deployer
+                    withdraw_address:
+                      type: string
+                      title: >-
+                        bech32 address of account receiving the transaction fees
+                        it defaults to
+
+                        deployer_address
+                  title: >-
+                    Fee defines an instance that organizes fee distribution
+                    conditions for the
+
+                    owner of a given smart contract
+              pagination:
+                description: pagination defines the pagination in the response.
+                type: object
+                properties:
+                  next_key:
+                    type: string
+                    format: byte
+                    title: |-
+                      next_key is the key to be passed to PageRequest.key to
+                      query the next page most efficiently
+                  total:
+                    type: string
+                    format: uint64
+                    title: >-
+                      total is total number of results available if
+                      PageRequest.count_total
+
+                      was set, its value is undefined otherwise
+            description: >-
+              QueryFeesResponse is the response type for the Query/Fees RPC
+              method.
+        default:
+          description: An unexpected error response.
+          schema:
+            type: object
+            properties:
+              error:
+                type: string
+              code:
+                type: integer
+                format: int32
+              message:
+                type: string
+              details:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    type_url:
+                      type: string
+                    value:
+                      type: string
+                      format: byte
+      parameters:
+        - name: pagination.key
+          description: |-
+            key is a value returned in PageResponse.next_key to begin
+            querying the next page most efficiently. Only one of offset or key
+            should be set.
+          in: query
+          required: false
+          type: string
+          format: byte
+        - name: pagination.offset
+          description: >-
+            offset is a numeric offset that can be used when key is unavailable.
+
+            It is less efficient than using key. Only one of offset or key
+            should
+
+            be set.
+          in: query
+          required: false
+          type: string
+          format: uint64
+        - name: pagination.limit
+          description: >-
+            limit is the total number of results to be returned in the result
+            page.
+
+            If left empty it will default to a value to be set by each app.
+          in: query
+          required: false
+          type: string
+          format: uint64
+        - name: pagination.count_total
+          description: >-
+            count_total is set to true  to indicate that the result set should
+            include
+
+            a count of the total number of items available for pagination in
+            UIs.
+
+            count_total is only respected when offset is used. It is ignored
+            when key
+
+            is set.
+          in: query
+          required: false
+          type: boolean
+        - name: pagination.reverse
+          description: >-
+            reverse is set to true if results are to be returned in the
+            descending order.
+
+
+            Since: cosmos-sdk 0.43
+          in: query
+          required: false
+          type: boolean
+      tags:
+        - Query
+  /evmos/fees/v1/fees/{contract_address}:
+    get:
+      summary: |-
+        Fee retrieves a registered contract for fee distribution for a given
+        address
+      operationId: Fee
+      responses:
+        '200':
+          description: A successful response.
+          schema:
+            type: object
+            properties:
+              fee:
+                type: object
+                properties:
+                  contract_address:
+                    type: string
+                    title: hex address of registered contract
+                  deployer_address:
+                    type: string
+                    title: bech32 address of contract deployer
+                  withdraw_address:
+                    type: string
+                    title: >-
+                      bech32 address of account receiving the transaction fees
+                      it defaults to
+
+                      deployer_address
+                title: >-
+                  Fee defines an instance that organizes fee distribution
+                  conditions for the
+
+                  owner of a given smart contract
+            description: >-
+              QueryFeeResponse is the response type for the Query/Fee RPC
+              method.
+        default:
+          description: An unexpected error response.
+          schema:
+            type: object
+            properties:
+              error:
+                type: string
+              code:
+                type: integer
+                format: int32
+              message:
+                type: string
+              details:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    type_url:
+                      type: string
+                    value:
+                      type: string
+                      format: byte
+      parameters:
+        - name: contract_address
+          description: contract identifier is the hex contract address of a contract
+          in: path
+          required: true
+          type: string
+      tags:
+        - Query
+  /evmos/fees/v1/fees/{deployer_address}:
+    get:
+      summary: >-
+        DeployerFees retrieves all contracts that a given deployer has
+        registered
+
+        for fee distribution
+      operationId: DeployerFees
+      responses:
+        '200':
+          description: A successful response.
+          schema:
+            type: object
+            properties:
+              fees:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    contract_address:
+                      type: string
+                      title: hex address of registered contract
+                    deployer_address:
+                      type: string
+                      title: bech32 address of contract deployer
+                    withdraw_address:
+                      type: string
+                      title: >-
+                        bech32 address of account receiving the transaction fees
+                        it defaults to
+
+                        deployer_address
+                  title: >-
+                    Fee defines an instance that organizes fee distribution
+                    conditions for the
+
+                    owner of a given smart contract
+              pagination:
+                description: pagination defines the pagination in the response.
+                type: object
+                properties:
+                  next_key:
+                    type: string
+                    format: byte
+                    title: |-
+                      next_key is the key to be passed to PageRequest.key to
+                      query the next page most efficiently
+                  total:
+                    type: string
+                    format: uint64
+                    title: >-
+                      total is total number of results available if
+                      PageRequest.count_total
+
+                      was set, its value is undefined otherwise
+            description: >-
+              QueryDeployerFeesResponse is the response type for the
+              Query/DeployerFees RPC
+
+              method.
+        default:
+          description: An unexpected error response.
+          schema:
+            type: object
+            properties:
+              error:
+                type: string
+              code:
+                type: integer
+                format: int32
+              message:
+                type: string
+              details:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    type_url:
+                      type: string
+                    value:
+                      type: string
+                      format: byte
+      parameters:
+        - name: deployer_address
+          description: deployer bech32 address
+          in: path
+          required: true
+          type: string
+        - name: pagination.key
+          description: |-
+            key is a value returned in PageResponse.next_key to begin
+            querying the next page most efficiently. Only one of offset or key
+            should be set.
+          in: query
+          required: false
+          type: string
+          format: byte
+        - name: pagination.offset
+          description: >-
+            offset is a numeric offset that can be used when key is unavailable.
+
+            It is less efficient than using key. Only one of offset or key
+            should
+
+            be set.
+          in: query
+          required: false
+          type: string
+          format: uint64
+        - name: pagination.limit
+          description: >-
+            limit is the total number of results to be returned in the result
+            page.
+
+            If left empty it will default to a value to be set by each app.
+          in: query
+          required: false
+          type: string
+          format: uint64
+        - name: pagination.count_total
+          description: >-
+            count_total is set to true  to indicate that the result set should
+            include
+
+            a count of the total number of items available for pagination in
+            UIs.
+
+            count_total is only respected when offset is used. It is ignored
+            when key
+
+            is set.
+          in: query
+          required: false
+          type: boolean
+        - name: pagination.reverse
+          description: >-
+            reverse is set to true if results are to be returned in the
+            descending order.
+
+
+            Since: cosmos-sdk 0.43
+          in: query
+          required: false
+          type: boolean
+      tags:
+        - Query
+  /evmos/fees/v1/params:
+    get:
+      summary: Params retrieves the fees module params
+      operationId: Params
+      responses:
+        '200':
+          description: A successful response.
+          schema:
+            type: object
+            properties:
+              params:
+                type: object
+                properties:
+                  enable_fees:
+                    type: boolean
+                    title: parameter to enable fees
+                  developer_shares:
+                    type: string
+                    title: >-
+                      developer_shares defines the proportion of the transaction
+                      fees to be
+
+                      distributed to the registered contract owner
+                  addr_derivation_cost_create:
+                    type: string
+                    format: uint64
+                    title: >-
+                      addr_derivation_cost_create defines the cost of address
+                      derivation for
+
+                      verifying the contract deployer at fee registration
+                title: Params defines the fees module params
+            description: >-
+              QueryParamsResponse is the response type for the Query/Params RPC
+              method.
+        default:
+          description: An unexpected error response.
+          schema:
+            type: object
+            properties:
+              error:
+                type: string
+              code:
+                type: integer
+                format: int32
+              message:
+                type: string
+              details:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    type_url:
+                      type: string
+                    value:
+                      type: string
+                      format: byte
+      tags:
+        - Query
   /ethermint/evm/v1/account/{address}:
     get:
       summary: Account queries an Ethereum account.
@@ -2107,6 +2513,13 @@ paths:
                       using *sdk.Int values
 
                       instead of *big.Int.
+                  allow_unprotected_txs:
+                    type: boolean
+                    description: >-
+                      Allow unprotected transactions defines if replay-protected
+                      (i.e non EIP155 
+
+                      signed) transactions can be executed on the state machine.
                 title: Params defines the EVM module parameters
             description: >-
               QueryParamsResponse defines the response type for querying x/evm
@@ -28105,6 +28518,188 @@ definitions:
     description: |-
       QueryBalancesResponse is the response type for the Query/Balances RPC
       method.
+  evmos.fees.v1.Fee:
+    type: object
+    properties:
+      contract_address:
+        type: string
+        title: hex address of registered contract
+      deployer_address:
+        type: string
+        title: bech32 address of contract deployer
+      withdraw_address:
+        type: string
+        title: >-
+          bech32 address of account receiving the transaction fees it defaults
+          to
+
+          deployer_address
+    title: |-
+      Fee defines an instance that organizes fee distribution conditions for the
+      owner of a given smart contract
+  evmos.fees.v1.Params:
+    type: object
+    properties:
+      enable_fees:
+        type: boolean
+        title: parameter to enable fees
+      developer_shares:
+        type: string
+        title: |-
+          developer_shares defines the proportion of the transaction fees to be
+          distributed to the registered contract owner
+      addr_derivation_cost_create:
+        type: string
+        format: uint64
+        title: |-
+          addr_derivation_cost_create defines the cost of address derivation for
+          verifying the contract deployer at fee registration
+    title: Params defines the fees module params
+  evmos.fees.v1.QueryDeployerFeesResponse:
+    type: object
+    properties:
+      fees:
+        type: array
+        items:
+          type: object
+          properties:
+            contract_address:
+              type: string
+              title: hex address of registered contract
+            deployer_address:
+              type: string
+              title: bech32 address of contract deployer
+            withdraw_address:
+              type: string
+              title: >-
+                bech32 address of account receiving the transaction fees it
+                defaults to
+
+                deployer_address
+          title: >-
+            Fee defines an instance that organizes fee distribution conditions
+            for the
+
+            owner of a given smart contract
+      pagination:
+        description: pagination defines the pagination in the response.
+        type: object
+        properties:
+          next_key:
+            type: string
+            format: byte
+            title: |-
+              next_key is the key to be passed to PageRequest.key to
+              query the next page most efficiently
+          total:
+            type: string
+            format: uint64
+            title: >-
+              total is total number of results available if
+              PageRequest.count_total
+
+              was set, its value is undefined otherwise
+    description: >-
+      QueryDeployerFeesResponse is the response type for the Query/DeployerFees
+      RPC
+
+      method.
+  evmos.fees.v1.QueryFeeResponse:
+    type: object
+    properties:
+      fee:
+        type: object
+        properties:
+          contract_address:
+            type: string
+            title: hex address of registered contract
+          deployer_address:
+            type: string
+            title: bech32 address of contract deployer
+          withdraw_address:
+            type: string
+            title: >-
+              bech32 address of account receiving the transaction fees it
+              defaults to
+
+              deployer_address
+        title: >-
+          Fee defines an instance that organizes fee distribution conditions for
+          the
+
+          owner of a given smart contract
+    description: QueryFeeResponse is the response type for the Query/Fee RPC method.
+  evmos.fees.v1.QueryFeesResponse:
+    type: object
+    properties:
+      fees:
+        type: array
+        items:
+          type: object
+          properties:
+            contract_address:
+              type: string
+              title: hex address of registered contract
+            deployer_address:
+              type: string
+              title: bech32 address of contract deployer
+            withdraw_address:
+              type: string
+              title: >-
+                bech32 address of account receiving the transaction fees it
+                defaults to
+
+                deployer_address
+          title: >-
+            Fee defines an instance that organizes fee distribution conditions
+            for the
+
+            owner of a given smart contract
+      pagination:
+        description: pagination defines the pagination in the response.
+        type: object
+        properties:
+          next_key:
+            type: string
+            format: byte
+            title: |-
+              next_key is the key to be passed to PageRequest.key to
+              query the next page most efficiently
+          total:
+            type: string
+            format: uint64
+            title: >-
+              total is total number of results available if
+              PageRequest.count_total
+
+              was set, its value is undefined otherwise
+    description: QueryFeesResponse is the response type for the Query/Fees RPC method.
+  evmos.fees.v1.QueryParamsResponse:
+    type: object
+    properties:
+      params:
+        type: object
+        properties:
+          enable_fees:
+            type: boolean
+            title: parameter to enable fees
+          developer_shares:
+            type: string
+            title: >-
+              developer_shares defines the proportion of the transaction fees to
+              be
+
+              distributed to the registered contract owner
+          addr_derivation_cost_create:
+            type: string
+            format: uint64
+            title: >-
+              addr_derivation_cost_create defines the cost of address derivation
+              for
+
+              verifying the contract deployer at fee registration
+        title: Params defines the fees module params
+    description: QueryParamsResponse is the response type for the Query/Params RPC method.
   ethermint.evm.v1.ChainConfig:
     type: object
     properties:
@@ -28577,6 +29172,13 @@ definitions:
           values
 
           instead of *big.Int.
+      allow_unprotected_txs:
+        type: boolean
+        description: >-
+          Allow unprotected transactions defines if replay-protected (i.e non
+          EIP155 
+
+          signed) transactions can be executed on the state machine.
     title: Params defines the EVM module parameters
   ethermint.evm.v1.QueryAccountResponse:
     type: object
@@ -28739,6 +29341,13 @@ definitions:
               *sdk.Int values
 
               instead of *big.Int.
+          allow_unprotected_txs:
+            type: boolean
+            description: >-
+              Allow unprotected transactions defines if replay-protected (i.e
+              non EIP155 
+
+              signed) transactions can be executed on the state machine.
         title: Params defines the EVM module parameters
     description: >-
       QueryParamsResponse defines the response type for querying x/evm

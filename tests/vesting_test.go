@@ -7,20 +7,20 @@ import (
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	"github.com/ethereum/go-ethereum/common"
 	ethtypes "github.com/ethereum/go-ethereum/core/types"
+	"github.com/evmos/ethermint/encoding"
+	evmtypes "github.com/evmos/ethermint/x/evm/types"
 	"github.com/stretchr/testify/suite"
-	"github.com/tharsis/ethermint/encoding"
-	evmtypes "github.com/tharsis/ethermint/x/evm/types"
 	"math/big"
 	"testing"
 	"time"
 
 	"github.com/AstraProtocol/astra/v2/testutil"
-	"github.com/tharsis/ethermint/tests"
+	"github.com/evmos/ethermint/tests"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkvesting "github.com/cosmos/cosmos-sdk/x/auth/vesting/types"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
-	"github.com/tharsis/evmos/v5/x/vesting/types"
+	"github.com/evmos/evmos/v6/x/vesting/types"
 )
 
 func TestVestingTestingSuite(t *testing.T) {
