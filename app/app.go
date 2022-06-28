@@ -6,9 +6,9 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/mint"
 	mintkeeper "github.com/cosmos/cosmos-sdk/x/mint/keeper"
 	minttypes "github.com/cosmos/cosmos-sdk/x/mint/types"
-	"github.com/evmos/evmos/v5/x/fees"
-	feeskeeper "github.com/evmos/evmos/v5/x/fees/keeper"
-	feestypes "github.com/evmos/evmos/v5/x/fees/types"
+	"github.com/evmos/evmos/v6/x/fees"
+	feeskeeper "github.com/evmos/evmos/v6/x/fees/keeper"
+	feestypes "github.com/evmos/evmos/v6/x/fees/types"
 	"io"
 	"net/http"
 	"os"
@@ -112,13 +112,13 @@ import (
 	feemarkettypes "github.com/evmos/ethermint/x/feemarket/types"
 
 	"github.com/AstraProtocol/astra/v2/app/ante"
-	"github.com/evmos/evmos/v5/x/erc20"
-	erc20client "github.com/evmos/evmos/v5/x/erc20/client"
-	erc20keeper "github.com/evmos/evmos/v5/x/erc20/keeper"
-	erc20types "github.com/evmos/evmos/v5/x/erc20/types"
-	"github.com/evmos/evmos/v5/x/vesting"
-	vestingkeeper "github.com/evmos/evmos/v5/x/vesting/keeper"
-	vestingtypes "github.com/evmos/evmos/v5/x/vesting/types"
+	"github.com/evmos/evmos/v6/x/erc20"
+	erc20client "github.com/evmos/evmos/v6/x/erc20/client"
+	erc20keeper "github.com/evmos/evmos/v6/x/erc20/keeper"
+	erc20types "github.com/evmos/evmos/v6/x/erc20/types"
+	"github.com/evmos/evmos/v6/x/vesting"
+	vestingkeeper "github.com/evmos/evmos/v6/x/vesting/keeper"
+	vestingtypes "github.com/evmos/evmos/v6/x/vesting/types"
 )
 
 func init() {
