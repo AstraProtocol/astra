@@ -32,7 +32,7 @@ the rest of Astras in subsequent years.
 We implement two different inflation mechanisms to support the token model:
 
 1. linear inflation for team vesting, reward providers; and
-2. exponential inflation for staking rewards, dev/community incentives and reserve treasury.
+2. exponential inflation for staking rewards.
 
 ### Linear Inflation - Team Vesting
 
@@ -45,11 +45,9 @@ linear rate. Team members cannot delegate, transfer or execute Ethereum
 transaction with `unvested` tokens until they are unlocked represented as
 `vested` tokens.
 
-### Exponential Inflation - Block Rewards & Reserve Treasury
-There will be a total of 30% of the total supply that will be distributed as block rewards. Block rewards are mainly 
-distributed as Staking Rewards and Reserve Treasury with the following distribution:
-- **Staking Rewards**: 66.67%
-- **Reserve Treasury**: 33.33%.
+### Exponential Inflation - Block Rewards
+There will be a total of 20% of the total supply that will be distributed as block rewards which are mainly 
+distributed as Staking Rewards.
 
 Block rewards are minted in daily epochs, via a decay function. During a period of 365 epochs (i.e, one year), a
 daily provision of Astra tokens is minted and allocated to staking rewards and reserve treasury. Within a period,
