@@ -7,8 +7,8 @@ astra_777-1:
     index-events:
       - ethereum_tx.ethereumTxHash
     json-rpc:
-      address: "0.0.0.0:8545"
-      ws-address: "0.0.0.0:8546"
+      address: "0.0.0.0:26651"
+      ws-address: "0.0.0.0:26652"
       api: "eth,net,web3,debug,astra"
   validators:
     - coins: 10000astra
@@ -24,12 +24,12 @@ astra_777-1:
     - name: genesis_partner
       coins: 2222200000astra
     - name: other_partner
-      coins: 2222200000astra
+      coins: 100astra
     - name: community
       coins: 1111100000astra
       mnemonic: ${COMMUNITY_MNEMONIC}
     - name: treasury
-      coins: 1111100000astra
+      coins: 100astra
     - name: signer1
       coins: 100000astra
     - name: signer2
@@ -63,3 +63,6 @@ astra_777-1:
         params:
           bond_denom: "aastra"
           unbonding_time: "10s"
+#      feemarket:
+#        params:
+#          "no_base_fee": true

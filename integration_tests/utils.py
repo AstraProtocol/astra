@@ -9,7 +9,6 @@ import time
 import uuid
 from pathlib import Path
 
-import web3
 from web3._utils.transactions import fill_nonce, fill_transaction_defaults
 
 import yaml
@@ -66,16 +65,23 @@ DISTRIBUTION = "distribution"
 # Querying commands for authz module
 GRANTS = "grants"
 
-# QUerying commands for distribution module
+# Querying commands for distribution module
 REWARDS = "rewards"
 
 # Default base port
 DEFAULT_BASE_PORT = 26650
 
+# Default gas price
+DEFAULT_GAS_PRICE = "0000000000aastra"
+
+# Supervisor config file
+SUPERVISOR_CONFIG_FILE = "tasks.ini"
+
 load_dotenv(Path(__file__).parent.parent / "integration_tests/configs/.env")
 Account.enable_unaudited_hdwallet_features()
 ACCOUNTS = {
     "validator": Account.from_mnemonic(os.getenv("VALIDATOR1_MNEMONIC")),
+    "validator2": Account.from_mnemonic(os.getenv("VALIDATOR2_MNEMONIC")),
     "team": Account.from_mnemonic(os.getenv("TEAM_MNEMONIC")),
     "signer1": Account.from_mnemonic(os.getenv("SIGNER1_MNEMONIC")),
     "signer2": Account.from_mnemonic(os.getenv("SIGNER2_MNEMONIC")),
@@ -127,7 +133,7 @@ def wait_for_block(cli, height, timeout=240):
 def wait_for_new_blocks(cli, n):
     begin_height = int((cli.status())["SyncInfo"]["latest_block_height"])
     while True:
-        time.sleep(0.5)
+        time.sleep(0.2)
         cur_height = int((cli.status())["SyncInfo"]["latest_block_height"])
         if cur_height - begin_height >= n:
             break
@@ -141,7 +147,9 @@ def wait_for_block_time(cli, t):
             now = isoparse((cli.status())["SyncInfo"]["latest_block_time"])
             print("block time now:", now)
         except:
-            now = isoparse("1900-01-01 01:01:01.01+00:00")
+            wait_for_port(DEFAULT_BASE_PORT)
+            now = isoparse((cli.status())["SyncInfo"]["latest_block_time"])
+            print("block time now:", now)
         if now >= t:
             break
         time.sleep(0.5)
@@ -564,12 +572,6 @@ def astra_to_aastra(amount):
     return amount * 10 ** 18
 
 
-def get_w3():
-    port = 8545
-    w3_http_endpoint = f"http://localhost:{port}"
-    return web3.Web3(web3.providers.HTTPProvider(w3_http_endpoint))
-
-
 def deploy_contract(w3, jsonfile, args=(), key=KEYS["validator"]):
     """
     deploy contract and return the deployed contract instance
@@ -597,3 +599,18 @@ def send_transaction(w3, tx, key=KEYS["validator"]):
     signed = sign_transaction(w3, tx, key)
     txhash = w3.eth.send_raw_transaction(signed.rawTransaction)
     return w3.eth.wait_for_transaction_receipt(txhash)
+
+
+def w3_wait_for_block(w3, height, timeout=240):
+    for i in range(timeout * 2):
+        try:
+            current_height = w3.eth.block_number
+        except AssertionError as e:
+            print(f"get current block number failed: {e}", file=sys.stderr)
+        else:
+            if current_height >= height:
+                break
+            print("current block height", current_height)
+        time.sleep(0.5)
+    else:
+        raise TimeoutError(f"wait for block {height} timeout")

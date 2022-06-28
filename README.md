@@ -24,12 +24,15 @@ make install
 ```
 
 ## Integration test
-### Start chain
-    pystarport serve --data=./data --config=./integration_tests/configs/default.yaml
-
-### Run test
     cd integration_tests
-    pytest -s -vv
+### Install dependencies
+    pip3 install -r requirements.txt 
+### Run test
+    ./test.sh
+
+### Run single test
+    example:
+        pytest -m staking -vv
 
 
 Or check out the latest [release](https://github.com/AstraProtocol/astra/releases).

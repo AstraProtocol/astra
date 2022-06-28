@@ -3,9 +3,9 @@ package keeper
 import (
 	"fmt"
 
-	"github.com/AstraProtocol/astra/v1/x/inflation/types"
+	"github.com/AstraProtocol/astra/v2/x/inflation/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	epochstypes "github.com/tharsis/evmos/v4/x/epochs/types"
+	epochstypes "github.com/evmos/evmos/v6/x/epochs/types"
 )
 
 // BeforeEpochStart : noop, We don't need to do anything here

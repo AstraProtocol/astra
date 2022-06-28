@@ -2,18 +2,17 @@ from pathlib import Path
 
 import pytest
 
-from .utils import cluster_fixture
+from .utils import DEFAULT_BASE_PORT, cluster_fixture
+from .network import setup_astra
 
 
 def pytest_configure(config):
-    config.addinivalue_line("markers", "slow: marks tests as slow")
-    config.addinivalue_line("markers", "ledger: marks tests as ledger hardware test")
-    config.addinivalue_line("markers", "grpc: marks grpc tests")
-    config.addinivalue_line("markers", "upgrade: marks upgrade tests")
     config.addinivalue_line("markers", "normal: marks normal tests")
-    config.addinivalue_line("markers", "ibc: marks ibc tests")
+    config.addinivalue_line("markers", "authz: marks authz tests")
     config.addinivalue_line("markers", "byzantine: marks byzantine tests")
     config.addinivalue_line("markers", "gov: marks gov tests")
+    config.addinivalue_line("markers", "staking: marks staking tests")
+    config.addinivalue_line("markers", "vesting: marks vesting tests")
 
 
 @pytest.fixture(scope="session")
@@ -38,8 +37,23 @@ def cluster(worker_index, tmp_path_factory):
 
 
 @pytest.fixture(scope="session")
+def astra(tmp_path_factory):
+    path = tmp_path_factory.mktemp("astra")
+    yield from setup_astra(path, DEFAULT_BASE_PORT)
+
+
+@pytest.fixture(scope="session")
 def suspend_capture(pytestconfig):
-    "used for pause in testing"
+    """
+    used to pause in testing
+    Example:
+    ```
+    def test_simple(suspend_capture):
+        with suspend_capture:
+            # read user input
+            print(input())
+    ```
+    """
 
     class SuspendGuard:
         def __init__(self):

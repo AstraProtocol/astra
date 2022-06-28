@@ -5,15 +5,15 @@ import (
 
 	"github.com/stretchr/testify/suite"
 
-	"github.com/AstraProtocol/astra/v1/app"
-	ibctesting "github.com/AstraProtocol/astra/v1/ibc/testing"
+	"github.com/AstraProtocol/astra/v2/app"
+	ibctesting "github.com/AstraProtocol/astra/v2/ibc/testing"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	transfertypes "github.com/cosmos/ibc-go/v3/modules/apps/transfer/types"
 	clienttypes "github.com/cosmos/ibc-go/v3/modules/core/02-client/types"
 	channeltypes "github.com/cosmos/ibc-go/v3/modules/core/04-channel/types"
 	ibcgotesting "github.com/cosmos/ibc-go/v3/testing"
 
-	erc20types "github.com/tharsis/evmos/v4/x/erc20/types"
+	erc20types "github.com/evmos/evmos/v6/x/erc20/types"
 )
 
 type IBCTestingSuite struct {

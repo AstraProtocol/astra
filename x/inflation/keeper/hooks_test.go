@@ -5,8 +5,8 @@ import (
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	"time"
 
-	"github.com/AstraProtocol/astra/v1/x/inflation/types"
-	epochstypes "github.com/tharsis/evmos/v4/x/epochs/types"
+	"github.com/AstraProtocol/astra/v2/x/inflation/types"
+	epochstypes "github.com/evmos/evmos/v6/x/epochs/types"
 )
 
 func (suite *KeeperTestSuite) TestEpochIdentifierAfterEpochEnd() {

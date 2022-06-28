@@ -13,10 +13,10 @@ import (
 	tmtypes "github.com/tendermint/tendermint/types"
 	dbm "github.com/tendermint/tm-db"
 
-	"github.com/tharsis/ethermint/encoding"
-	feemarkettypes "github.com/tharsis/ethermint/x/feemarket/types"
+	"github.com/evmos/ethermint/encoding"
+	feemarkettypes "github.com/evmos/ethermint/x/feemarket/types"
 
-	"github.com/AstraProtocol/astra/v1/cmd/config"
+	"github.com/AstraProtocol/astra/v2/cmd/config"
 )
 
 func init() {

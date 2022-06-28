@@ -7,9 +7,6 @@
   },
   "apis": [
     {
-      "url": "./tmp-swagger-gen/evmos/epochs/v1/query.swagger.json"
-    },
-    {
       "url": "./tmp-swagger-gen/evmos/erc20/v1/query.swagger.json",
       "operationIds": {
         "rename": {
@@ -19,6 +16,9 @@
     },
     {
       "url": "./tmp-swagger-gen/evmos/vesting/v1/query.swagger.json"
+    },
+    {
+      "url": "./tmp-swagger-gen/evmos/fees/v1/query.swagger.json"
     },
     {
       "url": "./tmp-swagger-gen/ethermint/evm/v1/query.swagger.json",
@@ -32,7 +32,8 @@
       "url": "./tmp-swagger-gen/ethermint/feemarket/v1/query.swagger.json",
       "operationIds": {
         "rename": {
-          "Params": "FeeMarketParams"
+          "Params": "FeeMarketParams",
+          "BaseFee": "FeeMarketBaseFee"
         }
       }
     },

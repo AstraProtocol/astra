@@ -3,8 +3,8 @@ package types
 import (
 	"testing"
 
+	epochstypes "github.com/evmos/evmos/v6/x/epochs/types"
 	"github.com/stretchr/testify/suite"
-	epochstypes "github.com/tharsis/evmos/v4/x/epochs/types"
 )
 
 type GenesisTestSuite struct {

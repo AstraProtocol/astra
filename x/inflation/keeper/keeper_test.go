@@ -17,11 +17,11 @@ import (
 	tmversion "github.com/tendermint/tendermint/proto/tendermint/version"
 	"github.com/tendermint/tendermint/version"
 
-	evm "github.com/tharsis/ethermint/x/evm/types"
+	evm "github.com/evmos/ethermint/x/evm/types"
 
-	"github.com/AstraProtocol/astra/v1/app"
-	"github.com/AstraProtocol/astra/v1/x/inflation/types"
-	epochstypes "github.com/tharsis/evmos/v4/x/epochs/types"
+	"github.com/AstraProtocol/astra/v2/app"
+	"github.com/AstraProtocol/astra/v2/x/inflation/types"
+	epochstypes "github.com/evmos/evmos/v6/x/epochs/types"
 )
 
 var denomMint = types.DefaultInflationDenom

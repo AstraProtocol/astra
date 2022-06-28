@@ -1,8 +1,8 @@
 package keeper
 
 import (
-	astra "github.com/AstraProtocol/astra/v1/types"
-	"github.com/AstraProtocol/astra/v1/x/inflation/types"
+	astra "github.com/AstraProtocol/astra/v2/types"
+	"github.com/AstraProtocol/astra/v2/x/inflation/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
