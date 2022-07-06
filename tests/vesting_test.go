@@ -246,7 +246,7 @@ func (suite *KeeperTestSuite) TestCrawbackVestingAccountsTokens() {
 			suite.Require().Equal(balanceGrantee, sdk.NewInt64Coin(stakeDenom, 0))
 			suite.Require().Equal(balanceDest, sdk.NewInt64Coin(stakeDenom, 0))
 
-			msg := types.NewMsgCreateClawbackVestingAccount(funder, grantee, vestingStart, lockupPeriods, vestingPeriods, true)
+			msg := types.NewMsgCreateClawbackVestingAccount(funder, grantee, vestingStart, lockupPeriods, vestingPeriods)
 
 			_, err := suite.app.VestingKeeper.CreateClawbackVestingAccount(ctx, msg)
 			suite.Require().NoError(err)
