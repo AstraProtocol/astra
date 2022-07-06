@@ -1,7 +1,6 @@
 package keeper
 
 import (
-	astra "github.com/AstraProtocol/astra/v2/types"
 	"github.com/AstraProtocol/astra/v2/x/inflation/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
@@ -52,9 +51,7 @@ func (k Keeper) AllocateInflation(ctx sdk.Context, mintedCoin sdk.Coin) error {
 func (k Keeper) BondedRatio(ctx sdk.Context) sdk.Dec {
 	stakeSupply := k.stakingKeeper.StakingTokenSupply(ctx)
 
-	isMainnet := astra.IsMainnet(ctx.ChainID())
-
-	if !stakeSupply.IsPositive() || (isMainnet) {
+	if !stakeSupply.IsPositive() {
 		return sdk.ZeroDec()
 	}
 

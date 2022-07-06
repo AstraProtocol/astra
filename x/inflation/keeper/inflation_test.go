@@ -109,16 +109,16 @@ func (suite *KeeperTestSuite) TestGetCirculatingSupplyAndInflationRate() {
 		suite.Run(fmt.Sprintf("Case %s", tc.name), func() {
 			suite.SetupTest() // reset
 
-			// Team allocation is only set on mainnet
 			suite.ctx = suite.ctx.WithChainID("astra_11112-1")
 
 			// Mint initial supply
 			coin := sdk.NewCoin(types.DefaultInflationDenom, sdk.TokensFromConsensusPower(tc.bankSupply, sdk.DefaultPowerReduction))
 			decCoin := sdk.NewDecCoinFromCoin(coin)
-			suite.app.InflationKeeper.MintCoins(suite.ctx, coin)
+
+			err := suite.app.InflationKeeper.MintCoins(suite.ctx, coin)
+			suite.Require().NoError(err)
 
 			circulatingSupply := s.app.InflationKeeper.GetCirculatingSupply(suite.ctx)
-
 			suite.Require().Equal(decCoin.Amount, circulatingSupply)
 
 			tc.malleate()
