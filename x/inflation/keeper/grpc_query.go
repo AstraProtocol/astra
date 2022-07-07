@@ -2,6 +2,7 @@ package keeper
 
 import (
 	"context"
+	"github.com/AstraProtocol/astra/v2/cmd/config"
 
 	"github.com/AstraProtocol/astra/v2/x/inflation/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -11,14 +12,20 @@ import (
 
 var _ types.QueryServer = Keeper{}
 
-// Period returns the current period of the inflation module.
-func (k Keeper) Period(
+// InflationPeriod returns the current period information of the inflation module.
+func (k Keeper) InflationPeriod(
 	c context.Context,
-	_ *types.QueryPeriodRequest,
-) (*types.QueryPeriodResponse, error) {
+	_ *types.QueryInflationPeriodRequest,
+) (*types.QueryInflationPeriodResponse, error) {
 	ctx := sdk.UnwrapSDKContext(c)
 	period := k.GetPeriod(ctx)
-	return &types.QueryPeriodResponse{Period: period}, nil
+	epochsPerPeriod := k.GetEpochsPerPeriod(ctx)
+	epochIdentifier := k.GetEpochIdentifier(ctx)
+	return &types.QueryInflationPeriodResponse{
+		Period:          period,
+		EpochsPerPeriod: uint64(epochsPerPeriod),
+		EpochIdentifier: epochIdentifier,
+	}, nil
 }
 
 // EpochMintProvision returns the EpochMintProvision of the inflation module.
@@ -32,8 +39,7 @@ func (k Keeper) EpochMintProvision(
 		return nil, status.Error(codes.NotFound, "epoch mint provision not found")
 	}
 
-	mintDenom := k.GetParams(ctx).MintDenom
-	coin := sdk.NewDecCoinFromDec(mintDenom, epochMintProvision)
+	coin := sdk.NewDecCoinFromDec(config.BaseDenom, epochMintProvision)
 
 	return &types.QueryEpochMintProvisionResponse{EpochMintProvision: coin}, nil
 }
@@ -68,8 +74,7 @@ func (k Keeper) CirculatingSupply(
 	ctx := sdk.UnwrapSDKContext(c)
 	circulatingSupply := k.GetCirculatingSupply(ctx)
 
-	mintDenom := k.GetParams(ctx).MintDenom
-	coin := sdk.NewDecCoinFromDec(mintDenom, circulatingSupply)
+	coin := sdk.NewDecCoinFromDec(config.BaseDenom, circulatingSupply)
 
 	return &types.QueryCirculatingSupplyResponse{CirculatingSupply: coin}, nil
 }

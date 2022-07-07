@@ -37,6 +37,7 @@ func (suite *KeeperTestSuite) TestMintAndAllocateInflation() {
 			tc.malleate()
 
 			err := suite.app.InflationKeeper.MintAndAllocateInflation(suite.ctx, tc.mintCoin)
+			suite.Require().NoError(err, tc.name)
 
 			// Get balances
 			balanceModule := suite.app.BankKeeper.GetBalance(

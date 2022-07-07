@@ -22,7 +22,7 @@ func GetQueryCmd() *cobra.Command {
 	}
 
 	cmd.AddCommand(
-		GetPeriod(),
+		GetInflationPeriod(),
 		GetEpochMintProvision(),
 		GetSkippedEpochs(),
 		GetCirculatingSupply(),
@@ -33,9 +33,8 @@ func GetQueryCmd() *cobra.Command {
 	return cmd
 }
 
-// GetPeriod implements a command to return the current inflation
-// period
-func GetPeriod() *cobra.Command {
+// GetInflationPeriod implements a command to return the current inflation period.
+func GetInflationPeriod() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "period",
 		Short: "Query the current inflation period",
@@ -47,8 +46,8 @@ func GetPeriod() *cobra.Command {
 			}
 			queryClient := types.NewQueryClient(clientCtx)
 
-			params := &types.QueryPeriodRequest{}
-			res, err := queryClient.Period(context.Background(), params)
+			params := &types.QueryInflationPeriodRequest{}
+			res, err := queryClient.InflationPeriod(context.Background(), params)
 			if err != nil {
 				return err
 			}
@@ -62,7 +61,7 @@ func GetPeriod() *cobra.Command {
 	return cmd
 }
 
-// GetEpochMintProvision implements a command to return the current inflation
+// GetEpochMintProvision implements a command to return the current inflation.
 // epoch provisions value.
 func GetEpochMintProvision() *cobra.Command {
 	cmd := &cobra.Command{
@@ -91,8 +90,7 @@ func GetEpochMintProvision() *cobra.Command {
 	return cmd
 }
 
-// GetSkippedEpochs implements a command to return the current inflation
-// period
+// GetSkippedEpochs implements a command to return the current inflation period.
 func GetSkippedEpochs() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "skipped-epochs",
@@ -120,7 +118,7 @@ func GetSkippedEpochs() *cobra.Command {
 	return cmd
 }
 
-// GetCirculatingSupply implements a command to return the current circulating supply
+// GetCirculatingSupply implements a command to return the current circulating supply.
 func GetCirculatingSupply() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "circulating-supply",
@@ -148,7 +146,7 @@ func GetCirculatingSupply() *cobra.Command {
 	return cmd
 }
 
-// GetInflationRate implements a command to return the inflation rate in %
+// GetInflationRate implements a command to return the inflation rate in %.
 func GetInflationRate() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "inflation-rate",
@@ -176,8 +174,7 @@ func GetInflationRate() *cobra.Command {
 	return cmd
 }
 
-// GetParams implements a command to return the current inflation
-// parameters.
+// GetParams implements a command to return the current inflation parameters.
 func GetParams() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "params",

@@ -1,6 +1,7 @@
 package keeper
 
 import (
+	"github.com/AstraProtocol/astra/v2/cmd/config"
 	"github.com/AstraProtocol/astra/v2/x/inflation/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
@@ -58,12 +59,9 @@ func (k Keeper) BondedRatio(ctx sdk.Context) sdk.Dec {
 	return k.stakingKeeper.TotalBondedTokens(ctx).ToDec().QuoInt(stakeSupply)
 }
 
-// GetCirculatingSupply returns the bank supply of the mintDenom excluding the
-// team allocation in the first year
+// GetCirculatingSupply returns the bank supply.
 func (k Keeper) GetCirculatingSupply(ctx sdk.Context) sdk.Dec {
-	mintDenom := k.GetParams(ctx).MintDenom
-
-	circulatingSupply := k.bankKeeper.GetSupply(ctx, mintDenom).Amount.ToDec()
+	circulatingSupply := k.bankKeeper.GetSupply(ctx, config.BaseDenom).Amount.ToDec()
 
 	return circulatingSupply
 }

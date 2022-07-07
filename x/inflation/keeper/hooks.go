@@ -2,6 +2,7 @@ package keeper
 
 import (
 	"fmt"
+	"github.com/AstraProtocol/astra/v2/cmd/config"
 
 	"github.com/AstraProtocol/astra/v2/x/inflation/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -47,7 +48,7 @@ func (k Keeper) AfterEpochEnd(ctx sdk.Context, epochIdentifier string, epochNumb
 		panic("the epochMintProvision was not found")
 	}
 
-	mintedCoin := sdk.NewCoin(params.MintDenom, epochMintProvision.TruncateInt())
+	mintedCoin := sdk.NewCoin(config.BaseDenom, epochMintProvision.TruncateInt())
 	if err := k.MintAndAllocateInflation(ctx, mintedCoin); err != nil {
 		panic(err)
 	}

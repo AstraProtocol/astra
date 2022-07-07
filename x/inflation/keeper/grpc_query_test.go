@@ -11,8 +11,8 @@ import (
 
 func (suite *KeeperTestSuite) TestPeriod() {
 	var (
-		req    *types.QueryPeriodRequest
-		expRes *types.QueryPeriodResponse
+		req    *types.QueryInflationPeriodRequest
+		expRes *types.QueryInflationPeriodResponse
 	)
 
 	testCases := []struct {
@@ -23,20 +23,20 @@ func (suite *KeeperTestSuite) TestPeriod() {
 		{
 			"default period",
 			func() {
-				req = &types.QueryPeriodRequest{}
-				expRes = &types.QueryPeriodResponse{}
+				req = &types.QueryInflationPeriodRequest{}
+				expRes = &types.QueryInflationPeriodResponse{}
 			},
 			true,
 		},
 		{
-			"set period",
+			"newly set period",
 			func() {
 				period := uint64(9)
 				suite.app.InflationKeeper.SetPeriod(suite.ctx, period)
 				suite.Commit()
 
-				req = &types.QueryPeriodRequest{}
-				expRes = &types.QueryPeriodResponse{Period: period}
+				req = &types.QueryInflationPeriodRequest{}
+				expRes = &types.QueryInflationPeriodResponse{Period: period}
 			},
 			true,
 		},
@@ -48,10 +48,10 @@ func (suite *KeeperTestSuite) TestPeriod() {
 			ctx := sdk.WrapSDKContext(suite.ctx)
 			tc.malleate()
 
-			res, err := suite.queryClient.Period(ctx, req)
+			res, err := suite.queryClient.InflationPeriod(ctx, req)
 			if tc.expPass {
 				suite.Require().NoError(err)
-				suite.Require().Equal(expRes, res)
+				suite.Require().Equal(expRes.Period, res.Period)
 			} else {
 				suite.Require().Error(err)
 			}
