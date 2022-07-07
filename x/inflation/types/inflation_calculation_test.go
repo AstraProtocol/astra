@@ -44,7 +44,7 @@ func (suite *InflationTestSuite) TestCalculateEpochMintProvision() {
 			"pass - default param - period 1",
 			defaultParams,
 			uint64(1),
-			sdk.MustNewDecFromStr("547939726027397260273973.000000000000000000"),
+			sdk.MustNewDecFromStr("547939726027397260273972.000000000000000000"),
 			true,
 		},
 		{
@@ -58,7 +58,7 @@ func (suite *InflationTestSuite) TestCalculateEpochMintProvision() {
 			"pass - default param - period 3",
 			defaultParams,
 			uint64(3),
-			sdk.MustNewDecFromStr("443831178082191780821918.000000000000000000"),
+			sdk.MustNewDecFromStr("443831178082191780821917.000000000000000000"),
 			true,
 		},
 		{

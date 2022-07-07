@@ -11,8 +11,8 @@ option go_package = "github.com/AstraProtocol/astra/x/inflation/types";
 // Query provides defines the gRPC querier service.
 service Query {
   // Period retrieves current period.
-  rpc Period(QueryPeriodRequest) returns (QueryPeriodResponse) {
-    option (google.api.http).get = "/astra/inflation/v1/period";
+  rpc InflationPeriod(QueryInflationPeriodRequest) returns (QueryInflationPeriodResponse) {
+    option (google.api.http).get = "/astra/inflation/v1/inflation_period";
   }
 
   // EpochMintProvision retrieves current minting epoch provision value.
@@ -46,13 +46,17 @@ service Query {
   }
 }
 
-// QueryPeriodRequest is the request type for the Query/Period RPC method.
-message QueryPeriodRequest {}
+// QueryInflationPeriodRequest is the request type for the Query/InflationPeriod RPC method.
+message QueryInflationPeriodRequest {}
 
-// QueryPeriodResponse is the response type for the Query/Period RPC method.
-message QueryPeriodResponse {
+// QueryInflationPeriodResponse is the response type for the Query/InflationPeriod RPC method.
+message QueryInflationPeriodResponse {
   // period is the current minting per epoch provision value.
   uint64 period = 1;
+  // epochs_per_period is the current number of epochs with-in an inflation period.
+  uint64 epochs_per_period = 2;
+  // epoch_identifier is the identifier of the inflation epoch.
+  string epoch_identifier = 3;
 }
 
 // QueryEpochMintProvisionRequest is the request type for the
