@@ -48,12 +48,6 @@ message MsgCreateClawbackVestingAccount {
     (gogoproto.castrepeated) =
         "github.com/cosmos/cosmos-sdk/x/auth/vesting/types.Periods"
   ];
-  // merge specifies a the creation mechanism for existing
-  // ClawbackVestingAccounts. If true, merge this new grant into an existing
-  // ClawbackVestingAccount, or create it if it does not exist. If false,
-  // creates a new account. New grants to an existing account must be from the
-  // same from_address.
-  bool merge = 6;
 }
 
 // MsgCreateClawbackVestingAccountResponse defines the
