@@ -1,7 +1,6 @@
 package types
 
 import (
-	"errors"
 	"fmt"
 	"strings"
 
@@ -10,7 +9,7 @@ import (
 	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
 )
 
-var DefaultInflationDenom = config.BaseDenom
+var DefaultInflationDenom = config.DisplayDenom
 
 // Parameter store keys
 var (
@@ -64,10 +63,13 @@ func validateMintDenom(i interface{}) error {
 	}
 
 	if strings.TrimSpace(v) == "" {
-		return errors.New("mint denom cannot be blank")
+		return fmt.Errorf("mint denom cannot be blank")
 	}
 	if err := sdk.ValidateDenom(v); err != nil {
 		return err
+	}
+	if v != config.BaseDenom && v != config.DisplayDenom {
+		return fmt.Errorf("mint denom must be one of [%v, %v]", config.BaseDenom, config.DisplayDenom)
 	}
 
 	return nil

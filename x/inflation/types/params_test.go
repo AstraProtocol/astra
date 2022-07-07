@@ -55,7 +55,7 @@ func (suite *ParamsTestSuite) TestParamsValidate() {
 			false,
 		},
 		{
-			"invalid - denom",
+			"invalid - denom with backslash",
 			NewParams(
 				"/aastra",
 				validInflationParameters,
@@ -64,9 +64,18 @@ func (suite *ParamsTestSuite) TestParamsValidate() {
 			true,
 		},
 		{
-			"invalid - denom",
+			"invalid - empty denom",
 			Params{
 				MintDenom:           "",
+				InflationParameters: validInflationParameters,
+				EnableInflation:     true,
+			},
+			true,
+		},
+		{
+			"invalid - not allowed denom",
+			Params{
+				MintDenom:           "aaastra",
 				InflationParameters: validInflationParameters,
 				EnableInflation:     true,
 			},

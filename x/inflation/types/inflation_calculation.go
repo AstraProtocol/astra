@@ -1,6 +1,7 @@
 package types
 
 import (
+	"github.com/AstraProtocol/astra/v2/cmd/config"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	ethermint "github.com/evmos/ethermint/types"
@@ -25,9 +26,12 @@ func CalculateEpochMintProvision(
 	// epochProvision = periodProvision / epochsPerPeriod
 	epochProvision := periodProvision.Quo(sdk.NewDec(epochsPerPeriod))
 
-	// Multiply epochMintProvision with power reduction (10^18 for astra) as the
-	// calculation is based on `astra` and the issued tokens need to be given in
-	// `aastra`
-	epochProvision = epochProvision.Mul(ethermint.PowerReduction.ToDec())
-	return epochProvision
+	// If the `denom` is already in `aastra`, multiply epochMintProvision with power reduction (10^18 for astra)
+	// as the issued tokens need to be given in `aastra`.
+	if params.MintDenom == config.DisplayDenom {
+		epochProvision = epochProvision.Mul(ethermint.PowerReduction.ToDec())
+	}
+
+	// The returned value is in `aastra`, therefore, it has to be rounded.
+	return epochProvision.TruncateInt().ToDec()
 }
