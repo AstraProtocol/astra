@@ -37,7 +37,7 @@ func GetQueryCmd() *cobra.Command {
 func GetInflationPeriod() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "period",
-		Short: "Query the current inflation period",
+		Short: "Query the current inflation period information",
 		Args:  cobra.NoArgs,
 		RunE: func(cmd *cobra.Command, args []string) error {
 			clientCtx, err := client.GetClientQueryContext(cmd)
@@ -52,7 +52,7 @@ func GetInflationPeriod() *cobra.Command {
 				return err
 			}
 
-			return clientCtx.PrintString(fmt.Sprintf("%v\n", res.Period))
+			return clientCtx.PrintProto(res)
 		},
 	}
 

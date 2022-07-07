@@ -2,6 +2,7 @@ package keeper_test
 
 import (
 	"fmt"
+	epochstypes "github.com/evmos/evmos/v6/x/epochs/types"
 	"github.com/tendermint/tendermint/libs/rand"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -15,16 +16,22 @@ func (suite *KeeperTestSuite) TestPeriod() {
 		expRes *types.QueryInflationPeriodResponse
 	)
 
+	defaultPeriodInfo := &types.QueryInflationPeriodResponse{
+		Period:          0,
+		EpochsPerPeriod: 365,
+		EpochIdentifier: epochstypes.DayEpochID,
+	}
+
 	testCases := []struct {
 		name     string
 		malleate func()
 		expPass  bool
 	}{
 		{
-			"default period",
+			"default period information",
 			func() {
 				req = &types.QueryInflationPeriodRequest{}
-				expRes = &types.QueryInflationPeriodResponse{}
+				expRes = defaultPeriodInfo
 			},
 			true,
 		},
@@ -36,7 +43,43 @@ func (suite *KeeperTestSuite) TestPeriod() {
 				suite.Commit()
 
 				req = &types.QueryInflationPeriodRequest{}
-				expRes = &types.QueryInflationPeriodResponse{Period: period}
+				expRes = &types.QueryInflationPeriodResponse{
+					Period:          period,
+					EpochsPerPeriod: defaultPeriodInfo.EpochsPerPeriod,
+					EpochIdentifier: defaultPeriodInfo.EpochIdentifier,
+				}
+			},
+			true,
+		},
+		{
+			"newly set epochIdentifier",
+			func() {
+				epochIdentifier := epochstypes.HourEpochID
+				suite.app.InflationKeeper.SetEpochIdentifier(suite.ctx, epochIdentifier)
+				suite.Commit()
+
+				req = &types.QueryInflationPeriodRequest{}
+				expRes = &types.QueryInflationPeriodResponse{
+					Period:          defaultPeriodInfo.Period,
+					EpochsPerPeriod: defaultPeriodInfo.EpochsPerPeriod,
+					EpochIdentifier: epochIdentifier,
+				}
+			},
+			true,
+		},
+		{
+			"newly set epochsPerPeriod",
+			func() {
+				epochsPerPeriod := int64(101)
+				suite.app.InflationKeeper.SetEpochsPerPeriod(suite.ctx, epochsPerPeriod)
+				suite.Commit()
+
+				req = &types.QueryInflationPeriodRequest{}
+				expRes = &types.QueryInflationPeriodResponse{
+					Period:          defaultPeriodInfo.Period,
+					EpochsPerPeriod: uint64(epochsPerPeriod),
+					EpochIdentifier: defaultPeriodInfo.EpochIdentifier,
+				}
 			},
 			true,
 		},
@@ -52,6 +95,8 @@ func (suite *KeeperTestSuite) TestPeriod() {
 			if tc.expPass {
 				suite.Require().NoError(err)
 				suite.Require().Equal(expRes.Period, res.Period)
+				suite.Require().Equal(expRes.EpochIdentifier, res.EpochIdentifier)
+				suite.Require().Equal(expRes.EpochsPerPeriod, res.EpochsPerPeriod)
 			} else {
 				suite.Require().Error(err)
 			}
