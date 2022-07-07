@@ -3,6 +3,7 @@ package types
 import (
 	fmt "fmt"
 	"github.com/AstraProtocol/astra/v2/cmd/config"
+	ethermint "github.com/evmos/ethermint/types"
 	"testing"
 
 	"github.com/stretchr/testify/suite"
@@ -22,7 +23,8 @@ func (suite *InflationTestSuite) TestCalculateEpochMintProvision() {
 	epochsPerPeriod := int64(365)
 	defaultParams := DefaultParams()
 	baseParams := defaultParams
-	baseParams.MintDenom = config.BaseDenom
+	baseParams.MintDenom = config.DisplayDenom
+	baseParams.InflationParameters.MaxStakingRewards = baseParams.InflationParameters.MaxStakingRewards.Quo(ethermint.PowerReduction.ToDec())
 
 	testCases := []struct {
 		name              string
@@ -35,7 +37,7 @@ func (suite *InflationTestSuite) TestCalculateEpochMintProvision() {
 			"pass - default param - initial period",
 			defaultParams,
 			uint64(0),
-			sdk.MustNewDecFromStr("608821917808219178082192.000000000000000000"),
+			sdk.MustNewDecFromStr("608821917808219178082191.000000000000000000"),
 			true,
 		},
 		{
@@ -74,10 +76,10 @@ func (suite *InflationTestSuite) TestCalculateEpochMintProvision() {
 			true,
 		},
 		{
-			"pass - `aastra` denom - period 0",
+			"pass - `astra` denom - period 0",
 			baseParams,
 			uint64(0),
-			sdk.MustNewDecFromStr("608821.000000000000000000"),
+			sdk.MustNewDecFromStr("608821917808219178082192.000000000000000000"),
 			true,
 		},
 	}

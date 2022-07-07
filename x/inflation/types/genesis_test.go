@@ -72,7 +72,7 @@ func (suite *GenesisTestSuite) TestValidateGenesis() {
 			false,
 		},
 		{
-			"invalid genesis - zero epochsPerPerid",
+			"invalid genesis - zero epochsPerPeriod",
 			&GenesisState{
 				Params:          validParams,
 				Period:          uint64(5),

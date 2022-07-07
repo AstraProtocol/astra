@@ -2,6 +2,7 @@ package types
 
 import (
 	"fmt"
+	ethermint "github.com/evmos/ethermint/types"
 	"strings"
 
 	"github.com/AstraProtocol/astra/v2/cmd/config"
@@ -9,7 +10,7 @@ import (
 	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
 )
 
-var DefaultInflationDenom = config.DisplayDenom
+var DefaultInflationDenom = config.BaseDenom
 
 // Parameter store keys
 var (
@@ -40,7 +41,7 @@ func DefaultParams() Params {
 	return Params{
 		MintDenom: DefaultInflationDenom,
 		InflationParameters: InflationParameters{
-			MaxStakingRewards: sdk.NewDec(2222200000),
+			MaxStakingRewards: sdk.NewDec(2222200000).Mul(ethermint.PowerReduction.ToDec()),
 			R:                 sdk.NewDecWithPrec(10, 2), // decayFactor = 10%
 		},
 		EnableInflation: true,

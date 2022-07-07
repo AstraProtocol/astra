@@ -7,7 +7,8 @@ import (
 	ethermint "github.com/evmos/ethermint/types"
 )
 
-// CalculateEpochMintProvision returns mint provision per epoch
+// CalculateEpochMintProvision returns mint provision per epoch.
+// The returned value's demon is always `aastra`.
 func CalculateEpochMintProvision(
 	params Params,
 	period uint64,
