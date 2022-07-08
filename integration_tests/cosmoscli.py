@@ -276,6 +276,17 @@ class CosmosCLI:
         )
         return json.loads(txs)
 
+    def distribution_params(self):
+        return json.loads(
+            self.raw(
+                "query",
+                "distribution",
+                "params",
+                output="json",
+                node=self.node_rpc,
+            )
+        )
+
     def distribution_commission(self, addr):
         coin = json.loads(
             self.raw(
@@ -368,6 +379,69 @@ class CosmosCLI:
                 self.raw("query", "staking", "pool", output="json", node=self.node_rpc)
             )["bonded_tokens" if bonded else "not_bonded_tokens"]
         )
+
+    def get_inflation_params(self, height=None):
+        if height:
+            return json.loads(
+                self.raw("query", "inflation", "params", "--height", height, output="json", node=self.node_rpc)
+            )
+        return json.loads(
+            self.raw("query", "inflation", "params", output="json", node=self.node_rpc)
+        )
+
+    def get_inflation_rate(self, height=None):
+        if height:
+            return json.loads(
+                self.raw("query", "inflation", "inflation-rate", "--height", height, output="json", node=self.node_rpc)
+            )
+        return json.loads(
+            self.raw("query", "inflation", "inflation-rate", output="json", node=self.node_rpc)
+        )
+
+    def get_epoch_mint_provision(self):
+        res = self.raw("query", "inflation", "epoch-mint-provision", node=self.node_rpc).decode()
+        res = res[:-6]
+        if res[-1] == 'a':
+            res = res[:-1]
+        return int(float(res))
+
+    def get_circulating_supply(self):
+        res = self.raw("query", "inflation", "circulating-supply", node=self.node_rpc).decode()
+        res = res[:-6]
+        if res[-1] == 'a':
+            res = res[:-1]
+        return int(float(res))
+
+    def get_inflation_epoch_identifier(self):
+        inflation_period_info = self.get_inflation_period()
+        return inflation_period_info["epoch_identifier"]
+
+    def get_inflation_period(self):
+        return json.loads(
+            self.raw("query", "inflation", "period", output="json", node=self.node_rpc)
+        )
+
+    def get_epoch_infos(self):
+        return json.loads(
+            self.raw("query", "epochs", "epoch-infos", output="json", node=self.node_rpc)
+        )
+
+    def get_epoch_duration(self, epoch_identifier="day"):
+        epoch_infos = self.get_epoch_infos()
+        if epoch_infos["epochs"]:
+            for epoch in epoch_infos["epochs"]:
+                if epoch["identifier"] == epoch_identifier:
+                    return int(epoch["duration"])
+        return None
+
+    def get_current_epoch(self, epoch_identifier="day"):
+        res = json.loads(
+            self.raw("query", "epochs", "current-epoch", epoch_identifier, output="json", node=self.node_rpc)
+        )
+        if res:
+            return int(res["current_epoch"])
+
+        return None
 
     def transfer(self, from_, to, coins, generate_only=False, fees=None, **kwargs):
         kwargs.setdefault("gas_prices", DEFAULT_GAS_PRICE)

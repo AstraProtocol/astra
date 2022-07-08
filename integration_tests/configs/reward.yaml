@@ -28,6 +28,7 @@ astra_777-1:
       block:
         max_bytes: "22020096"
         max_gas: "20000000"
+        time_iota_ms: "500"
     app_state:
       evm:
         params:
@@ -51,3 +52,14 @@ astra_777-1:
         params:
           bond_denom: "aastra"
           unbonding_time: "10s"
+      epochs:
+        epochs:
+          - identifier: "custom"
+            duration: "4s"
+      inflation:
+        params:
+          mint_denom: "aastra"
+          inflation_parameters:
+            max_staking_rewards: "20000000000000000000"
+        epoch_identifier: "custom"
+        epochs_per_period: "1"
