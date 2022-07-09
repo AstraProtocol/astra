@@ -1,8 +1,9 @@
 import json
+import time
 
 import pytest
 
-from .utils import sign_single_tx_with_options
+from .utils import sign_single_tx_with_options, wait_for_block
 
 pytestmark = pytest.mark.normal
 
@@ -22,6 +23,8 @@ def test_different_fee_payer(astra, tmp_path):
     receiver_balance = astra.cosmos_cli(0).balance(receiver_addr)
     sender_balance = astra.cosmos_cli(0).balance(sender_addr)
     fee_payer_balance = astra.cosmos_cli(0).balance(fee_payer_addr)
+    print("receiver_balance", receiver_balance)
+    time.sleep(1)
 
     unsigned_tx_msg = astra.cosmos_cli(0).transfer(
         sender_addr,
@@ -45,6 +48,8 @@ def test_different_fee_payer(astra, tmp_path):
     with open(signed_txt, "w") as opened_file:
         json.dump(signed_tx_msg, opened_file)
     astra.cosmos_cli(0).broadcast_tx(signed_txt)
+
+    wait_for_block(astra.cosmos_cli(0), 2)
 
     assert astra.cosmos_cli(0).balance(receiver_addr) == receiver_balance + transaction_coins
     assert astra.cosmos_cli(0).balance(sender_addr) == sender_balance - transaction_coins

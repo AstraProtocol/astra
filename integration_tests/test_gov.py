@@ -4,7 +4,7 @@ from time import sleep
 import pytest
 from dateutil.parser import isoparse
 
-from .utils import DEFAULT_BASE_PORT, astra_to_aastra, parse_events, wait_for_block, wait_for_block_time, wait_for_port
+from .utils import DEFAULT_BASE_PORT, astra_to_aastra, parse_events, wait_for_block, wait_for_block_time, wait_for_port, GAS_USE
 
 pytestmark = pytest.mark.gov
 
@@ -136,6 +136,7 @@ def test_deposit_period_expires(astra):
             "deposit": "%daastra" % deposit_amount,
         },
     )
+    print(rsp)
     assert rsp["code"] == 0, rsp["raw_log"]
     ev = parse_events(rsp["logs"])["submit_proposal"]
     assert ev["proposal_type"] == "ParameterChange", rsp
@@ -144,7 +145,7 @@ def test_deposit_period_expires(astra):
     proposal = astra.cosmos_cli(0).query_proposal(proposal_id)
     assert proposal["total_deposit"] == [{"denom": "aastra", "amount": str(deposit_amount)}]
 
-    assert astra.cosmos_cli(0).balance(astra.cosmos_cli(0).address("team")) == amount1 - deposit_amount
+    assert astra.cosmos_cli(0).balance(astra.cosmos_cli(0).address("team")) == amount1 - deposit_amount - GAS_USE
 
     amount2 = astra.cosmos_cli(0).balance(astra.cosmos_cli(0).address("community"))
     rsp = astra.cosmos_cli(0).gov_deposit("community", proposal["proposal_id"], "%daastra" % deposit_amount)
@@ -221,7 +222,7 @@ def test_community_pool_spend_proposal(astra):
 
     proposal = astra.cosmos_cli(0).query_proposal(proposal_id)
     assert proposal["status"] == "PROPOSAL_STATUS_PASSED", proposal
-    assert astra.cosmos_cli(0).balance(recipient) == old_amount + amount
+    assert astra.cosmos_cli(0).balance(recipient) == old_amount + amount - GAS_USE
 
 
 def test_change_vote(astra):

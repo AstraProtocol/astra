@@ -22,7 +22,6 @@ astra_777-1:
       coins: 100astra
     - name: team
       coins: 200astra
-      vesting: "3600s"
     - name: genesis_partner
       coins: 200astra
     - name: other_partner
