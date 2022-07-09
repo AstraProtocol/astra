@@ -369,7 +369,8 @@ class CosmosCLI:
         )
 
     def transfer(self, from_, to, coins, generate_only=False, fees=None, **kwargs):
-        kwargs.setdefault("gas_prices", DEFAULT_GAS_PRICE)
+        if fees is None:
+            kwargs.setdefault("gas_prices", DEFAULT_GAS_PRICE)
         return json.loads(
             self.raw(
                 "tx",

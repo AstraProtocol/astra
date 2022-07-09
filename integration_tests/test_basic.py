@@ -4,7 +4,7 @@ from eth_bloom import BloomFilter
 from eth_utils import abi, big_endian_to_int
 from hexbytes import HexBytes
 
-from integration_tests.utils import astra_to_aastra, deploy_contract, CONTRACTS, KEYS, ADDRS, send_transaction
+from integration_tests.utils import astra_to_aastra, deploy_contract, CONTRACTS, KEYS, ADDRS, send_transaction, wait_for_block
 
 pytestmark = pytest.mark.normal
 
@@ -141,5 +141,7 @@ def test_transfer(astra):
         }
     ]
 
-    assert astra.cosmos_cli(0).balance(team_addr) == team_balance - amount_aastra
+    wait_for_block(astra.cosmos_cli(0), 2)
+
+    assert astra.cosmos_cli(0).balance(team_addr) == team_balance - amount_aastra - 200000000000000
     assert astra.cosmos_cli(0).balance(treasury_addr) == treasury_balance + amount_aastra
