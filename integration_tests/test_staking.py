@@ -29,6 +29,7 @@ def astra(tmp_path_factory):
 def test_staking_delegate(astra):
     sleep(1)
     signer1_address = astra.cosmos_cli(0).address("signer1")
+    print(signer1_address)
     validators = astra.cosmos_cli(0).validators()
     validator1_operator_address = validators[0]["operator_address"]
     validator2_operator_address = validators[1]["operator_address"]
@@ -152,7 +153,9 @@ def test_join_validator(astra):
     # wait for the new node to sync
     wait_for_block(astra.cosmos_cli(i), astra.cosmos_cli(0).block_height())
     # create validator tx
-    assert astra.cosmos_cli(i).create_validator("1astra")["code"] == 0
+    tx_result = astra.cosmos_cli(i).create_validator("1astra")
+    print(tx_result)
+    assert tx_result["code"] == 0
     sleep(1)
 
     count2 = len(astra.cosmos_cli(0).validators())
@@ -172,8 +175,10 @@ def test_join_validator(astra):
     assert (
             astra.cosmos_cli(i).edit_validator(commission_rate="0.2")["code"] == 12
     ), "commission cannot be changed more than once in 24h"
-    assert astra.cosmos_cli(i).edit_validator(moniker="awesome node")["code"] == 0
-    assert astra.cosmos_cli(0).validator(val_addr)["description"]["moniker"] == "awesome node"
+    tx_result = astra.cosmos_cli(i).edit_validator(moniker="awesome")
+    print(tx_result)
+    assert tx_result["code"] == 0
+    assert astra.cosmos_cli(0).validator(val_addr)["description"]["moniker"] == "awesome"
 
 
 def test_min_self_delegation(astra):

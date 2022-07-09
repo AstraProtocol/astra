@@ -15,7 +15,7 @@ from dateutil.parser import isoparse
 from pystarport.utils import build_cli_args_safe, format_doc_string, interact
 from pystarport import ports
 import tomlkit
-from .utils import DEFAULT_GAS_PRICE, SUPERVISOR_CONFIG_FILE
+from .utils import DEFAULT_GAS_PRICE, SUPERVISOR_CONFIG_FILE, DEFAULT_GAS
 
 COMMON_PROG_OPTIONS = {
     # redirect to supervisord's stdout, easier to collect all logs
@@ -63,13 +63,13 @@ class ChainCommand:
         tried = 0
         # trying to interact with chain 10 times when socket error occurs
         while result == "":
-            tried+=1
+            tried += 1
             if tried == 10:
                 return interact(f"{self.cmd} {args}", input=stdin)
             try:
                 result = interact(f"{self.cmd} {args}", input=stdin)
             except:
-                result = ""    
+                result = ""
                 sleep(0.5)
         return result
 
@@ -78,10 +78,10 @@ class CosmosCLI:
     "the apis to interact with wallet and blockchain"
 
     def __init__(
-        self,
-        data_dir,
-        node_rpc,
-        cmd,
+            self,
+            data_dir,
+            node_rpc,
+            cmd,
     ):
         self.data_dir = data_dir
         self._genesis = json.loads(
@@ -105,7 +105,7 @@ class CosmosCLI:
                 "update",
             ],
             check=True,
-        )    
+        )
 
     def node_id(self):
         "get tendermint node id"
@@ -113,11 +113,11 @@ class CosmosCLI:
         return output.decode().strip()
 
     def base_port(self, i):
-        return self.config["validators"][i]["base_port"]    
+        return self.config["validators"][i]["base_port"]
 
     def get_node_rpc(self, i):
         "rpc url of i-th node"
-        return "tcp://127.0.0.1:%d" % ports.rpc_port(self.base_port(i))    
+        return "tcp://127.0.0.1:%d" % ports.rpc_port(self.base_port(i))
 
     def delete_account(self, name):
         "delete wallet account in node's keyring"
@@ -180,7 +180,6 @@ class CosmosCLI:
                 stdin=mnemonic.encode() + b"\n",
             )
         return json.loads(output)
-    
 
     def init(self, moniker):
         "the node's config is already added"
@@ -199,7 +198,7 @@ class CosmosCLI:
             moniker,
             chain_id=self.chain_id,
             home=data_path / str("node" + str(i)),
-        )    
+        )
 
     def home(self, i):
         "home directory of i-th node"
@@ -438,6 +437,7 @@ class CosmosCLI:
 
     # to_addr: astraclcl1...  , from_addr: astra1...
     def unbond_amount(self, to_addr, amount, from_addr):
+
         return json.loads(
             self.raw(
                 "tx",
@@ -451,12 +451,13 @@ class CosmosCLI:
                 keyring_backend="test",
                 chain_id=self.chain_id,
                 node=self.node_rpc,
+                gas=DEFAULT_GAS
             )
         )
 
     # to_validator_addr: astracncl1...  ,  from_from_validator_addraddr: astracl1...
     def redelegate_amount(
-        self, to_validator_addr, from_validator_addr, amount, from_addr
+            self, to_validator_addr, from_validator_addr, amount, from_addr
     ):
         return json.loads(
             self.raw(
@@ -518,7 +519,7 @@ class CosmosCLI:
         )
 
     def sign_batch_multisig_tx(
-        self, tx_file, multi_addr, signer_name, account_number, sequence_number
+            self, tx_file, multi_addr, signer_name, account_number, sequence_number
     ):
         r = self.raw(
             "tx",
@@ -574,7 +575,7 @@ class CosmosCLI:
         )
 
     def combine_batch_multisig_tx(
-        self, tx_file, multi_name, signer1_file, signer2_file
+            self, tx_file, multi_name, signer1_file, signer2_file
     ):
         r = self.raw(
             "tx",
@@ -619,33 +620,34 @@ class CosmosCLI:
         )
 
     def create_validator(
-        self,
-        amount,
-        moniker=None,
-        commission_max_change_rate="0.01",
-        commission_rate="0.1",
-        commission_max_rate="0.2",
-        min_self_delegation="1",
-        identity="",
-        website="",
-        security_contact="",
-        details="",
+            self,
+            amount,
+            moniker=None,
+            commission_max_change_rate="0.01",
+            commission_rate="0.1",
+            commission_max_rate="0.2",
+            min_self_delegation="1",
+            identity="",
+            website="",
+            security_contact="",
+            details="",
     ):
         """MsgCreateValidator
         create the node with create_node before call this"""
         pubkey = (
-            "'"
-            + (
-                self.raw(
-                    "tendermint",
-                    "show-validator",
-                    home=self.data_dir,
+                "'"
+                + (
+                    self.raw(
+                        "tendermint",
+                        "show-validator",
+                        home=self.data_dir,
+                    )
+                        .strip()
+                        .decode()
                 )
-                .strip()
-                .decode()
-            )
-            + "'"
+                + "'"
         )
+
         return json.loads(
             self.raw(
                 "tx",
@@ -671,28 +673,29 @@ class CosmosCLI:
                 node=self.node_rpc,
                 keyring_backend="test",
                 chain_id=self.chain_id,
+                gas=DEFAULT_GAS
             )
         )
 
     def edit_validator(
-        self,
-        commission_rate=None,
-        moniker=None,
-        identity=None,
-        website=None,
-        security_contact=None,
-        details=None,
+            self,
+            commission_rate=None,
+            moniker=None,
+            identity=None,
+            website=None,
+            security_contact=None,
+            details=None,
     ):
         """MsgEditValidator"""
         options = dict(
             commission_rate=commission_rate,
             # description
-            moniker=moniker,
             identity=identity,
             website=website,
             security_contact=security_contact,
             details=details,
         )
+        options["new-moniker"] = moniker
         return json.loads(
             self.raw(
                 "tx",
@@ -842,13 +845,13 @@ class CosmosCLI:
         )
 
     def ibc_transfer(
-        self,
-        from_,
-        to,
-        amount,
-        channel,  # src channel
-        target_version,  # chain version number of target chain
-        i=0,
+            self,
+            from_,
+            to,
+            amount,
+            channel,  # src channel
+            target_version,  # chain version number of target chain
+            i=0,
     ):
         return json.loads(
             self.raw(
@@ -1141,7 +1144,7 @@ class CosmosCLI:
                 home=self.data_dir,
                 **kwargs,
             )
-        )   
+        )
 
     def start_node(self, i):
         subprocess.run(
@@ -1153,7 +1156,7 @@ class CosmosCLI:
                 "start",
                 "{}-node{}".format(self.chain_id, i),
             ]
-        )    
+        )
 
     def stop_node(self, i):
         subprocess.run(
@@ -1165,7 +1168,7 @@ class CosmosCLI:
                 "stop",
                 "{}-node{}".format(self.chain_id, i),
             ]
-        )    
+        )
 
     def copy_validator_key(self, from_node, to_node):
         "Copy the validtor file in from_node to to_node"
@@ -1178,8 +1181,7 @@ class CosmosCLI:
         with open(from_key_file, "r") as f:
             key = f.read()
         with open(to_key_file, "w") as f:
-            f.write(key)    
-
+            f.write(key)
 
     def nodes_len(self):
         "find how many 'node{i}' sub-directories"
@@ -1189,12 +1191,12 @@ class CosmosCLI:
         )
 
     def create_node(
-        self,
-        base_port=None,
-        moniker=None,
-        hostname="localhost",
-        statesync=False,
-        mnemonic=None,
+            self,
+            base_port=None,
+            moniker=None,
+            hostname="localhost",
+            statesync=False,
+            mnemonic=None,
     ):
         """create new node in the data directory,
         process information is written into supervisor config
@@ -1252,7 +1254,7 @@ class CosmosCLI:
                         "temp_dir": str(Path(self.data_dir).parent),
                         "discovery_time": "5s",
                     }
-                )   
+                )
 
         edit_tm_cfg(
             home / "config/config.toml",
@@ -1285,7 +1287,7 @@ class CosmosCLI:
         with path.open("w") as fp:
             ini.write(fp)
         self.reload_supervisor()
-        return i      
+        return i
 
 
 def edit_tm_cfg(path, base_port, peers, config, *, custom_edit=None):
@@ -1313,7 +1315,7 @@ def edit_tm_cfg(path, base_port, peers, config, *, custom_edit=None):
     patch_toml_doc(doc, config)
     if custom_edit is not None:
         custom_edit(doc)
-    open(path, "w").write(tomlkit.dumps(doc))    
+    open(path, "w").write(tomlkit.dumps(doc))
 
 
 def edit_app_cfg(path, base_port, app_config):
@@ -1347,7 +1349,7 @@ def edit_app_cfg(path, base_port, app_config):
     doc["grpc-web"] = {}
     doc["grpc-web"]["address"] = "0.0.0.0:%d" % ports.grpc_web_port(base_port)
     patch_toml_doc(doc, jsonmerge.merge(default_patch, app_config))
-    open(path, "w").write(tomlkit.dumps(doc))       
+    open(path, "w").write(tomlkit.dumps(doc))
 
 
 def patch_toml_doc(doc, patch):
@@ -1355,7 +1357,7 @@ def patch_toml_doc(doc, patch):
         if isinstance(v, dict):
             patch_toml_doc(doc[k], v)
         else:
-            doc[k] = v     
+            doc[k] = v
 
 
 def format_value(v, ctx):

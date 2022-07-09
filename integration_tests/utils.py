@@ -72,7 +72,9 @@ REWARDS = "rewards"
 DEFAULT_BASE_PORT = 26650
 
 # Default gas price
-DEFAULT_GAS_PRICE = "0000000000aastra"
+DEFAULT_GAS_PRICE = "1000000000aastra"
+DEFAULT_GAS = "300000"
+
 
 # Supervisor config file
 SUPERVISOR_CONFIG_FILE = "tasks.ini"
