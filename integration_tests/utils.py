@@ -435,6 +435,7 @@ def grant_authorization(
             "-y",
             *k_options,
             from_=granter,
+            gas=DEFAULT_GAS,
             home=cli.cosmos_cli(i).data_dir,
             **kv_options,
         )

@@ -1,4 +1,5 @@
 import json
+import time
 from datetime import timedelta
 from time import sleep
 
@@ -19,7 +20,7 @@ from .utils import (AASTRA_DENOM, AUTHORIZATION_DELEGATE,
                     query_total_reward_amount, redelegate_amount,
                     revoke_authorization, transfer, unbond_amount,
                     wait_for_block_time, wait_for_new_blocks,
-                    withdraw_all_rewards)
+                    withdraw_all_rewards, wait_for_block)
 
 pytestmark = pytest.mark.authz
 
@@ -34,7 +35,7 @@ def test_execute_tx_within_authorization_spend_limit(astra_temp, tmp_path):
     """
     test execute transaction within send authorization spend limit
     """
-    sleep(1)
+    wait_for_block(astra_temp.cosmos_cli(0), 2)
     spend_limit = 200
     transaction_coins = 100
     granter_address = astra_temp.cosmos_cli(0).address("community")
@@ -82,6 +83,7 @@ def test_execute_tx_within_authorization_spend_limit(astra_temp, tmp_path):
     revoke_authorization(
         astra_temp, grantee_address, SEND_MSG_TYPE_URL, granter_address
     )
+    wait_for_block(astra_temp.cosmos_cli(0), 2)
     assert (
         len(
             query_command(astra_temp, AUTHZ, GRANTS,
@@ -94,7 +96,7 @@ def test_execute_tx_beyond_authorization_spend_limit(astra_temp, tmp_path):
     """
     test execute transaction beyond send authorization spend limit
     """
-    sleep(1)
+    wait_for_block(astra_temp.cosmos_cli(0), 2)
     spend_limit = 50
     transaction_coins = 100
     granter_address = astra_temp.cosmos_cli(0).address("community")
@@ -135,6 +137,8 @@ def test_execute_tx_beyond_authorization_spend_limit(astra_temp, tmp_path):
     revoke_authorization(
         astra_temp, grantee_address, SEND_MSG_TYPE_URL, granter_address
     )
+    wait_for_block(astra_temp.cosmos_cli(0), 2)
+
     assert(
         len(query_command(astra_temp, AUTHZ, GRANTS,
             granter_address, grantee_address)["grants"]) == 0
@@ -145,7 +149,7 @@ def test_revoke_authorization(astra_temp, tmp_path):
     """
     test unable to execute transaction once grant is revoked
     """
-    sleep(1)
+    wait_for_block(astra_temp.cosmos_cli(0), 2)
     spend_limit = 200
     transaction_coins = 100
     granter_address = astra_temp.cosmos_cli(0).address("community")
@@ -191,6 +195,7 @@ def test_revoke_authorization(astra_temp, tmp_path):
         "%s%s" % (transaction_coins, AASTRA_DENOM),
         GENERATE_ONLY,
     )
+    wait_for_block(astra_temp.cosmos_cli(0), 2)
     with open(generated_tx_txt, "w") as opened_file:
         json.dump(generated_tx_msg, opened_file)
 
@@ -206,7 +211,7 @@ def test_generic_authorization_grant(astra_temp, tmp_path):
     """
     test grant authorization with generic authorization with send msg type
     """
-    sleep(1)
+    wait_for_block(astra_temp.cosmos_cli(0), 2)
     delegate_coins = 1000000
     validator_address = astra_temp.cosmos_cli(
         0).validators()[0]["operator_address"]
@@ -250,7 +255,7 @@ def test_generic_authorization_grant(astra_temp, tmp_path):
         grantee_address,
         broadcast_mode=BLOCK_BROADCASTING,
     )
-    wait_for_new_blocks(astra_temp.cosmos_cli(0), 1)
+    wait_for_new_blocks(astra_temp.cosmos_cli(0), 2)
 
     assert(
         astra_temp.cosmos_cli(0).balance(granter_address) -
@@ -265,6 +270,7 @@ def test_generic_authorization_grant(astra_temp, tmp_path):
         WITHDRAW_DELEGATOR_REWARD_TYPE_URL,
         granter_address,
     )
+    wait_for_block(astra_temp.cosmos_cli(0), 2)
     assert(
         len(query_command(astra_temp, AUTHZ, GRANTS,
             granter_address, grantee_address)["grants"]) == 0
@@ -277,7 +283,7 @@ def test_execute_delegate_to_allowed_validator(astra_temp, tmp_path):
     test execute delegate to other validators should fail
     """
     # test execute delegate to allowed validator should succeed
-    sleep(1)
+    wait_for_block(astra_temp.cosmos_cli(0), 2)
     spend_limit = 200
     delegate_coins = 100
     allowed_validator_address = astra_temp.cosmos_cli(0).validators()[
@@ -344,6 +350,7 @@ def test_execute_delegate_to_allowed_validator(astra_temp, tmp_path):
     revoke_authorization(
         astra_temp, grantee_address, DELEGATE_MSG_TYPE_URL, granter_address
     )
+    wait_for_block(astra_temp.cosmos_cli(0), 2)
     assert(
         len(query_command(astra_temp, AUTHZ, GRANTS,
             granter_address, grantee_address)["grants"]) == 0
@@ -354,7 +361,7 @@ def test_unable_to_execute_delegate_to_deny_validator(astra_temp, tmp_path):
     """
     test execute delegate to deny validator should fail
     """
-    sleep(1)
+    wait_for_block(astra_temp.cosmos_cli(0), 2)
     spend_limit = 200
     delegate_coins = 100
     deny_validator_address = astra_temp.cosmos_cli(
@@ -389,6 +396,7 @@ def test_unable_to_execute_delegate_to_deny_validator(astra_temp, tmp_path):
     revoke_authorization(
         astra_temp, grantee_address, DELEGATE_MSG_TYPE_URL, granter_address
     )
+    wait_for_block(astra_temp.cosmos_cli(0), 2)
     assert(
         len(query_command(astra_temp, AUTHZ, GRANTS,
             granter_address, grantee_address)["grants"]) == 0
@@ -399,7 +407,7 @@ def test_execute_all_staking_operations(astra_temp, tmp_path):
     """
     test execute delegate, unbond, redelegate by grantee
     """
-    sleep(1)
+    wait_for_block(astra_temp.cosmos_cli(0), 2)
     spend_limit = 200
     delegate_coins = 100
     unbond_coins = 50
@@ -523,6 +531,7 @@ def test_execute_all_staking_operations(astra_temp, tmp_path):
     revoke_authorization(
         astra_temp, grantee_address, REDELEGATE_MSG_TYPE_URL, granter_address
     )
+    wait_for_block(astra_temp.cosmos_cli(0), 2)
     assert(
         len(query_command(astra_temp, AUTHZ, GRANTS,
             granter_address, grantee_address)["grants"]) == 0

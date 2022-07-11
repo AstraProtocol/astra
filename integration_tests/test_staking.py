@@ -13,7 +13,7 @@ from .utils import (
     parse_events,
     wait_for_block,
     wait_for_block_time,
-    wait_for_port,
+    wait_for_port, DEFAULT_GAS,
 )
 
 pytestmark = pytest.mark.staking
@@ -43,6 +43,7 @@ def test_staking_delegate(astra):
         validator1_operator_address, "2aastra", signer1_address
     )
     assert rsp["code"] == 0, rsp["raw_log"]
+    wait_for_block(astra.cosmos_cli(0), 2)
     assert astra.cosmos_cli(0).staking_pool() == old_bonded + 2
     new_amount = astra.cosmos_cli(0).balance(signer1_address)
     assert old_amount == new_amount + 2
@@ -69,6 +70,8 @@ def test_staking_unbond(astra):
     )
     assert rsp["code"] == 0, rsp["raw_log"]
     assert astra.cosmos_cli(0).staking_pool() == old_bonded + 7
+    wait_for_block(astra.cosmos_cli(0), 2)
+
     assert astra.cosmos_cli(0).balance(signer1_address) == old_amount - 7
 
     old_unbonded = astra.cosmos_cli(0).staking_pool(bonded=False)
@@ -83,6 +86,8 @@ def test_staking_unbond(astra):
         isoparse(parse_events(rsp["logs"])["unbond"]["completion_time"])
         + timedelta(seconds=1),
     )
+
+    wait_for_block_time(astra, 2)
 
     assert astra.cosmos_cli(0).balance(signer1_address) == old_amount - 5
 
@@ -101,6 +106,7 @@ def test_staking_redelegate(astra):
         validator1_operator_address, "3aastra", signer1_address
     )
     assert rsp["code"] == 0, rsp["raw_log"]
+    wait_for_block(astra.cosmos_cli(0), 2)
     rsp = astra.cosmos_cli(0).delegate_amount(
         validator2_operator_address, "4aastra", signer1_address
     )
@@ -117,8 +123,7 @@ def test_staking_redelegate(astra):
             validator1_operator_address,
             "2aastra",
             "-y",
-            "--gas",
-            "300000",
+            gas=DEFAULT_GAS,
             home=cli.data_dir,
             from_=signer1_address,
             keyring_backend="test",
@@ -133,16 +138,21 @@ def test_staking_redelegate(astra):
 
 
 def test_join_validator(astra):
-    sleep(1)
+    wait_for_block(astra.cosmos_cli(0), 2)
     i = astra.cosmos_cli(0).create_node(moniker="new joined")
+    wait_for_block(astra.cosmos_cli(0), 2)
     addr = astra.cosmos_cli(i).address("validator")
     # transfer 1astra from community account
-    assert astra.cosmos_cli(0).transfer(astra.cosmos_cli(0).address("community"), addr, "1astra")["code"] == 0
+    tx_result = astra.cosmos_cli(0).transfer(astra.cosmos_cli(0).address("community"), addr, "1astra")
+    print(tx_result)
+    assert tx_result["code"] == 0
+    wait_for_block(astra.cosmos_cli(0), 2)
     assert astra.cosmos_cli(0).balance(addr) == 10 ** 18
 
     # start the node
     print("START NEW NODE...")
     astra.cosmos_cli(0).start_node(i)
+    wait_for_block(astra.cosmos_cli(0), 2)
     wait_for_port(rpc_port(astra.cosmos_cli(0).base_port(i)))
 
     count1 = len(astra.cosmos_cli(0).validators())
@@ -186,14 +196,14 @@ def test_min_self_delegation(astra):
     - validator unbond min_self_delegation
     - check not in validator set anymore
     """
-    sleep(1)
+    wait_for_block(astra.cosmos_cli(0), 2)
     assert len(astra.cosmos_cli(0).validators()) == 4, "wrong validator set"
 
     oper_addr = astra.cosmos_cli(2).address("validator", bech="val")
     acct_addr = astra.cosmos_cli(2).address("validator")
     rsp = astra.cosmos_cli(2).unbond_amount(oper_addr, "90000000aastra", acct_addr)
     assert rsp["code"] == 0, rsp["raw_log"]
-
+    wait_for_block(astra.cosmos_cli(0), 2)
     def find_validator():
         return next(
             iter(
