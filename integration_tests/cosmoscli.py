@@ -308,8 +308,11 @@ class CosmosCLI:
                 output="json",
                 node=self.node_rpc,
             )
-        )["pool"][0]
-        return float(coin["amount"])
+        )["pool"]
+        if len(coin) > 0:
+            return float(coin[0]["amount"])
+
+        return float(0.0)
 
     def distribution_reward(self, delegator_addr):
         coin = json.loads(

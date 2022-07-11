@@ -18,6 +18,8 @@ def astra(tmp_path_factory):
 
 
 def approximate_equal(a, b, diff_rate=1e-9):
+    if b == 0:
+        return a == b
     return abs(1-float(a)/float(b)) <= diff_rate
 
 
