@@ -289,6 +289,333 @@ paths:
           type: string
       tags:
         - Query
+  /astra/inflation/v1/circulating_supply:
+    get:
+      summary: |-
+        CirculatingSupply retrieves the total number of tokens that are in
+        circulation (i.e. excluding unVested tokens).
+      operationId: CirculatingSupply
+      responses:
+        '200':
+          description: A successful response.
+          schema:
+            type: object
+            properties:
+              circulating_supply:
+                title: total amount of coins in circulation
+                type: object
+                properties:
+                  denom:
+                    type: string
+                  amount:
+                    type: string
+                description: >-
+                  DecCoin defines a token with a denomination and a decimal
+                  amount.
+
+
+                  NOTE: The amount field is an Dec which implements the custom
+                  method
+
+                  signatures required by gogoproto.
+            description: |-
+              QueryCirculatingSupplyResponse is the response type for the
+              Query/CirculatingSupply RPC method.
+        default:
+          description: An unexpected error response.
+          schema:
+            type: object
+            properties:
+              error:
+                type: string
+              code:
+                type: integer
+                format: int32
+              message:
+                type: string
+              details:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    type_url:
+                      type: string
+                    value:
+                      type: string
+                      format: byte
+      tags:
+        - Query
+  /astra/inflation/v1/epoch_mint_provision:
+    get:
+      summary: EpochMintProvision retrieves current minting epoch provision value.
+      operationId: EpochMintProvision
+      responses:
+        '200':
+          description: A successful response.
+          schema:
+            type: object
+            properties:
+              epoch_mint_provision:
+                description: >-
+                  epoch_mint_provision is the current minting per epoch
+                  provision value.
+                type: object
+                properties:
+                  denom:
+                    type: string
+                  amount:
+                    type: string
+            description: |-
+              QueryEpochMintProvisionResponse is the response type for the
+              Query/EpochMintProvision RPC method.
+        default:
+          description: An unexpected error response.
+          schema:
+            type: object
+            properties:
+              error:
+                type: string
+              code:
+                type: integer
+                format: int32
+              message:
+                type: string
+              details:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    type_url:
+                      type: string
+                    value:
+                      type: string
+                      format: byte
+      tags:
+        - Query
+  /astra/inflation/v1/inflation_period:
+    get:
+      summary: InflationPeriod retrieves current period.
+      operationId: InflationPeriod
+      responses:
+        '200':
+          description: A successful response.
+          schema:
+            type: object
+            properties:
+              period:
+                type: string
+                format: uint64
+                description: period is the current minting per epoch provision value.
+              epochs_per_period:
+                type: string
+                format: uint64
+                description: >-
+                  epochs_per_period is the current number of epochs with-in an
+                  inflation period.
+              epoch_identifier:
+                type: string
+                description: epoch_identifier is the identifier of the inflation epoch.
+            description: >-
+              QueryInflationPeriodResponse is the response type for the
+              Query/InflationPeriod RPC method.
+        default:
+          description: An unexpected error response.
+          schema:
+            type: object
+            properties:
+              error:
+                type: string
+              code:
+                type: integer
+                format: int32
+              message:
+                type: string
+              details:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    type_url:
+                      type: string
+                    value:
+                      type: string
+                      format: byte
+      tags:
+        - Query
+  /astra/inflation/v1/inflation_rate:
+    get:
+      summary: InflationRate retrieves the inflation rate of the current period.
+      operationId: InflationRate
+      responses:
+        '200':
+          description: A successful response.
+          schema:
+            type: object
+            properties:
+              inflation_rate:
+                type: string
+                title: rate by which the total supply increases within one period
+            description: >-
+              QueryInflationRateResponse is the response type for the
+              Query/InflationRate
+
+              RPC method.
+        default:
+          description: An unexpected error response.
+          schema:
+            type: object
+            properties:
+              error:
+                type: string
+              code:
+                type: integer
+                format: int32
+              message:
+                type: string
+              details:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    type_url:
+                      type: string
+                    value:
+                      type: string
+                      format: byte
+      tags:
+        - Query
+  /astra/inflation/v1/params:
+    get:
+      summary: Params retrieves the total set of minting parameters.
+      operationId: InflationParams
+      responses:
+        '200':
+          description: A successful response.
+          schema:
+            type: object
+            properties:
+              params:
+                description: params defines the parameters of the module.
+                type: object
+                properties:
+                  mint_denom:
+                    type: string
+                    title: mint_denom indicates the type of coin to mint
+                  inflation_parameters:
+                    description: >-
+                      inflation_parameters consists of parameters which define
+                      how inflation is allocated.
+                    type: object
+                    properties:
+                      max_staking_rewards:
+                        type: string
+                        description: >-
+                          max_staking_rewards defines the maximum amount of the
+                          staking reward inflation
+
+                          distributed through block rewards (i.e, R). The
+                          max_staking_rewards accounts for 20% of the total
+                          supply.
+                      r:
+                        type: string
+                        description: r holds the value of the decay factor.
+                    title: >-
+                      InflationParameters defines the distribution along with
+                      the parameters in which inflation is
+
+                      allocated through minting on each epoch. It excludes the
+                      genesis-enabled vesting distribution for team,
+
+                      genesis partners or reward providers, as they are only
+                      minted once at genesis.
+
+                      The rest of the total supply (i.e, 30%) will be gradually
+                      allocated for staking rewards through
+
+                      epoch provisions (e.g, block rewards).
+
+                      The epoch provision on each period is calculated as
+                      follows:
+
+                      periodProvision  = exponentialDecay       * 
+                      totalInflation
+
+                      f(x)             = r * (1 - r)^x  *  R
+                  enable_inflation:
+                    type: boolean
+                    title: >-
+                      enable_inflation is the parameter to enable inflation and
+                      halt increasing the skipped_epochs
+            description: >-
+              QueryParamsResponse is the response type for the Query/Params RPC
+              method.
+        default:
+          description: An unexpected error response.
+          schema:
+            type: object
+            properties:
+              error:
+                type: string
+              code:
+                type: integer
+                format: int32
+              message:
+                type: string
+              details:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    type_url:
+                      type: string
+                    value:
+                      type: string
+                      format: byte
+      tags:
+        - Query
+  /astra/inflation/v1/skipped_epochs:
+    get:
+      summary: SkippedEpochs retrieves the total number of skipped epochs.
+      operationId: SkippedEpochs
+      responses:
+        '200':
+          description: A successful response.
+          schema:
+            type: object
+            properties:
+              skipped_epochs:
+                type: string
+                format: uint64
+                description: number of epochs that the inflation module has been disabled.
+            description: >-
+              QuerySkippedEpochsResponse is the response type for the
+              Query/SkippedEpochs
+
+              RPC method.
+        default:
+          description: An unexpected error response.
+          schema:
+            type: object
+            properties:
+              error:
+                type: string
+              code:
+                type: integer
+                format: int32
+              message:
+                type: string
+              details:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    type_url:
+                      type: string
+                    value:
+                      type: string
+                      format: byte
+      tags:
+        - Query
   /evmos/vesting/v1/balances/{address}:
     get:
       summary: Retrieves the unvested, vested and locked tokens for a vesting account
@@ -28455,6 +28782,229 @@ definitions:
                   "@type": "type.googleapis.com/google.protobuf.Duration",
                   "value": "1.212s"
                 }
+  astra.inflation.v1.InflationParameters:
+    type: object
+    properties:
+      max_staking_rewards:
+        type: string
+        description: >-
+          max_staking_rewards defines the maximum amount of the staking reward
+          inflation
+
+          distributed through block rewards (i.e, R). The max_staking_rewards
+          accounts for 20% of the total supply.
+      r:
+        type: string
+        description: r holds the value of the decay factor.
+    title: >-
+      InflationParameters defines the distribution along with the parameters in
+      which inflation is
+
+      allocated through minting on each epoch. It excludes the genesis-enabled
+      vesting distribution for team,
+
+      genesis partners or reward providers, as they are only minted once at
+      genesis.
+
+      The rest of the total supply (i.e, 30%) will be gradually allocated for
+      staking rewards through
+
+      epoch provisions (e.g, block rewards).
+
+      The epoch provision on each period is calculated as follows:
+
+      periodProvision  = exponentialDecay       *  totalInflation
+
+      f(x)             = r * (1 - r)^x  *  R
+  astra.inflation.v1.Params:
+    type: object
+    properties:
+      mint_denom:
+        type: string
+        title: mint_denom indicates the type of coin to mint
+      inflation_parameters:
+        description: >-
+          inflation_parameters consists of parameters which define how inflation
+          is allocated.
+        type: object
+        properties:
+          max_staking_rewards:
+            type: string
+            description: >-
+              max_staking_rewards defines the maximum amount of the staking
+              reward inflation
+
+              distributed through block rewards (i.e, R). The
+              max_staking_rewards accounts for 20% of the total supply.
+          r:
+            type: string
+            description: r holds the value of the decay factor.
+        title: >-
+          InflationParameters defines the distribution along with the parameters
+          in which inflation is
+
+          allocated through minting on each epoch. It excludes the
+          genesis-enabled vesting distribution for team,
+
+          genesis partners or reward providers, as they are only minted once at
+          genesis.
+
+          The rest of the total supply (i.e, 30%) will be gradually allocated
+          for staking rewards through
+
+          epoch provisions (e.g, block rewards).
+
+          The epoch provision on each period is calculated as follows:
+
+          periodProvision  = exponentialDecay       *  totalInflation
+
+          f(x)             = r * (1 - r)^x  *  R
+      enable_inflation:
+        type: boolean
+        title: >-
+          enable_inflation is the parameter to enable inflation and halt
+          increasing the skipped_epochs
+    description: Params holds parameters for the inflation module.
+  astra.inflation.v1.QueryCirculatingSupplyResponse:
+    type: object
+    properties:
+      circulating_supply:
+        title: total amount of coins in circulation
+        type: object
+        properties:
+          denom:
+            type: string
+          amount:
+            type: string
+        description: |-
+          DecCoin defines a token with a denomination and a decimal amount.
+
+          NOTE: The amount field is an Dec which implements the custom method
+          signatures required by gogoproto.
+    description: |-
+      QueryCirculatingSupplyResponse is the response type for the
+      Query/CirculatingSupply RPC method.
+  astra.inflation.v1.QueryEpochMintProvisionResponse:
+    type: object
+    properties:
+      epoch_mint_provision:
+        description: epoch_mint_provision is the current minting per epoch provision value.
+        type: object
+        properties:
+          denom:
+            type: string
+          amount:
+            type: string
+    description: |-
+      QueryEpochMintProvisionResponse is the response type for the
+      Query/EpochMintProvision RPC method.
+  astra.inflation.v1.QueryInflationPeriodResponse:
+    type: object
+    properties:
+      period:
+        type: string
+        format: uint64
+        description: period is the current minting per epoch provision value.
+      epochs_per_period:
+        type: string
+        format: uint64
+        description: >-
+          epochs_per_period is the current number of epochs with-in an inflation
+          period.
+      epoch_identifier:
+        type: string
+        description: epoch_identifier is the identifier of the inflation epoch.
+    description: >-
+      QueryInflationPeriodResponse is the response type for the
+      Query/InflationPeriod RPC method.
+  astra.inflation.v1.QueryInflationRateResponse:
+    type: object
+    properties:
+      inflation_rate:
+        type: string
+        title: rate by which the total supply increases within one period
+    description: >-
+      QueryInflationRateResponse is the response type for the
+      Query/InflationRate
+
+      RPC method.
+  astra.inflation.v1.QueryParamsResponse:
+    type: object
+    properties:
+      params:
+        description: params defines the parameters of the module.
+        type: object
+        properties:
+          mint_denom:
+            type: string
+            title: mint_denom indicates the type of coin to mint
+          inflation_parameters:
+            description: >-
+              inflation_parameters consists of parameters which define how
+              inflation is allocated.
+            type: object
+            properties:
+              max_staking_rewards:
+                type: string
+                description: >-
+                  max_staking_rewards defines the maximum amount of the staking
+                  reward inflation
+
+                  distributed through block rewards (i.e, R). The
+                  max_staking_rewards accounts for 20% of the total supply.
+              r:
+                type: string
+                description: r holds the value of the decay factor.
+            title: >-
+              InflationParameters defines the distribution along with the
+              parameters in which inflation is
+
+              allocated through minting on each epoch. It excludes the
+              genesis-enabled vesting distribution for team,
+
+              genesis partners or reward providers, as they are only minted once
+              at genesis.
+
+              The rest of the total supply (i.e, 30%) will be gradually
+              allocated for staking rewards through
+
+              epoch provisions (e.g, block rewards).
+
+              The epoch provision on each period is calculated as follows:
+
+              periodProvision  = exponentialDecay       *  totalInflation
+
+              f(x)             = r * (1 - r)^x  *  R
+          enable_inflation:
+            type: boolean
+            title: >-
+              enable_inflation is the parameter to enable inflation and halt
+              increasing the skipped_epochs
+    description: QueryParamsResponse is the response type for the Query/Params RPC method.
+  astra.inflation.v1.QuerySkippedEpochsResponse:
+    type: object
+    properties:
+      skipped_epochs:
+        type: string
+        format: uint64
+        description: number of epochs that the inflation module has been disabled.
+    description: >-
+      QuerySkippedEpochsResponse is the response type for the
+      Query/SkippedEpochs
+
+      RPC method.
+  cosmos.base.v1beta1.DecCoin:
+    type: object
+    properties:
+      denom:
+        type: string
+      amount:
+        type: string
+    description: |-
+      DecCoin defines a token with a denomination and a decimal amount.
+
+      NOTE: The amount field is an Dec which implements the custom method
+      signatures required by gogoproto.
   cosmos.base.v1beta1.Coin:
     type: object
     properties:
@@ -35629,18 +36179,6 @@ definitions:
     description: |-
       SendEnabled maps coin denom to a send_enabled status (whether a denom is
       sendable).
-  cosmos.base.v1beta1.DecCoin:
-    type: object
-    properties:
-      denom:
-        type: string
-      amount:
-        type: string
-    description: |-
-      DecCoin defines a token with a denomination and a decimal amount.
-
-      NOTE: The amount field is an Dec which implements the custom method
-      signatures required by gogoproto.
   cosmos.distribution.v1beta1.DelegationDelegatorReward:
     type: object
     properties:
