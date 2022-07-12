@@ -63,6 +63,9 @@ astra_777-1:
         params:
           bond_denom: "aastra"
           unbonding_time: "10s"
+      distribution:
+        params:
+          community_tax: "0.0"
 #      feemarket:
 #        params:
 #          "no_base_fee": true
