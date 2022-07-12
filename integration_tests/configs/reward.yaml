@@ -65,4 +65,4 @@ astra_777-1:
           inflation_parameters:
             max_staking_rewards: "20000000000000000000"
         epoch_identifier: "custom"
-        epochs_per_period: "1"
+        epochs_per_period: "2"
