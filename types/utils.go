@@ -12,6 +12,18 @@ import (
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 )
 
+const (
+	// MainnetChainID defines the Astra EIP155 chain ID for mainnet
+	MainnetChainID = "astra_11111"
+	// TestnetChainID defines the Astra EIP155 chain ID for testnet
+	TestnetChainID = "astra_11112"
+)
+
+// IsMainnet returns true if the chain-id has the Evmos mainnet EIP155 chain prefix.
+func IsMainnet(chainID string) bool {
+	return strings.HasPrefix(chainID, MainnetChainID)
+}
+
 // IsSupportedKey returns true if the pubkey type is supported by the chain
 // (i.e eth_secp256k1, amino multisig, ed25519).
 // NOTE: Nested multisigs are not supported.

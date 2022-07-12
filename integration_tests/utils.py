@@ -143,6 +143,24 @@ def wait_for_new_blocks(cli, n):
             break
 
 
+def wait_for_new_epochs(cli, n=1, epoch_identifier="day"):
+    begin_epoch = int(cli.get_current_epoch(epoch_identifier=epoch_identifier))
+    while True:
+        time.sleep(0.2)
+        cur_epoch = int(cli.get_current_epoch(epoch_identifier=epoch_identifier))
+        if cur_epoch - begin_epoch >= n:
+            break
+
+
+def wait_for_new_inflation_periods(cli, n=1):
+    begin_period = int(cli.get_inflation_period()["period"])
+    while True:
+        time.sleep(0.2)
+        cur_period = int(cli.get_inflation_period()["period"])
+        if cur_period - begin_period >= n:
+            break
+
+
 def wait_for_block_time(cli, t):
     print("wait for block time", t)
     now = isoparse("1900-01-01 01:01:01.01+00:00")
@@ -417,6 +435,7 @@ def grant_authorization(
             "-y",
             *k_options,
             from_=granter,
+            gas=DEFAULT_GAS,
             home=cli.cosmos_cli(i).data_dir,
             **kv_options,
         )
