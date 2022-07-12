@@ -25,7 +25,7 @@ governance proposals is distributed amongst more people.
 The Astra Token Model outlines how the Astra network is secured through a
 balanced incentivized interest from users, developers and validators. In this
 model, inflation plays a major role in sustaining this balance. With an initial
-supply of 8,888,780,000 Astras and 2,222,200,000 Astras being issued through inflation
+supply of 8,888,780,000 Astras and 111,111,000 Astras being issued through inflation
 during the first year, the model suggests an exponential decline in inflation to
 the rest of Astras in subsequent years.
 
