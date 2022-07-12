@@ -44,11 +44,6 @@ service Query {
   rpc Params(QueryParamsRequest) returns (QueryParamsResponse) {
     option (google.api.http).get = "/astra/inflation/v1/params";
   }
-
-  // BondedRatio retrieves current bondedRatio.
-  rpc BondedRatio(QueryBondedRatioRequest) returns (QueryBondedRatioResponse) {
-    option (google.api.http).get = "/astra/inflation/v1/bonded_ratio";
-  }
 }
 
 // QueryInflationPeriodRequest is the request type for the Query/InflationPeriod RPC method.
