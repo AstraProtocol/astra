@@ -15,6 +15,15 @@
       }
     },
     {
+      "url": "./tmp-swagger-gen/astra/inflation/v1/query.swagger.json",
+      "operationIds": {
+        "rename": {
+          "Params": "InflationParams",
+          "TotalSupply": "InflationTotalSupply"
+        }
+      }
+    },
+    {
       "url": "./tmp-swagger-gen/evmos/vesting/v1/query.swagger.json"
     },
     {
