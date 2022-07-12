@@ -63,6 +63,20 @@ astra_777-1:
         params:
           bond_denom: "aastra"
           unbonding_time: "10s"
+      distribution:
+        params:
+          community_tax: "0.0"
+      epochs:
+        epochs:
+          - identifier: "custom"
+            duration: "1s"
+      inflation:
+        params:
+          mint_denom: "aastra"
+          inflation_parameters:
+            max_staking_rewards: "20000000000000000000"
+        epoch_identifier: "custom"
+        epochs_per_period: "2"
 #      feemarket:
 #        params:
 #          "no_base_fee": true

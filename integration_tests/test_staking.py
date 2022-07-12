@@ -86,9 +86,6 @@ def test_staking_unbond(astra):
         isoparse(parse_events(rsp["logs"])["unbond"]["completion_time"])
         + timedelta(seconds=1),
     )
-
-    wait_for_block_time(astra, 2)
-
     assert astra.cosmos_cli(0).balance(signer1_address) == old_amount - 5
 
 
@@ -146,7 +143,6 @@ def test_join_validator(astra):
     tx_result = astra.cosmos_cli(0).transfer(astra.cosmos_cli(0).address("community"), addr, "1astra")
     print(tx_result)
     assert tx_result["code"] == 0
-    wait_for_block(astra.cosmos_cli(0), 2)
     assert astra.cosmos_cli(0).balance(addr) == 10 ** 18
 
     # start the node
