@@ -10,7 +10,7 @@ option go_package = "github.com/AstraProtocol/astra/x/inflation/types";
 
 // Query provides defines the gRPC querier service.
 service Query {
-  // Period retrieves current period.
+  // InflationPeriod retrieves current period.
   rpc InflationPeriod(QueryInflationPeriodRequest) returns (QueryInflationPeriodResponse) {
     option (google.api.http).get = "/astra/inflation/v1/inflation_period";
   }
@@ -43,6 +43,11 @@ service Query {
   // Params retrieves the total set of minting parameters.
   rpc Params(QueryParamsRequest) returns (QueryParamsResponse) {
     option (google.api.http).get = "/astra/inflation/v1/params";
+  }
+
+  // BondedRatio retrieves current bondedRatio.
+  rpc BondedRatio(QueryBondedRatioRequest) returns (QueryBondedRatioResponse) {
+    option (google.api.http).get = "/astra/inflation/v1/bonded_ratio";
   }
 }
 
