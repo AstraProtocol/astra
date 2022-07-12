@@ -10,22 +10,10 @@ parent:
 ## Abstract
 
 The `x/inflation` module mints new Astra tokens and allocates them in daily
-epochs according to the [Evmos Token
-Model](https://evmos.blog/the-evmos-token-model-edc07014978b) distribution to
-
-* Staking Rewards `40%`,
-* Team Vesting `25%`,
-* Usage Incentives: `25%`,
-* Community Pool `10%`.
+epochs to the staking module (`Fee Collector account`). The allocation of new coins incentivizes specific behaviour in the Astra
+network.
 
 It replaces the currently used Cosmos SDK `x/mint` module.
-
-The allocation of new coins incentivizes specific behaviour in the Astra
-network. Inflation allocates funds to 1) the `Fee Collector account` (in the sdk
-`x/auth` module) to increase staking rewards, 2) the  `x/incentives` module
-account  to provide supply for usage incentives and 3) the community pool
-(managed by sdk `x/distr` module) to fund spending proposals.
-
 ## Contents
 
 1. **[Concepts](01_concepts.md)**
