@@ -1,6 +1,6 @@
-KEY="mykey"
-CHAINID="astra_11110-1"
-MONIKER="localtestnet"
+KEY="masterTiki"
+CHAINID="astra_11115-1"
+MONIKER="genesisValidator"
 KEYRING="test"
 KEYALGO="eth_secp256k1"
 LOGLEVEL="info"
@@ -26,12 +26,12 @@ astrad keys add $KEY --keyring-backend $KEYRING --algo $KEYALGO
 # Set moniker and chain-id for Evmos (Moniker can be anything, chain-id must be an integer)
 astrad init $MONIKER --chain-id $CHAINID
 
-# Change parameter token denominations to aastra
-cat $HOME/.astrad/config/genesis.json | jq '.app_state["staking"]["params"]["bond_denom"]="aastra"' > $HOME/.astrad/config/tmp_genesis.json && mv $HOME/.astrad/config/tmp_genesis.json $HOME/.astrad/config/genesis.json
-cat $HOME/.astrad/config/genesis.json | jq '.app_state["crisis"]["constant_fee"]["denom"]="aastra"' > $HOME/.astrad/config/tmp_genesis.json && mv $HOME/.astrad/config/tmp_genesis.json $HOME/.astrad/config/genesis.json
-cat $HOME/.astrad/config/genesis.json | jq '.app_state["gov"]["deposit_params"]["min_deposit"][0]["denom"]="aastra"' > $HOME/.astrad/config/tmp_genesis.json && mv $HOME/.astrad/config/tmp_genesis.json $HOME/.astrad/config/genesis.json
-cat $HOME/.astrad/config/genesis.json | jq '.app_state["evm"]["params"]["evm_denom"]="aastra"' > $HOME/.astrad/config/tmp_genesis.json && mv $HOME/.astrad/config/tmp_genesis.json $HOME/.astrad/config/genesis.json
-cat $HOME/.astrad/config/genesis.json | jq '.app_state["mint"]["params"]["mint_denom"]="aastra"' > $HOME/.astrad/config/tmp_genesis.json && mv $HOME/.astrad/config/tmp_genesis.json $HOME/.astrad/config/genesis.json
+# Change parameter token denominations to aasa
+cat $HOME/.astrad/config/genesis.json | jq '.app_state["staking"]["params"]["bond_denom"]="aasa"' > $HOME/.astrad/config/tmp_genesis.json && mv $HOME/.astrad/config/tmp_genesis.json $HOME/.astrad/config/genesis.json
+cat $HOME/.astrad/config/genesis.json | jq '.app_state["crisis"]["constant_fee"]["denom"]="aasa"' > $HOME/.astrad/config/tmp_genesis.json && mv $HOME/.astrad/config/tmp_genesis.json $HOME/.astrad/config/genesis.json
+cat $HOME/.astrad/config/genesis.json | jq '.app_state["gov"]["deposit_params"]["min_deposit"][0]["denom"]="aasa"' > $HOME/.astrad/config/tmp_genesis.json && mv $HOME/.astrad/config/tmp_genesis.json $HOME/.astrad/config/genesis.json
+cat $HOME/.astrad/config/genesis.json | jq '.app_state["evm"]["params"]["evm_denom"]="aasa"' > $HOME/.astrad/config/tmp_genesis.json && mv $HOME/.astrad/config/tmp_genesis.json $HOME/.astrad/config/genesis.json
+cat $HOME/.astrad/config/genesis.json | jq '.app_state["mint"]["params"]["mint_denom"]="aasa"' > $HOME/.astrad/config/tmp_genesis.json && mv $HOME/.astrad/config/tmp_genesis.json $HOME/.astrad/config/genesis.json
 cat $HOME/.astrad/config/genesis.json | jq '.app_state["fees"]["params"]["enable_fees"]=true' > $HOME/.astrad/config/tmp_genesis.json && mv $HOME/.astrad/config/tmp_genesis.json $HOME/.astrad/config/genesis.json
 
 # increase block time (?)
@@ -56,7 +56,7 @@ if [[ $1 == "pending" ]]; then
       sed -i '' 's/timeout_prevote_delta = "500ms"/timeout_prevote_delta = "5s"/g' $HOME/.astrad/config/config.toml
       sed -i '' 's/timeout_precommit = "1s"/timeout_precommit = "10s"/g' $HOME/.astrad/config/config.toml
       sed -i '' 's/timeout_precommit_delta = "500ms"/timeout_precommit_delta = "5s"/g' $HOME/.astrad/config/config.toml
-      sed -i '' 's/timeout_commit = "5s"/timeout_commit = "150s"/g' $HOME/.astrad/config/config.toml
+      sed -i '' 's/timeout_commit = "2s"/timeout_commit = "150s"/g' $HOME/.astrad/config/config.toml
       sed -i '' 's/timeout_broadcast_tx_commit = "10s"/timeout_broadcast_tx_commit = "150s"/g' $HOME/.astrad/config/config.toml
   else
       sed -i 's/create_empty_blocks_interval = "0s"/create_empty_blocks_interval = "30s"/g' $HOME/.astrad/config/config.toml
@@ -66,26 +66,26 @@ if [[ $1 == "pending" ]]; then
       sed -i 's/timeout_prevote_delta = "500ms"/timeout_prevote_delta = "5s"/g' $HOME/.astrad/config/config.toml
       sed -i 's/timeout_precommit = "1s"/timeout_precommit = "10s"/g' $HOME/.astrad/config/config.toml
       sed -i 's/timeout_precommit_delta = "500ms"/timeout_precommit_delta = "5s"/g' $HOME/.astrad/config/config.toml
-      sed -i 's/timeout_commit = "5s"/timeout_commit = "150s"/g' $HOME/.astrad/config/config.toml
+      sed -i 's/timeout_commit = "2s"/timeout_commit = "150s"/g' $HOME/.astrad/config/config.toml
       sed -i 's/timeout_broadcast_tx_commit = "10s"/timeout_broadcast_tx_commit = "150s"/g' $HOME/.astrad/config/config.toml
   fi
 fi
 
 # Allocate genesis accounts (cosmos formatted addresses)
-astrad add-genesis-account $KEY 100000000000000000000000000aastra --keyring-backend $KEYRING
+astrad add-genesis-account $KEY 100000000000000000000000000aasa --keyring-backend $KEYRING
 
 # Sign genesis transaction
-astrad gentx $KEY 1000000000000000000000aastra --keyring-backend $KEYRING --chain-id $CHAINID
+astrad gentx $KEY 1000000000000000000000aasa --keyring-backend $KEYRING --chain-id $CHAINID
 
 # Collect genesis tx
-astrad collect-gentxs
+# astrad collect-gentxs
 
 # Run this to ensure everything worked and that the genesis file is setup correctly
-astrad validate-genesis
+# astrad validate-genesis
 
 if [[ $1 == "pending" ]]; then
   echo "pending mode is on, please wait for the first block committed."
 fi
 
 # Start the node (remove the --pruning=nothing flag if historical queries are not needed)
-astrad start --pruning=nothing $TRACE --log_level $LOGLEVEL --minimum-gas-prices=0.0001aevmos --json-rpc.api eth,txpool,personal,net,debug,web3
+# astrad start --pruning=nothing $TRACE --log_level $LOGLEVEL --minimum-gas-prices=0.0001aevmos --json-rpc.api eth,txpool,personal,net,debug,web3
