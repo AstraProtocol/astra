@@ -18,9 +18,9 @@ import (
 
 	abci "github.com/tendermint/tendermint/abci/types"
 
-	"github.com/AstraProtocol/astra/v2/x/inflation/client/cli"
-	"github.com/AstraProtocol/astra/v2/x/inflation/keeper"
-	"github.com/AstraProtocol/astra/v2/x/inflation/types"
+	"github.com/AstraProtocol/astra/v1/x/inflation/client/cli"
+	"github.com/AstraProtocol/astra/v1/x/inflation/keeper"
+	"github.com/AstraProtocol/astra/v1/x/inflation/types"
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"

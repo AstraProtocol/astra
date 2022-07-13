@@ -20,7 +20,7 @@ import (
 	ibcgotesting "github.com/cosmos/ibc-go/v3/testing"
 	"github.com/cosmos/ibc-go/v3/testing/simapp"
 
-	astraapp "github.com/AstraProtocol/astra/v2/app"
+	astraapp "github.com/AstraProtocol/astra/v1/app"
 	ethermint "github.com/evmos/ethermint/types"
 )
 
