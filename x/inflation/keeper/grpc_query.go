@@ -2,9 +2,9 @@ package keeper
 
 import (
 	"context"
-	"github.com/AstraProtocol/astra/v2/cmd/config"
+	"github.com/AstraProtocol/astra/v1/cmd/config"
 
-	"github.com/AstraProtocol/astra/v2/x/inflation/types"
+	"github.com/AstraProtocol/astra/v1/x/inflation/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"

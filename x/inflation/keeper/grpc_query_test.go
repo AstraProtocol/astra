@@ -7,7 +7,7 @@ import (
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
-	"github.com/AstraProtocol/astra/v2/x/inflation/types"
+	"github.com/AstraProtocol/astra/v1/x/inflation/types"
 )
 
 func (suite *KeeperTestSuite) TestPeriod() {

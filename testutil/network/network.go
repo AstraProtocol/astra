@@ -6,7 +6,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"github.com/AstraProtocol/astra/v2/app"
+	"github.com/AstraProtocol/astra/v1/app"
 	"net/http"
 	"net/url"
 	"os"
