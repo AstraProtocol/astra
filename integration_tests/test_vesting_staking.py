@@ -4,7 +4,7 @@ from time import sleep
 import pytest
 
 from integration_tests.network import setup_astra
-from integration_tests.utils import DEFAULT_BASE_PORT
+from integration_tests.utils import DEFAULT_BASE_PORT, wait_for_block
 
 pytestmark = pytest.mark.vesting
 
@@ -19,12 +19,12 @@ def astra(tmp_path_factory):
 # one more test for the vesting account bug
 # that one can delegate twice with fee + redelegate
 def test_staking_vesting_redelegate(astra):
-    sleep(1)
+    wait_for_block(astra.cosmos_cli(0), 2)
     community_addr = astra.cosmos_cli(0).address("community")
     reserve_addr = astra.cosmos_cli(0).address("team")
     # for the fee payment
     astra.cosmos_cli(0).transfer(community_addr, reserve_addr, "10000aastra")
-
+    wait_for_block(astra.cosmos_cli(0), 2)
     signer1_address = astra.cosmos_cli(0).address("team")
     validators = astra.cosmos_cli(0).validators()
     validator1_operator_address = validators[0]["operator_address"]
@@ -41,11 +41,13 @@ def test_staking_vesting_redelegate(astra):
         "0.025aastra",
     )
     assert rsp["code"] == 0, rsp["raw_log"]
+    wait_for_block(astra.cosmos_cli(0), 2)
     assert astra.cosmos_cli(0).staking_pool() == old_bonded + 2009999498
     rsp = astra.cosmos_cli(0).delegate_amount(
         validator2_operator_address, "1aastra", signer1_address, "0.025aastra"
     )
     assert rsp["code"] == 0, rsp["raw_log"]
+    wait_for_block(astra.cosmos_cli(0), 2)
     assert astra.cosmos_cli(0).staking_pool() == old_bonded + 2009999499
     # delegation_info = cluster.get_delegated_amount(signer1_address)
     # old_output = delegation_info["delegation_responses"][0]["balance"]["amount"]
