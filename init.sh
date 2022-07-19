@@ -8,6 +8,9 @@ LOGLEVEL="info"
 #TRACE="--trace"
 TRACE=""
 
+KEY_DEV="dev"
+KEY_DEV_VESTING="dev_vesting"
+
 # validate dependencies are installed
 command -v jq > /dev/null 2>&1 || { echo >&2 "jq not installed. More info: https://stedolan.github.io/jq/download/"; exit 1; }
 
@@ -21,7 +24,9 @@ astrad config keyring-backend $KEYRING
 astrad config chain-id $CHAINID
 
 # if $KEY exists it should be deleted
-astrad keys add $KEY --keyring-backend $KEYRING --algo $KEYALGO
+astrad keys add $KEY --keyring-backend $KEYRING
+astrad keys add $KEY_DEV --keyring-backend $KEYRING
+astrad keys add $KEY_DEV_VESTING --keyring-backend $KEYRING
 
 # Set moniker and chain-id for Evmos (Moniker can be anything, chain-id must be an integer)
 astrad init $MONIKER --chain-id $CHAINID
@@ -76,20 +81,14 @@ if [[ $1 == "pending" ]]; then
 fi
 
 # Allocate genesis accounts (cosmos formatted addresses)
-astrad add-genesis-account $KEY 100000000000000000000000000aastra --keyring-backend $KEYRING
-
+astrad add-genesis-account $KEY 1000000astra --keyring-backend $KEYRING
+astrad add-genesis-account $KEY_DEV 2000001astra --keyring-backend $KEYRING
+# astrad add-genesis-account astra12lakkamgtx84ep0txku7ejpeajmv2d674apc9d 2000000astra --keyring-backend test --vesting ./vesting/vesting_dev.json --clawback --funder astra1z4p2nev0l590pnvs6jdn80288sp3kcg3gy3stq
 # Sign genesis transaction
-astrad gentx $KEY 1000000000000000000000aastra --keyring-backend $KEYRING --chain-id $CHAINID
+# astrad gentx mykey 1000000astra --keyring-backend test --chain-id astra_11110-1
 
 # Collect genesis tx
-astrad collect-gentxs
+# astrad collect-gentxs
 
 # Run this to ensure everything worked and that the genesis file is setup correctly
 astrad validate-genesis
-
-if [[ $1 == "pending" ]]; then
-  echo "pending mode is on, please wait for the first block committed."
-fi
-
-# Start the node (remove the --pruning=nothing flag if historical queries are not needed)
-astrad start --pruning=nothing $TRACE --log_level $LOGLEVEL --minimum-gas-prices=0.0001aevmos --json-rpc.api eth,txpool,personal,net,debug,web3
