@@ -14,14 +14,19 @@ import (
 
 const (
 	// MainnetChainID defines the Astra EIP155 chain ID for mainnet
-	MainnetChainID = "astra_11111"
+	MainnetChainID = "astra_11110"
 	// TestnetChainID defines the Astra EIP155 chain ID for testnet
-	TestnetChainID = "astra_11112"
+	TestnetChainID = "astra_11115"
 )
 
 // IsMainnet returns true if the chain-id has the Evmos mainnet EIP155 chain prefix.
 func IsMainnet(chainID string) bool {
 	return strings.HasPrefix(chainID, MainnetChainID)
+}
+
+// IsTestnet returns true if the chain-id has the Evmos mainnet EIP155 chain prefix.
+func IsTestnet(chainID string) bool {
+	return strings.HasPrefix(chainID, TestnetChainID)
 }
 
 // IsSupportedKey returns true if the pubkey type is supported by the chain
