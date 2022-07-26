@@ -5,6 +5,7 @@ import (
 	"github.com/AstraProtocol/astra/v1/app/upgrades/v1_1"
 	astratypes "github.com/AstraProtocol/astra/v1/types"
 	"github.com/cosmos/cosmos-sdk/baseapp"
+	"github.com/cosmos/cosmos-sdk/x/upgrade/types"
 	abci "github.com/tendermint/tendermint/abci/types"
 	"testing"
 	"time"
@@ -149,6 +150,58 @@ func (suite *UpgradeTestSuite) TestUpdateConsensusParams() {
 			if tc.pass {
 				suite.Require().Equal(tc.expBlockParams.MaxGas, cp.Block.MaxGas)
 			}
+		})
+	}
+}
+
+func (suite *UpgradeTestSuite) TestScheduledUpgrade() {
+	testCases := []struct {
+		name       string
+		preUpdate  func()
+		update     func()
+		postUpdate func()
+	}{
+		{
+			"scheduled upgrade",
+			func() {
+				plan := types.Plan{
+					Name:   v1_1.UpgradeName,
+					Height: v1_1.TestUpgradeHeight,
+					Info:   v1_1.UpgradeInfo,
+				}
+				err := suite.app.UpgradeKeeper.ScheduleUpgrade(suite.ctx, plan)
+				suite.Require().NoError(err)
+
+				// ensure the plan is scheduled
+				plan, found := suite.app.UpgradeKeeper.GetUpgradePlan(suite.ctx)
+				suite.Require().True(found)
+			},
+			func() {
+				suite.ctx = suite.ctx.WithBlockHeight(v1_1.TestUpgradeHeight)
+				suite.Require().NotPanics(
+					func() {
+						beginBlockRequest := abci.RequestBeginBlock{
+							Header: suite.ctx.BlockHeader(),
+						}
+						suite.app.BeginBlocker(suite.ctx, beginBlockRequest)
+					},
+				)
+			},
+			func() {
+				// check that the default params have been overridden by the init function
+				consensusParams := suite.app.GetConsensusParams(suite.ctx)
+				suite.Require().Equal(v1_1.NewMaxGas, consensusParams.Block.MaxGas)
+			},
+		},
+	}
+
+	for _, tc := range testCases {
+		suite.Run(fmt.Sprintf("Case %s", tc.name), func() {
+			suite.SetupTest(astratypes.TestnetChainID + "-2") // reset
+
+			tc.preUpdate()
+			tc.update()
+			tc.postUpdate()
 		})
 	}
 }
