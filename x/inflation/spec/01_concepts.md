@@ -59,7 +59,7 @@ where
     R = total amount of block rewards
 ```
 
-With the given formula of `f(x)`, we can make sure that the total of minted block rewards never exceed `R`, as:
+With the given formula of `f(x)`, we can make sure that the total of minted block rewards never exceeds `R`, as:
 ![Total inflation calculation](img/total_inflation.png)
 
 With a decay factor of `0.05`, there will be a total of 40%, 64%, 87% and 98% of block rewards minted after the first 10, 
