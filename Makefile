@@ -188,48 +188,47 @@ RUNSIM         = $(TOOLS_DESTDIR)/runsim
 runsim: $(RUNSIM)
 $(RUNSIM):
 	@echo "Installing runsim..."
-	@(cd /tmp && ${GO_MOD} go get github.com/cosmos/tools/cmd/runsim@master)
+	@(cd /tmp && ${GO_MOD} go install github.com/cosmos/tools/cmd/runsim@master)
 
 statik: $(STATIK)
 $(STATIK):
 	@echo "Installing statik..."
-	@(cd /tmp && go get github.com/rakyll/statik@v0.1.6)
+	@(cd /tmp && go install github.com/rakyll/statik@v0.1.6)
 
 contract-tools:
 ifeq (, $(shell which stringer))
 	@echo "Installing stringer..."
-	@go get golang.org/x/tools/cmd/stringer
+	@go install golang.org/x/tools/cmd/stringer@latest
 else
 	@echo "stringer already installed; skipping..."
 endif
 
 ifeq (, $(shell which go-bindata))
 	@echo "Installing go-bindata..."
-	@go get github.com/kevinburke/go-bindata/go-bindata
+	@go install github.com/kevinburke/go-bindata/go-bindata@latest
 else
 	@echo "go-bindata already installed; skipping..."
 endif
 
 ifeq (, $(shell which gencodec))
 	@echo "Installing gencodec..."
-	@go get github.com/fjl/gencodec
+	@go install github.com/fjl/gencodec@latest
 else
 	@echo "gencodec already installed; skipping..."
 endif
 
 ifeq (, $(shell which protoc-gen-go))
 	@echo "Installing protoc-gen-go..."
-	@go get github.com/fjl/gencodec github.com/golang/protobuf/protoc-gen-go
+	@go install github.com/fjl/gencodec@latest
+	@go install google.golang.org/protobuf/cmd/protoc-gen-go@latest
 else
 	@echo "protoc-gen-go already installed; skipping..."
 endif
 
-ifeq (, $(shell which protoc))
-	@echo "Please istalling protobuf according to your OS"
-	@echo "macOS: brew install protobuf"
-	@echo "linux: apt-get install -f -y protobuf-compiler"
+ifeq (, $(shell which protoc-gen-go-grpc))
+	@go install google.golang.org/grpc/cmd/protoc-gen-go-grpc@latest
 else
-	@echo "protoc already installed; skipping..."
+	@echo "protoc-gen-go-grpc already installed; skipping..."
 endif
 
 ifeq (, $(shell which solcjs))
@@ -286,7 +285,7 @@ update-swagger-docs: statik
 .PHONY: update-swagger-docs
 
 godocs:
-	@echo "--> Wait a few seconds and visit http://localhost:6060/pkg/github.com/tharsis/astra/types"
+	@echo "--> Wait a few seconds and visit http://localhost:6060/pkg/github.com/AstraProtocol/astra/types"
 	godoc -http=:6060
 
 # Start docs site at localhost:8080
@@ -418,6 +417,7 @@ benchmark:
 
 lint:
 	golangci-lint run --out-format=tab
+	solhint contracts/**/*.sol
 
 lint-contracts:
 	@cd contracts && \
@@ -431,13 +431,14 @@ lint-fix-contracts:
 	@cd contracts && \
 	npm i && \
 	npm run lint-fix
+	solhint --fix contracts/**/*.sol
 
 .PHONY: lint lint-fix
 
 format:
 	find . -name '*.go' -type f -not -path "./vendor*" -not -path "*.git*" -not -path "./client/docs/statik/statik.go" -not -name '*.pb.go' | xargs gofmt -w -s
 	find . -name '*.go' -type f -not -path "./vendor*" -not -path "*.git*" -not -path "./client/docs/statik/statik.go" -not -name '*.pb.go' | xargs misspell -w
-	find . -name '*.go' -type f -not -path "./vendor*" -not -path "*.git*" -not -path "./client/docs/statik/statik.go" -not -name '*.pb.go' | xargs goimports -w -local github.com/tharsis/astra
+	find . -name '*.go' -type f -not -path "./vendor*" -not -path "*.git*" -not -path "./client/docs/statik/statik.go" -not -name '*.pb.go' | xargs goimports -w -local github.com/AstraProtocol/astra
 .PHONY: format
 
 ###############################################################################
@@ -455,10 +456,6 @@ proto-all: proto-format proto-lint proto-gen
 proto-gen:
 	@echo "Generating Protobuf files"
 	$(DOCKER) run --rm -v $(CURDIR):/workspace --workdir /workspace tendermintdev/sdk-proto-gen sh ./scripts/protocgen.sh
-
-proto-swagger-gen:
-	@echo "Generating Protobuf Swagger"
-	@./scripts/protoc-swagger-gen.sh
 
 proto-format:
 	@echo "Formatting Protobuf files"
@@ -520,20 +517,9 @@ localnet-build:
 	@$(MAKE) -C networks/local
 
 # Start a 4-node testnet locally
-localnet-start: localnet-stop
-ifeq ($(OS),Windows_NT)
-	mkdir localnet-setup &
-	@$(MAKE) localnet-build
-
-	IF not exist "build/node0/$(ASTRA_BINARY)/config/genesis.json" docker run --rm -v $(CURDIR)/build\astra\Z astrad/node "./astrad testnet --v 4 -o /astra --keyring-backend=test --ip-addresses astradnode0,astradnode1,astradnode2,astradnode3"
+localnet-start: localnet-stop localnet-build
+	@if ! [ -f build/node0/$(ASTRA_BINARY)/config/genesis.json ]; then docker run --rm -v $(CURDIR)/build:/astra:Z astra/node "./astrad testnet init-files --v 4 -o /astra --keyring-backend=test --starting-ip-address 192.167.10.2"; fi
 	docker-compose up -d
-else
-	mkdir -p localnet-setup
-	@$(MAKE) localnet-build
-
-	if ! [ -f localnet-setup/node0/$(ASTRA_BINARY)/config/genesis.json ]; then docker run --rm -v $(CURDIR)/localnet-setup:/astra:Z astrad/node "./astrad testnet --v 4 -o /astra --keyring-backend=test --ip-addresses astradnode0,astradnode1,astradnode2,astradnode3"; fi
-	docker-compose up -d
-endif
 
 # Stop testnet
 localnet-stop:
@@ -542,35 +528,35 @@ localnet-stop:
 # Clean testnet
 localnet-clean:
 	docker-compose down
-	sudo rm -rf localnet-setup
+	sudo rm -rf build/*
 
  # Reset testnet
 localnet-unsafe-reset:
 	docker-compose down
 ifeq ($(OS),Windows_NT)
-	@docker run --rm -v $(CURDIR)\localnet-setup\node0\astrad:astra\Z astrad/node "./astrad unsafe-reset-all --home=/astra"
-	@docker run --rm -v $(CURDIR)\localnet-setup\node1\astrad:astra\Z astrad/node "./astrad unsafe-reset-all --home=/astra"
-	@docker run --rm -v $(CURDIR)\localnet-setup\node2\astrad:astra\Z astrad/node "./astrad unsafe-reset-all --home=/astra"
-	@docker run --rm -v $(CURDIR)\localnet-setup\node3\astrad:astra\Z astrad/node "./astrad unsafe-reset-all --home=/astra"
+	@docker run --rm -v $(CURDIR)\build\node0\astrad:/astra\Z astra/node "./astrad tendermint unsafe-reset-all --home=/astra"
+	@docker run --rm -v $(CURDIR)\build\node1\astrad:/astra\Z astra/node "./astrad tendermint unsafe-reset-all --home=/astra"
+	@docker run --rm -v $(CURDIR)\build\node2\astrad:/astra\Z astra/node "./astrad tendermint unsafe-reset-all --home=/astra"
+	@docker run --rm -v $(CURDIR)\build\node3\astrad:/astra\Z astra/node "./astrad tendermint unsafe-reset-all --home=/astra"
 else
-	@docker run --rm -v $(CURDIR)/localnet-setup/node0/astrad:/astra:Z astrad/node "./astrad unsafe-reset-all --home=/astra"
-	@docker run --rm -v $(CURDIR)/localnet-setup/node1/astrad:/astra:Z astrad/node "./astrad unsafe-reset-all --home=/astra"
-	@docker run --rm -v $(CURDIR)/localnet-setup/node2/astrad:/astra:Z astrad/node "./astrad unsafe-reset-all --home=/astra"
-	@docker run --rm -v $(CURDIR)/localnet-setup/node3/astrad:/astra:Z astrad/node "./astrad unsafe-reset-all --home=/astra"
+	@docker run --rm -v $(CURDIR)/build/node0/astrad:/astra:Z astra/node "./astrad tendermint unsafe-reset-all --home=/astra"
+	@docker run --rm -v $(CURDIR)/build/node1/astrad:/astra:Z astra/node "./astrad tendermint unsafe-reset-all --home=/astra"
+	@docker run --rm -v $(CURDIR)/build/node2/astrad:/astra:Z astra/node "./astrad tendermint unsafe-reset-all --home=/astra"
+	@docker run --rm -v $(CURDIR)/build/node3/astrad:/astra:Z astra/node "./astrad tendermint unsafe-reset-all --home=/astra"
 endif
 
 # Clean testnet
 localnet-show-logstream:
 	docker-compose logs --tail=1000 -f
 
-.PHONY: build-docker-local-astra localnet-start localnet-stop
+.PHONY: localnet-build localnet-start localnet-stop
 
 ###############################################################################
 ###                                Releasing                                ###
 ###############################################################################
 
 PACKAGE_NAME:=github.com/AstraProtocol/astra
-GOLANG_CROSS_VERSION  = v1.17.1
+GOLANG_CROSS_VERSION  = v1.18
 GOPATH ?= '$(HOME)/go'
 release-dry-run:
 	docker run \
@@ -581,7 +567,7 @@ release-dry-run:
 		-v `pwd`:/go/src/$(PACKAGE_NAME) \
 		-v ${GOPATH}/pkg:/go/pkg \
 		-w /go/src/$(PACKAGE_NAME) \
-		ghcr.io/troian/golang-cross:${GOLANG_CROSS_VERSION} \
+		ghcr.io/goreleaser/goreleaser-cross:${GOLANG_CROSS_VERSION} \
 		--rm-dist --skip-validate --skip-publish --snapshot
 
 release:
@@ -597,7 +583,7 @@ release:
 		-v /var/run/docker.sock:/var/run/docker.sock \
 		-v `pwd`:/go/src/$(PACKAGE_NAME) \
 		-w /go/src/$(PACKAGE_NAME) \
-		ghcr.io/troian/golang-cross:${GOLANG_CROSS_VERSION} \
+		ghcr.io/goreleaser/goreleaser-cross:${GOLANG_CROSS_VERSION} \
 		release --rm-dist --skip-validate
 
 .PHONY: release-dry-run release

@@ -38,9 +38,9 @@ import (
 	servercfg "github.com/evmos/ethermint/server/config"
 	srvflags "github.com/evmos/ethermint/server/flags"
 
-	"github.com/AstraProtocol/astra/v2/app"
-	cmdcfg "github.com/AstraProtocol/astra/v2/cmd/config"
-	astrakr "github.com/AstraProtocol/astra/v2/crypto/keyring"
+	"github.com/AstraProtocol/astra/v1/app"
+	cmdcfg "github.com/AstraProtocol/astra/v1/cmd/config"
+	astrakr "github.com/AstraProtocol/astra/v1/crypto/keyring"
 )
 
 const (

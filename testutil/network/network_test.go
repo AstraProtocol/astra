@@ -14,7 +14,7 @@ import (
 	"github.com/evmos/ethermint/server/config"
 	"github.com/evmos/ethermint/testutil/network"
 
-	astranetwork "github.com/AstraProtocol/astra/v2/testutil/network"
+	astranetwork "github.com/AstraProtocol/astra/v1/testutil/network"
 )
 
 type IntegrationTestSuite struct {

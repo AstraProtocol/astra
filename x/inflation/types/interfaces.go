@@ -1,4 +1,4 @@
-package types // noalias
+package types // Package types noalias
 
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"

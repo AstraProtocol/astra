@@ -5,7 +5,7 @@ import (
 	ethermint "github.com/evmos/ethermint/types"
 	"strings"
 
-	"github.com/AstraProtocol/astra/v2/cmd/config"
+	"github.com/AstraProtocol/astra/v1/cmd/config"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
 )

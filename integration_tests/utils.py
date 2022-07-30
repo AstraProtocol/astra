@@ -163,7 +163,6 @@ def wait_for_new_inflation_periods(cli, n=1):
 
 def wait_for_block_time(cli, t):
     print("wait for block time", t)
-    now = isoparse("1900-01-01 01:01:01.01+00:00")
     while True:
         try:
             now = isoparse((cli.status())["SyncInfo"]["latest_block_time"])

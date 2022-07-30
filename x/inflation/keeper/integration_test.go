@@ -23,7 +23,8 @@ var _ = Describe("Inflation", Ordered, func() {
 	})
 
 	Describe("Committing a block", func() {
-
+		initSupply := s.app.InflationKeeper.GetCirculatingSupply(s.ctx)
+		genesisProvision := sdk.MustNewDecFromStr("608821917808219178082191.000000000000000000")
 		Context("with inflation param enabled", func() {
 			BeforeEach(func() {
 				params := s.app.InflationKeeper.GetParams(s.ctx)
@@ -36,12 +37,65 @@ var _ = Describe("Inflation", Ordered, func() {
 					s.CommitAfter(time.Minute)    // Start Epoch
 					s.CommitAfter(time.Hour * 23) // End Epoch
 				})
+				It("should equal init supply", func() {
+					supply := s.app.InflationKeeper.GetCirculatingSupply(s.ctx)
+					Expect(supply).To(Equal(initSupply))
+				})
 			})
 
 			Context("after an epoch ends", func() {
 				BeforeEach(func() {
 					s.CommitAfter(time.Minute)    // Start Epoch
 					s.CommitAfter(time.Hour * 25) // End Epoch
+				})
+
+				It("should release token to block reward", func() {
+					supply := s.app.InflationKeeper.GetCirculatingSupply(s.ctx)
+					Expect(supply).To(Equal(genesisProvision))
+				})
+			})
+
+			Context("after two epoch ends", func() {
+				BeforeEach(func() {
+					s.CommitAfter(time.Minute)    // Start Epoch
+					s.CommitAfter(time.Hour * 24) // End 1 Epoch
+					s.CommitAfter(time.Hour * 50) // End 2 Epoch
+				})
+
+				It("should release token to block reward 608821917808219178082191 * 2", func() {
+					supply := s.app.InflationKeeper.GetCirculatingSupply(s.ctx)
+					supplyAfter2Epoch := sdk.MustNewDecFromStr("1217643835616438356164382.000000000000000000")
+					Expect(supply).To(Equal(supplyAfter2Epoch))
+				})
+			})
+			Context("after 365 epoch ends", func() {
+				BeforeEach(func() {
+					s.CommitAfter(time.Minute) // Start Epoch
+					for i := 1; i < 366; i++ {
+						t := 24 * i
+						s.CommitAfter(time.Hour * time.Duration(t)) // End Epoch i
+					}
+				})
+
+				It("should release token to block reward 608821917808219178082191 * 365", func() {
+					supply := s.app.InflationKeeper.GetCirculatingSupply(s.ctx)
+					supplyAfter2Epoch := sdk.MustNewDecFromStr("222219999999999999999999715.000000000000000000")
+					Expect(supply).To(Equal(supplyAfter2Epoch))
+				})
+			})
+			Context("after 366 epoch ends", func() {
+				BeforeEach(func() {
+					s.CommitAfter(time.Minute) // Start Epoch
+					for i := 1; i < 367; i++ {
+						t := 24 * i
+						s.CommitAfter(time.Hour * time.Duration(t)) // End Epoch i
+					}
+				})
+
+				It("should release token to block reward, 608821917808219178082191 * 365 + 608821917808219178082191 * 0.9", func() {
+					supply := s.app.InflationKeeper.GetCirculatingSupply(s.ctx)
+					supplyAfter2Epoch := sdk.MustNewDecFromStr("222767939726027397260273687.000000000000000000")
+					Expect(supply).To(Equal(supplyAfter2Epoch))
 				})
 			})
 		})
