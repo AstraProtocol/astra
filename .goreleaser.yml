@@ -33,7 +33,7 @@ builds:
       - -tags=cgo
     ldflags:
       - -s -w -X github.com/cosmos/cosmos-sdk/version.Name=astra -X github.com/cosmos/cosmos-sdk/version.AppName=astrad -X github.com/cosmos/cosmos-sdk/version.Version={{.Version}} -X github.com/cosmos/cosmos-sdk/version.Commit={{.Commit}}
-  - id: "astrad-linux"
+  - id: "astrad-linux-amd64"
     main: ./cmd/astrad
     binary: bin/astrad
     env:
@@ -86,7 +86,6 @@ archives:
       darwin: Darwin
       linux: Linux
       windows: Windows
-      amd64: x86_64
     format_overrides:
       - goos: windows
         format: zip
@@ -94,7 +93,7 @@ archives:
       - astrad-darwin
       - astrad-darwin-arm64
       - astrad-windows
-      - astrad-linux
+      - astrad-linux-amd64
       - astrad-linux-arm64
 
 checksum:
