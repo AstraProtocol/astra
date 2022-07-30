@@ -65,7 +65,6 @@ def fn_vote_option(astra, vote):
     amount = astra.cosmos_cli(0).balance(astra.cosmos_cli(0).address("team"))
     rsp = astra.cosmos_cli(0).gov_deposit("team", proposal_id, "%daastra" % deposit_amount)
     assert rsp["code"] == 0, rsp["raw_log"]
-    wait_for_block(astra.cosmos_cli(0), 2)
     assert astra.cosmos_cli(0).balance(astra.cosmos_cli(0).address("team")) == amount - deposit_amount
 
     proposal = astra.cosmos_cli(0).query_proposal(proposal_id)

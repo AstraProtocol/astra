@@ -5,9 +5,6 @@ import (
 	"encoding/json"
 	"github.com/AstraProtocol/astra/v1/x/inflation"
 	"github.com/evmos/evmos/v6/x/epochs"
-	"github.com/evmos/evmos/v6/x/fees"
-	feeskeeper "github.com/evmos/evmos/v6/x/fees/keeper"
-	feestypes "github.com/evmos/evmos/v6/x/fees/types"
 	"io"
 	"net/http"
 	"os"
@@ -183,7 +180,6 @@ var (
 		inflation.AppModuleBasic{},
 		erc20.AppModuleBasic{},
 		epochs.AppModuleBasic{},
-		fees.AppModuleBasic{},
 	)
 
 	// module account permissions
@@ -261,7 +257,6 @@ type Astra struct {
 	Erc20Keeper     erc20keeper.Keeper
 	EpochsKeeper    epochskeeper.Keeper
 	VestingKeeper   vestingkeeper.Keeper
-	FeesKeeper      feeskeeper.Keeper
 
 	// the module manager
 	mm *module.Manager
@@ -447,11 +442,6 @@ func NewAstraApp(
 			app.InflationKeeper.Hooks(),
 		),
 	)
-	app.FeesKeeper = feeskeeper.NewKeeper(
-		keys[feestypes.StoreKey], appCodec, app.GetSubspace(feestypes.ModuleName),
-		app.BankKeeper, app.EvmKeeper,
-		authtypes.FeeCollectorName,
-	)
 
 	app.GovKeeper = *govKeeper.SetHooks(
 		govtypes.NewMultiGovHooks(),
@@ -636,7 +626,6 @@ func NewAstraApp(
 		erc20types.ModuleName,
 		epochstypes.ModuleName,
 		inflationtypes.ModuleName,
-		feestypes.ModuleName,
 		// NOTE: crisis module must go at the end to check for invariants on each module
 		crisistypes.ModuleName,
 	)
