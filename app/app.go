@@ -120,6 +120,8 @@ import (
 
 	inflationkeeper "github.com/AstraProtocol/astra/v1/x/inflation/keeper"
 	inflationtypes "github.com/AstraProtocol/astra/v1/x/inflation/types"
+
+	v1_1 "github.com/AstraProtocol/astra/v1/app/upgrades/v1_1"
 )
 
 func init() {
@@ -138,9 +140,9 @@ const (
 	// Name defines the application binary name
 	Name = "astrad"
 	// MainnetChainID defines the Astra EIP155 chain ID for mainnet
-	MainnetChainID = "astra_11111"
+	MainnetChainID = "astra_11110"
 	// TestnetChainID defines the Astra EIP155 chain ID for testnet
-	TestnetChainID = "astra_11110"
+	TestnetChainID = "astra_11115"
 )
 
 var (
@@ -941,5 +943,10 @@ func initParamsKeeper(
 }
 
 func (app *Astra) setupUpgradeHandlers() {
-	// upgrade handler
+	// v1.0.1 upgrade handler
+	app.UpgradeKeeper.SetUpgradeHandler(v1_1.UpgradeName,
+		v1_1.CreateUpgradeHandler(app.mm,
+			app.configurator,
+			app.StakingKeeper,
+			app.ParamsKeeper))
 }
