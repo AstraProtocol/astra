@@ -20,7 +20,7 @@ func (k Keeper) AfterEpochEnd(ctx sdk.Context, epochIdentifier string, epochNumb
 
 	// Skip inflation if it is disabled and increment number of skipped epochs
 	if !params.EnableInflation {
-		// check if the epochIdentifier is "day" before incrementing.
+		// check if the epochIdentifier is `day` before incrementing.
 		if epochIdentifier != epochstypes.DayEpochID {
 			return
 		}
