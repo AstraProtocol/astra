@@ -47,18 +47,6 @@ func (k Keeper) AllocateInflation(ctx sdk.Context, mintedCoin sdk.Coin) error {
 	)
 }
 
-// BondedRatio the fraction of the staking tokens which are currently bonded
-// It doesn't consider team allocation for inflation
-func (k Keeper) BondedRatio(ctx sdk.Context) sdk.Dec {
-	stakeSupply := k.stakingKeeper.StakingTokenSupply(ctx)
-
-	if !stakeSupply.IsPositive() {
-		return sdk.ZeroDec()
-	}
-
-	return k.stakingKeeper.TotalBondedTokens(ctx).ToDec().QuoInt(stakeSupply)
-}
-
 // GetCirculatingSupply returns the bank supply.
 func (k Keeper) GetCirculatingSupply(ctx sdk.Context) sdk.Dec {
 	circulatingSupply := k.bankKeeper.GetSupply(ctx, config.BaseDenom).Amount.ToDec()
