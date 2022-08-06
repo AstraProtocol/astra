@@ -25,9 +25,9 @@ DOCKER_TAG := $(COMMIT_HASH)
 export GO111MODULE = on
 
 # Default target executed when no arguments are given to make.
-default_target: all
+default_target: print_parameter all
 
-.PHONY: default_target
+.PHONY: default_target print_parameter
 
 # process build tags
 
@@ -99,6 +99,13 @@ ifeq (,$(findstring nostrip,$(COSMOS_BUILD_OPTIONS)))
 endif
 ldflags += $(LDFLAGS)
 ldflags := $(strip $(ldflags))
+
+build_tags += $(BUILD_TAGS)
+
+print_parameter:
+	@echo "======="
+	@echo ${COSMOS_BUILD_OPTIONS}
+	@echo "======="
 
 BUILD_FLAGS := -tags "$(build_tags)" -ldflags '$(ldflags)'
 # check for nostrip option
