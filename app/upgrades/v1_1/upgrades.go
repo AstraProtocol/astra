@@ -26,11 +26,11 @@ func CreateUpgradeHandler(
 		// - https://docs.cosmos.network/master/migrations/chain-upgrade-guide-044.html#chain-upgrade
 
 		if types.IsTestnet(ctx.ChainID()) {
-			logger.Debug("updating Tendermint consensus params...")
+			logger.Info("updating Tendermint consensus params...")
 			UpdateConsensusParams(ctx, sk, pk)
 		}
 		// Leave modules are as-is to avoid running InitGenesis.
-		logger.Debug("running module migrations ...")
+		logger.Info("running module migrations ...")
 		return mm.RunMigrations(ctx, configurator, vm)
 	}
 }

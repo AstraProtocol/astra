@@ -22,13 +22,19 @@ func (k Keeper) AfterEpochEnd(ctx sdk.Context, epochIdentifier string, epochNumb
 	if !params.EnableInflation {
 		// check if the epochIdentifier is `day` before incrementing.
 		if epochIdentifier != epochstypes.DayEpochID {
+			k.Logger(ctx).Info(
+				"skipping counting skippedEpochs (EnableInflation = false)",
+				"height", ctx.BlockHeight(),
+				"epoch-id", epochIdentifier,
+				"epoch-number", epochNumber,
+			)
 			return
 		}
 		skippedEpochs++
 
 		k.SetSkippedEpochs(ctx, skippedEpochs)
-		k.Logger(ctx).Debug(
-			"skipping inflation mint and distribution",
+		k.Logger(ctx).Info(
+			"skipping inflation mint (EnableInflation = false)",
 			"height", ctx.BlockHeight(),
 			"epoch-id", epochIdentifier,
 			"epoch-number", epochNumber,
@@ -39,6 +45,13 @@ func (k Keeper) AfterEpochEnd(ctx sdk.Context, epochIdentifier string, epochNumb
 
 	expEpochID := k.GetEpochIdentifier(ctx)
 	if epochIdentifier != expEpochID {
+		k.Logger(ctx).Info(
+			"skipping inflation mint (epochIDs mismatch)",
+			"height", ctx.BlockHeight(),
+			"epoch-id", epochIdentifier,
+			"expEpochID", expEpochID,
+			"epoch-number", epochNumber,
+		)
 		return
 	}
 
@@ -70,7 +83,6 @@ func (k Keeper) AfterEpochEnd(ctx sdk.Context, epochIdentifier string, epochNumb
 	if epochNumber-epochsPerPeriod*int64(period)-int64(skippedEpochs) > epochsPerPeriod {
 		period++
 		k.SetPeriod(ctx, period)
-		period = k.GetPeriod(ctx)
 		newProvision = types.CalculateEpochMintProvision(
 			params,
 			period,
