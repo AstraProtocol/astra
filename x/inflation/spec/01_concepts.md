@@ -31,16 +31,16 @@ the rest of Astras in subsequent years.
 
 Here are the detail of the tokenomics:
 
-|                              |    % |            #ASA | Minted at genesis |                                                                Vesting schedule |
-|:-----------------------------|-----:|----------------:|------------------:|--------------------------------------------------------------------------------:|
-| **Core Contributors**        |  15% |   1,666,650,000 |     1,666,650,000 | 100% minted at genesis: 20% unlocked at genesis, 80% linearly vested in 8 years |
-| **Genesis Partners**         |  15% |   1,666,650,000 |     1,666,650,000 | 100% minted at genesis: 20% unlocked at genesis, 80% linearly vested in 8 years |
-| **Dev/Community Incentives** |   5% |     555,550,000 |       555,550,000 | 100% minted at genesis: 20% unlocked at genesis, 80% linearly vested in 8 years |
-| **Staking Rewards**          |  20% |   2,222,220,000 |                 0 |                              100% exponentially vested with `decay_factor = 5%` |
-| **Reward Providers**         |  30% |   3,333,330,000 |     3,333,330,000 |                        100% minted & locked at genesis, unlocked with GOV rules |
-| **Reserve Treasury**         |  10% |   1,111,110,000 |     1,111,110,000 |                        100% minted & locked at genesis, unlocked with GOV rules |
-| **LP Rewards**               |   5% |     555,550,000 |       555,550,000 |                        100% minted & locked at genesis, unlocked with GOV rules |
-| **Total**                    | 100% |  11,111,000,000 |     8,888,780,000 |                                                                                 |
+|                              |    % |           #ASA | Minted at genesis |                                                                Vesting schedule |
+|:-----------------------------|-----:|---------------:|------------------:|--------------------------------------------------------------------------------:|
+| **Core Contributors**        |  15% |  1,666,650,000 |     1,666,650,000 | 100% minted at genesis: 20% unlocked at genesis, 80% linearly vested in 8 years |
+| **Genesis Partners**         |  15% |  1,666,650,000 |     1,666,650,000 | 100% minted at genesis: 20% unlocked at genesis, 80% linearly vested in 8 years |
+| **Dev/Community Incentives** |   5% |    555,550,000 |       555,550,000 | 100% minted at genesis: 20% unlocked at genesis, 80% linearly vested in 8 years |
+| **Staking Rewards**          |  20% |  2,222,200,000 |                 0 |                              100% exponentially vested with `decay_factor = 5%` |
+| **Reward Providers**         |  30% |  3,333,300,000 |     3,333,300,000 |                        100% minted & locked at genesis, unlocked with GOV rules |
+| **Reserve Treasury**         |  10% |  1,111,100,000 |     1,111,100,000 |                        100% minted & locked at genesis, unlocked with GOV rules |
+| **LP Rewards**               |   5% |    555,550,000 |       555,550,000 |                        100% minted & locked at genesis, unlocked with GOV rules |
+| **Total**                    | 100% | 11,111,000,000 |     8,888,780,000 |                                                                                 |
 
 
 ### Exponential Inflation - Block Rewards
