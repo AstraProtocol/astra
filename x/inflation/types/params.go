@@ -2,12 +2,10 @@ package types
 
 import (
 	"fmt"
-	ethermint "github.com/evmos/ethermint/types"
-	"strings"
-
 	"github.com/AstraProtocol/astra/v1/cmd/config"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
+	ethermint "github.com/evmos/ethermint/types"
 )
 
 var DefaultInflationDenom = config.BaseDenom
@@ -42,7 +40,7 @@ func DefaultParams() Params {
 		MintDenom: DefaultInflationDenom,
 		InflationParameters: InflationParameters{
 			MaxStakingRewards: sdk.NewDec(2222200000).Mul(ethermint.PowerReduction.ToDec()),
-			R:                 sdk.NewDecWithPrec(10, 2), // decayFactor = 10%
+			R:                 sdk.NewDecWithPrec(5, 2), // decayFactor = 5%
 		},
 		EnableInflation: true,
 	}
@@ -63,12 +61,6 @@ func validateMintDenom(i interface{}) error {
 		return fmt.Errorf("invalid parameter type: %T", i)
 	}
 
-	if strings.TrimSpace(v) == "" {
-		return fmt.Errorf("mint denom cannot be blank")
-	}
-	if err := sdk.ValidateDenom(v); err != nil {
-		return err
-	}
 	if v != config.BaseDenom && v != config.DisplayDenom {
 		return fmt.Errorf("mint denom must be one of [%v, %v]", config.BaseDenom, config.DisplayDenom)
 	}
@@ -87,12 +79,12 @@ func validateInflationParameters(i interface{}) error {
 	}
 
 	// validate reduction factor
-	if v.R.GT(sdk.NewDec(1)) {
-		return fmt.Errorf("DecayFactor cannot be greater than 1")
+	if v.R.GTE(sdk.NewDec(1)) {
+		return fmt.Errorf("DecayFactor cannot be greater than or equal to 1")
 	}
 
-	if v.R.IsNegative() {
-		return fmt.Errorf("DecayFactor cannot be negative")
+	if v.R.LTE(sdk.NewDec(0)) {
+		return fmt.Errorf("DecayFactor cannot be negative or equal to 0")
 	}
 
 	return nil

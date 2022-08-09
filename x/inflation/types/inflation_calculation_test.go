@@ -22,6 +22,7 @@ func TestInflationSuite(t *testing.T) {
 func (suite *InflationTestSuite) TestCalculateEpochMintProvision() {
 	epochsPerPeriod := int64(365)
 	defaultParams := DefaultParams()
+	defaultParams.InflationParameters.R = sdk.NewDecWithPrec(10, 2)
 	baseParams := defaultParams
 	baseParams.MintDenom = config.DisplayDenom
 	baseParams.InflationParameters.MaxStakingRewards = baseParams.InflationParameters.MaxStakingRewards.Quo(ethermint.PowerReduction.ToDec())
