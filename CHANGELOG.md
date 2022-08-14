@@ -1,4 +1,28 @@
 
+<a name="v1.2.1"></a>
+## [v1.2.1](https://github.com/AstraProtocol/astra/compare/v1.2.0...v1.2.1) (2022-08-03)
+
+
+<a name="v1.2.0"></a>
+## [v1.2.0](https://github.com/AstraProtocol/astra/compare/v1.1.0...v1.2.0) (2022-08-01)
+
+### Deps
+
+* bump ethermint to 0.17.3-astra ([#77](https://github.com/AstraProtocol/astra/issues/77))
+
+### Fix
+
+* update version ethermint ([#79](https://github.com/AstraProtocol/astra/issues/79))
+
+
+<a name="v1.1.0"></a>
+## [v1.1.0](https://github.com/AstraProtocol/astra/compare/v1.0.0...v1.1.0) (2022-07-28)
+
+### Chore
+
+* add changelog ([#73](https://github.com/AstraProtocol/astra/issues/73))
+
+
 <a name="v1.0.0"></a>
 ## [v1.0.0](https://github.com/AstraProtocol/astra/compare/v0.3.2...v1.0.0) (2022-07-13)
 
@@ -8,7 +32,7 @@
 
 ### Feat
 
-* update evmos to v6 ([#59](https://github.com/AstraProtocol/astra/issues/59))
+* add module fees and update evmos to v6 ([#59](https://github.com/AstraProtocol/astra/issues/59))
 
 ### Fix
 
