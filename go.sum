@@ -68,8 +68,8 @@ filippo.io/edwards25519 v1.0.0-beta.2 h1:/BZRNzm8N4K4eWfK28dL4yescorxtO7YG1yun8f
 filippo.io/edwards25519 v1.0.0-beta.2/go.mod h1:X+pm78QAUPtFLi1z9PYIlS/bdDnvbCOGKtZ+ACWEf7o=
 github.com/Antonboom/errname v0.1.6/go.mod h1:7lz79JAnuoMNDAWE9MeeIr1/c/VpSUWatBv2FH9NYpI=
 github.com/Antonboom/nilnil v0.1.1/go.mod h1:L1jBqoWM7AOeTD+tSquifKSesRHs4ZdaxvZR+xdJEaI=
-github.com/AstraProtocol/ethermint v0.17.3-astra h1:WaxcyIhdRTqpJ5MpzdC0eUkb880mTcUiU2+aafone3w=
-github.com/AstraProtocol/ethermint v0.17.3-astra/go.mod h1:F7SbOTTI3Gpbhn7rWWY7hTzUfb+aF+U+lQAMgdYTZiM=
+github.com/AstraProtocol/ethermint v0.18.0-astra h1:LSFJbQ/sJKgyS9eTzh+fFCfLSFx8iJaUFAMEpcWBW0c=
+github.com/AstraProtocol/ethermint v0.18.0-astra/go.mod h1:F7SbOTTI3Gpbhn7rWWY7hTzUfb+aF+U+lQAMgdYTZiM=
 github.com/AstraProtocol/evmos/v6 v6.0.3-astra h1:gkQxTnSCzOvhq4izepQ+nq4Z7m0Czff3jrK4fbbKa5A=
 github.com/AstraProtocol/evmos/v6 v6.0.3-astra/go.mod h1:e/zM/ZQzNepW6k1G6M4v9++Q7uNgPkCkzeJYoPeN4Qs=
 github.com/Azure/azure-pipeline-go v0.2.1/go.mod h1:UGSo8XybXnIGZ3epmeBw7Jdz+HiUVpqIlpz/HKHylF4=
