@@ -24,7 +24,7 @@ var _ = Describe("Inflation", Ordered, func() {
 
 	Describe("Committing a block", func() {
 		initSupply := s.app.InflationKeeper.GetCirculatingSupply(s.ctx)
-		genesisProvision := sdk.MustNewDecFromStr("608821917808219178082191.000000000000000000")
+		genesisProvision := sdk.MustNewDecFromStr("304410958904109589041095.000000000000000000")
 		Context("with inflation param enabled", func() {
 			BeforeEach(func() {
 				params := s.app.InflationKeeper.GetParams(s.ctx)
@@ -62,9 +62,9 @@ var _ = Describe("Inflation", Ordered, func() {
 					s.CommitAfter(time.Hour * 50) // End 2 Epoch
 				})
 
-				It("should release token to block reward 608821917808219178082191 * 2", func() {
+				It("should release token to block reward 304410958904109589041095 * 2", func() {
 					supply := s.app.InflationKeeper.GetCirculatingSupply(s.ctx)
-					supplyAfter2Epoch := sdk.MustNewDecFromStr("1217643835616438356164382.000000000000000000")
+					supplyAfter2Epoch := sdk.MustNewDecFromStr("608821917808219178082190")
 					Expect(supply).To(Equal(supplyAfter2Epoch))
 				})
 			})
@@ -77,9 +77,9 @@ var _ = Describe("Inflation", Ordered, func() {
 					}
 				})
 
-				It("should release token to block reward 608821917808219178082191 * 365", func() {
+				It("should release token to block reward 304410958904109589041095 * 365", func() {
 					supply := s.app.InflationKeeper.GetCirculatingSupply(s.ctx)
-					supplyAfter2Epoch := sdk.MustNewDecFromStr("222219999999999999999999715.000000000000000000")
+					supplyAfter2Epoch := sdk.MustNewDecFromStr("111109999999999999999999675")
 					Expect(supply).To(Equal(supplyAfter2Epoch))
 				})
 			})
@@ -92,9 +92,9 @@ var _ = Describe("Inflation", Ordered, func() {
 					}
 				})
 
-				It("should release token to block reward, 608821917808219178082191 * 365 + 608821917808219178082191 * 0.9", func() {
+				It("should release token to block reward, 304410958904109589041095 * 365 + 304410958904109589041095 * 0.95", func() {
 					supply := s.app.InflationKeeper.GetCirculatingSupply(s.ctx)
-					supplyAfter2Epoch := sdk.MustNewDecFromStr("222767939726027397260273687.000000000000000000")
+					supplyAfter2Epoch := sdk.MustNewDecFromStr("111399190410958904109588716")
 					Expect(supply).To(Equal(supplyAfter2Epoch))
 				})
 			})
@@ -191,7 +191,7 @@ var _ = Describe("Inflation", Ordered, func() {
 						It("should recalculate the EpochMintProvision", func() {
 							provisionAfter, _ := s.app.InflationKeeper.GetEpochMintProvision(s.ctx)
 							Expect(provisionAfter).ToNot(Equal(provision))
-							Expect(provisionAfter).To(Equal(sdk.MustNewDecFromStr("199998000000000000000000000")))
+							Expect(provisionAfter).To(Equal(sdk.MustNewDecFromStr("105554500000000000000000000")))
 						})
 					})
 				})
