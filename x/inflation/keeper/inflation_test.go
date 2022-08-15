@@ -91,19 +91,19 @@ func (suite *KeeperTestSuite) TestGetCirculatingSupplyAndInflationRate() {
 			"usual supply",
 			400_000_000,
 			func() {},
-			sdk.MustNewDecFromStr("55.5550000000000000"),
+			sdk.MustNewDecFromStr("27.777500000000000000"),
 		},
 		{
 			"high supply",
 			800_000_000,
 			func() {},
-			sdk.MustNewDecFromStr("27.7775000000000000"),
+			sdk.MustNewDecFromStr("13.888750000000000000"),
 		},
 		{
 			"low supply",
 			200_000_000,
 			func() {},
-			sdk.MustNewDecFromStr("111.110000000000000000"),
+			sdk.MustNewDecFromStr("55.555000000000000000"),
 		},
 	}
 	for _, tc := range testCases {
