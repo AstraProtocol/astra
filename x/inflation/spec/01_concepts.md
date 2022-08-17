@@ -56,7 +56,7 @@ with a decay factor `r`. Precisely, at the end of each period, the provision is 
 f(x) = r * (1 - r)^x * R
 where
     x = variable = period (i.e, year)
-    r = 0.01 = decay factor
+    r = 0.05 = decay factor
     R = total amount of block rewards
 ```
 
