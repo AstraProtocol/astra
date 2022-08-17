@@ -25,7 +25,7 @@ governance proposals is distributed amongst more people.
 The Astra Token Model outlines how the Astra network is secured through a
 balanced incentivized interest from users, developers and validators. In this
 model, inflation plays a major role in sustaining this balance. With an initial
-supply of 8,888,780,000 Astras and 111,111,000 Astras being issued through inflation
+supply of 8,888,800,000 Astras and 111,111,000 Astras being issued through inflation
 during the first year, the model suggests an exponential decline in inflation to
 the rest of Astras in subsequent years.
 
@@ -56,7 +56,7 @@ with a decay factor `r`. Precisely, at the end of each period, the provision is 
 f(x) = r * (1 - r)^x * R
 where
     x = variable = period (i.e, year)
-    r = 0.1 = decay factor
+    r = 0.05 = decay factor
     R = total amount of block rewards
 ```
 
