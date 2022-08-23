@@ -3,7 +3,7 @@ package app
 import (
 	"context"
 	"encoding/json"
-	"github.com/AstraProtocol/astra/v1/x/inflation"
+	"github.com/AstraProtocol/astra/v2/x/inflation"
 	"github.com/evmos/evmos/v6/x/epochs"
 	"io"
 	"net/http"
@@ -93,7 +93,7 @@ import (
 	ibctesting "github.com/cosmos/ibc-go/v3/testing"
 
 	// unnamed import of statik for swagger UI support
-	_ "github.com/AstraProtocol/astra/v1/client/docs/statik"
+	_ "github.com/AstraProtocol/astra/v2/client/docs/statik"
 	"github.com/evmos/ethermint/encoding"
 
 	srvflags "github.com/evmos/ethermint/server/flags"
@@ -107,7 +107,7 @@ import (
 	feemarketkeeper "github.com/evmos/ethermint/x/feemarket/keeper"
 	feemarkettypes "github.com/evmos/ethermint/x/feemarket/types"
 
-	"github.com/AstraProtocol/astra/v1/app/ante"
+	"github.com/AstraProtocol/astra/v2/app/ante"
 	epochskeeper "github.com/evmos/evmos/v6/x/epochs/keeper"
 	epochstypes "github.com/evmos/evmos/v6/x/epochs/types"
 	"github.com/evmos/evmos/v6/x/erc20"
@@ -118,10 +118,10 @@ import (
 	vestingkeeper "github.com/evmos/evmos/v6/x/vesting/keeper"
 	vestingtypes "github.com/evmos/evmos/v6/x/vesting/types"
 
-	inflationkeeper "github.com/AstraProtocol/astra/v1/x/inflation/keeper"
-	inflationtypes "github.com/AstraProtocol/astra/v1/x/inflation/types"
+	inflationkeeper "github.com/AstraProtocol/astra/v2/x/inflation/keeper"
+	inflationtypes "github.com/AstraProtocol/astra/v2/x/inflation/types"
 
-	v1_1 "github.com/AstraProtocol/astra/v1/app/upgrades/v1_1"
+	v1_1 "github.com/AstraProtocol/astra/v2/app/upgrades/v1_1"
 )
 
 func init() {

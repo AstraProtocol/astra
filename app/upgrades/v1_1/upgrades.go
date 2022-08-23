@@ -1,7 +1,7 @@
 package v1_1
 
 import (
-	"github.com/AstraProtocol/astra/v1/types"
+	"github.com/AstraProtocol/astra/v2/types"
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
