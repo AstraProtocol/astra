@@ -6,8 +6,8 @@ require (
 	github.com/cosmos/cosmos-sdk v0.45.7
 	github.com/cosmos/go-bip39 v1.0.0
 	github.com/cosmos/ibc-go/v3 v3.2.0
-	github.com/ethereum/go-ethereum v1.10.17
-	github.com/evmos/ethermint v0.18.0
+	github.com/ethereum/go-ethereum v1.10.19
+	github.com/evmos/ethermint v0.19.0
 	github.com/evmos/evmos/v6 v6.0.1
 	github.com/gogo/protobuf v1.3.3
 	github.com/golang/protobuf v1.5.2
@@ -23,11 +23,12 @@ require (
 	github.com/tendermint/tendermint v0.34.20
 	github.com/tendermint/tm-db v0.6.7
 	go.opencensus.io v0.23.0
-	google.golang.org/genproto v0.0.0-20220712132514-bdd2acd4974d
+	google.golang.org/genproto v0.0.0-20220810155839-1856144b1d9c
 	google.golang.org/grpc v1.48.0
 )
 
 require (
+	cosmossdk.io/math v1.0.0-beta.3 // indirect
 	filippo.io/edwards25519 v1.0.0-beta.2 // indirect
 	github.com/99designs/keyring v1.1.6 // indirect
 	github.com/ChainSafe/go-schnorrkel v0.0.0-20200405005733-88cbf1b4c40d // indirect
@@ -39,7 +40,7 @@ require (
 	github.com/beorn7/perks v1.0.1 // indirect
 	github.com/bgentry/speakeasy v0.1.0 // indirect
 	github.com/btcsuite/btcd v0.22.1 // indirect
-	github.com/btcsuite/btcd/btcec/v2 v2.1.2 // indirect
+	github.com/btcsuite/btcd/btcec/v2 v2.2.0 // indirect
 	github.com/btcsuite/btcd/chaincfg/chainhash v1.0.1 // indirect
 	github.com/btcsuite/btcutil v1.0.3-0.20201208143702-a53e38424cce // indirect
 	github.com/cenkalti/backoff/v4 v4.1.3 // indirect
@@ -60,6 +61,8 @@ require (
 	github.com/dgraph-io/badger/v2 v2.2007.3 // indirect
 	github.com/dgraph-io/ristretto v0.1.0 // indirect
 	github.com/dgryski/go-farm v0.0.0-20200201041132-a6ae2369ad13 // indirect
+	github.com/dlclark/regexp2 v1.4.1-0.20201116162257-a2a8dda75c91 // indirect
+	github.com/dop251/goja v0.0.0-20220405120441-9037c2b61cbf // indirect
 	github.com/dustin/go-humanize v1.0.0 // indirect
 	github.com/dvsekhvalnov/jose2go v0.0.0-20200901110807-248326c1351b // indirect
 	github.com/edsrzf/mmap-go v1.0.0 // indirect
@@ -70,6 +73,7 @@ require (
 	github.com/go-kit/log v0.2.1 // indirect
 	github.com/go-logfmt/logfmt v0.5.1 // indirect
 	github.com/go-ole/go-ole v1.2.6 // indirect
+	github.com/go-sourcemap/sourcemap v2.1.3+incompatible // indirect
 	github.com/go-stack/stack v1.8.0 // indirect
 	github.com/godbus/dbus v0.0.0-20190726142602-4481cbc300e2 // indirect
 	github.com/gogo/gateway v1.1.0 // indirect
@@ -91,7 +95,7 @@ require (
 	github.com/hdevalence/ed25519consensus v0.0.0-20210204194344-59a8610d2b87 // indirect
 	github.com/holiman/bloomfilter/v2 v2.0.3 // indirect
 	github.com/holiman/uint256 v1.2.0 // indirect
-	github.com/huin/goupnp v1.0.3-0.20220313090229-ca81a64b4204 // indirect
+	github.com/huin/goupnp v1.0.3 // indirect
 	github.com/improbable-eng/grpc-web v0.15.0 // indirect
 	github.com/inconshreveable/mousetrap v1.0.0 // indirect
 	github.com/jackpal/go-nat-pmp v1.0.2 // indirect
@@ -143,16 +147,15 @@ require (
 	github.com/tyler-smith/go-bip39 v1.1.0 // indirect
 	github.com/zondax/hid v0.9.0 // indirect
 	go.etcd.io/bbolt v1.3.6 // indirect
-	golang.org/x/crypto v0.0.0-20220622213112-05595931fe9d // indirect
+	golang.org/x/crypto v0.0.0-20220722155217-630584e8d5aa // indirect
 	golang.org/x/net v0.0.0-20220617184016-355a448f1bc9 // indirect
 	golang.org/x/sync v0.0.0-20220513210516-0976fa681c29 // indirect
 	golang.org/x/sys v0.0.0-20220615213510-4f61da869c0c // indirect
 	golang.org/x/term v0.0.0-20220526004731-065cf7ba2467 // indirect
 	golang.org/x/text v0.3.7 // indirect
-	google.golang.org/protobuf v1.28.0 // indirect
+	google.golang.org/protobuf v1.28.1 // indirect
 	gopkg.in/ini.v1 v1.66.6 // indirect
 	gopkg.in/natefinch/npipe.v2 v2.0.0-20160621034901-c1b8fa8bdcce // indirect
-	gopkg.in/olebedev/go-duktape.v3 v3.0.0-20200619000410-60c24ae608a6 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 	nhooyr.io/websocket v1.8.7 // indirect
@@ -160,7 +163,7 @@ require (
 
 replace (
 	github.com/99designs/keyring => github.com/cosmos/keyring v1.1.7-0.20210622111912-ef00f8ac3d76
-	github.com/evmos/ethermint => github.com/AstraProtocol/ethermint v0.18.0-astra
+	github.com/evmos/ethermint => github.com/AstraProtocol/ethermint v0.19.0-astra
 	github.com/evmos/evmos/v6 => github.com/AstraProtocol/evmos/v6 v6.0.3-astra
 	github.com/gogo/protobuf => github.com/regen-network/protobuf v1.3.3-alpha.regen.1
 	google.golang.org/grpc => google.golang.org/grpc v1.33.2
