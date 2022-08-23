@@ -1,4 +1,4 @@
-module github.com/AstraProtocol/astra/v1
+module github.com/AstraProtocol/astra/v2
 
 go 1.18
 

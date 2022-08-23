@@ -1,8 +1,8 @@
 package types
 
 import (
-	fmt "fmt"
-	"github.com/AstraProtocol/astra/v1/cmd/config"
+	"fmt"
+	"github.com/AstraProtocol/astra/v2/cmd/config"
 	ethermint "github.com/evmos/ethermint/types"
 	"testing"
 

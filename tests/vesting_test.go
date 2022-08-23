@@ -2,8 +2,8 @@ package tests
 
 import (
 	"fmt"
-	"github.com/AstraProtocol/astra/v1/app"
-	"github.com/AstraProtocol/astra/v1/app/ante"
+	"github.com/AstraProtocol/astra/v2/app"
+	"github.com/AstraProtocol/astra/v2/app/ante"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	"github.com/ethereum/go-ethereum/common"
 	ethtypes "github.com/ethereum/go-ethereum/core/types"
@@ -14,7 +14,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/AstraProtocol/astra/v1/testutil"
+	"github.com/AstraProtocol/astra/v2/testutil"
 	"github.com/evmos/ethermint/tests"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"

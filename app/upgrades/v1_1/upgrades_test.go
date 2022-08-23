@@ -2,8 +2,8 @@ package v1_1_test
 
 import (
 	"fmt"
-	"github.com/AstraProtocol/astra/v1/app/upgrades/v1_1"
-	astratypes "github.com/AstraProtocol/astra/v1/types"
+	"github.com/AstraProtocol/astra/v2/app/upgrades/v1_1"
+	astratypes "github.com/AstraProtocol/astra/v2/types"
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/cosmos/cosmos-sdk/x/upgrade/types"
 	abci "github.com/tendermint/tendermint/abci/types"
@@ -22,7 +22,7 @@ import (
 	"github.com/evmos/ethermint/crypto/ethsecp256k1"
 	feemarkettypes "github.com/evmos/ethermint/x/feemarket/types"
 
-	"github.com/AstraProtocol/astra/v1/app"
+	"github.com/AstraProtocol/astra/v2/app"
 )
 
 type UpgradeTestSuite struct {
