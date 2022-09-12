@@ -113,9 +113,9 @@ astrad add-genesis-account $MASTERTEAM 1333320000000000000000000001aastra --keyr
 
 
 # Sign genesis transaction
-astrad gentx $KEY 9250000000000000000000000aastra --keyring-backend $KEYRING --chain-id $CHAINID --moniker $MONIKER --pubkey="{\"@type\":\"/cosmos.crypto.ed25519.PubKey\",\"key\":\"82U/Lr9fAJ2knYbZfgpvQEjDCdRvi7kCUxqcr9dFPP8=\"}"
-astrad gentx $KEYTEAM 26000000000000000000000000aastra --keyring-backend $KEYRING --chain-id $CHAINID --output-document team.json  --moniker "team validator" --pubkey="{\"@type\":\"/cosmos.crypto.ed25519.PubKey\",\"key\":\"P1DPv1TkA8tN4oDliIt9RPZfOajRYs0LrEGw4Xiv57g=\"}"
-astrad gentx $KEYDEV 30000000000000000000000000aastra --keyring-backend $KEYRING  --chain-id $CHAINID --output-document dev.json  --moniker "community validator" --pubkey="{\"@type\":\"/cosmos.crypto.ed25519.PubKey\",\"key\":\"TAqTpkFSS/ogtptFso4w9XXlNxuN97c72B91xwnc5yE=\"}"
+# astrad gentx $KEY 9250000000000000000000000aastra --keyring-backend $KEYRING --chain-id $CHAINID --moniker $MONIKER --pubkey="{\"@type\":\"/cosmos.crypto.ed25519.PubKey\",\"key\":\"82U/Lr9fAJ2knYbZfgpvQEjDCdRvi7kCUxqcr9dFPP8=\"}"
+# astrad gentx $KEYTEAM 26000000000000000000000000aastra --keyring-backend $KEYRING --chain-id $CHAINID --output-document team.json  --moniker "team validator" --pubkey="{\"@type\":\"/cosmos.crypto.ed25519.PubKey\",\"key\":\"P1DPv1TkA8tN4oDliIt9RPZfOajRYs0LrEGw4Xiv57g=\"}"
+# astrad gentx $KEYDEV 30000000000000000000000000aastra --keyring-backend $KEYRING  --chain-id $CHAINID --output-document dev.json  --moniker "community validator" --pubkey="{\"@type\":\"/cosmos.crypto.ed25519.PubKey\",\"key\":\"TAqTpkFSS/ogtptFso4w9XXlNxuN97c72B91xwnc5yE=\"}"
 
 # Collect genesis tx
 # astrad collect-gentxs
