@@ -7,7 +7,7 @@ import (
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
-	"github.com/AstraProtocol/astra/v1/x/inflation/types"
+	"github.com/AstraProtocol/astra/v2/x/inflation/types"
 )
 
 func (suite *KeeperTestSuite) TestPeriod() {
@@ -254,7 +254,7 @@ func (suite *KeeperTestSuite) TestQueryInflationRate() {
 	err := suite.app.InflationKeeper.MintCoins(suite.ctx, mintCoin)
 	suite.Require().NoError(err)
 
-	expInflationRate := sdk.MustNewDecFromStr("55.555000000000000000")
+	expInflationRate := sdk.MustNewDecFromStr("27.777500000000000000")
 	res, err := suite.queryClient.InflationRate(ctx, &types.QueryInflationRateRequest{})
 	suite.Require().NoError(err)
 	suite.Require().Equal(expInflationRate, res.InflationRate)

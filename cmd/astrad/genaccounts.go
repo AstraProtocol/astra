@@ -24,7 +24,7 @@ import (
 	ethermint "github.com/evmos/ethermint/types"
 	evmtypes "github.com/evmos/ethermint/x/evm/types"
 
-	astrakr "github.com/AstraProtocol/astra/v1/crypto/keyring"
+	astrakr "github.com/AstraProtocol/astra/v2/crypto/keyring"
 
 	vestingcli "github.com/evmos/evmos/v6/x/vesting/client/cli"
 	vestingtypes "github.com/evmos/evmos/v6/x/vesting/types"

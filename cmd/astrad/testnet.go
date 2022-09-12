@@ -43,9 +43,9 @@ import (
 	ethermint "github.com/evmos/ethermint/types"
 	evmtypes "github.com/evmos/ethermint/x/evm/types"
 
-	cmdcfg "github.com/AstraProtocol/astra/v1/cmd/config"
-	astrakr "github.com/AstraProtocol/astra/v1/crypto/keyring"
-	"github.com/AstraProtocol/astra/v1/testutil/network"
+	cmdcfg "github.com/AstraProtocol/astra/v2/cmd/config"
+	astrakr "github.com/AstraProtocol/astra/v2/crypto/keyring"
+	"github.com/AstraProtocol/astra/v2/testutil/network"
 )
 
 var (
