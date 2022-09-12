@@ -11,7 +11,7 @@ KEY="tiki"
 KEYTIKI="abckey"
 CHAINID="astra_11115-1"
 MONIKER="genesisValidator"
-KEYRING="test"
+KEYRING="file"
 KEYALGO="eth_secp256k1"
 LOGLEVEL="info"
 # to trace evm
@@ -21,7 +21,7 @@ TRACE="--trace"
 # validate dependencies are installed
 command -v jq > /dev/null 2>&1 || { echo >&2 "jq not installed. More info: https://stedolan.github.io/jq/download/"; exit 1; }
 
-rm -rf ~/.astrad*
+# rm -rf ~/.astrad*
 
 # Reinstall daemon
 make install
@@ -31,22 +31,22 @@ astrad config keyring-backend $KEYRING
 astrad config chain-id $CHAINID
 
 # if $KEY exists it should be deleted
-astrad keys add $KEY --keyring-backend $KEYRING --algo $KEYALGO
-astrad keys add $KEYTEAM --keyring-backend $KEYRING --algo $KEYALGO
-astrad keys add $KEYTIKI --keyring-backend $KEYRING --algo $KEYALGO
-astrad keys add $KEYDEV --keyring-backend $KEYRING --algo $KEYALGO
-astrad keys add $DEV --keyring-backend $KEYRING --algo $KEYALGO
-astrad keys add $MASTERTEAM --keyring-backend $KEYRING --algo $KEYALGO
-astrad keys add $MASTERGENESIS --keyring-backend $KEYRING --algo $KEYALGO
-astrad keys add $LP --keyring-backend $KEYRING --algo $KEYALGO
-astrad keys add $TREASURY --keyring-backend $KEYRING --algo $KEYALGO
-astrad keys add $REWARDPROVIDER --keyring-backend $KEYRING --algo $KEYALGO
-astrad keys add $MASTERDEV --keyring-backend $KEYRING --algo $KEYALGO
+# astrad keys add $KEY --keyring-backend $KEYRING --algo $KEYALGO
+# astrad keys add $KEYTEAM --keyring-backend $KEYRING --algo $KEYALGO
+# astrad keys add $KEYTIKI --keyring-backend $KEYRING --algo $KEYALGO
+# astrad keys add $KEYDEV --keyring-backend $KEYRING --algo $KEYALGO
+# astrad keys add $DEV --keyring-backend $KEYRING --algo $KEYALGO
+# astrad keys add $MASTERTEAM --keyring-backend $KEYRING --algo $KEYALGO
+# astrad keys add $MASTERGENESIS --keyring-backend $KEYRING --algo $KEYALGO
+# astrad keys add $LP --keyring-backend $KEYRING --algo $KEYALGO
+# astrad keys add $TREASURY --keyring-backend $KEYRING --algo $KEYALGO
+# astrad keys add $REWARDPROVIDER --keyring-backend $KEYRING --algo $KEYALGO
+# astrad keys add $MASTERDEV --keyring-backend $KEYRING --algo $KEYALGO
 
 
 # Set moniker and chain-id for Evmos (Moniker can be anything, chain-id must be an integer)
-astrad init $MONIKER --chain-id $CHAINID
-astrad init genesisValidator  --chain-id astra_11115-1
+astrad init $MONIKER --chain-id $CHAINID --overwrite
+astrad init genesisValidator  --chain-id astra_11115-1 --overwrite
 
 # Change parameter token denominations to aastra
 cat $HOME/.astrad/config/genesis.json | jq '.app_state["staking"]["params"]["bond_denom"]="aastra"' > $HOME/.astrad/config/tmp_genesis.json && mv $HOME/.astrad/config/tmp_genesis.json $HOME/.astrad/config/genesis.json
@@ -98,7 +98,7 @@ if [[ $1 == "pending" ]]; then
 fi
 
 # Allocate genesis accounts (cosmos formatted addresses)
-astrad add-genesis-accounDEVt $KEYTEAM 333330000000000000000000000aastra --keyring-backend $KEYRING
+astrad add-genesis-account $KEYTEAM 333330000000000000000000000aastra --keyring-backend $KEYRING
 astrad add-genesis-account $KEY 333330000000000000000000000aastra --keyring-backend $KEYRING
 astrad add-genesis-account $KEYDEV 111110000000000000000000000aastra --keyring-backend $KEYRING
 
@@ -106,16 +106,16 @@ astrad add-genesis-account $LP 555550000000000000000000000aastra --keyring-backe
 astrad add-genesis-account $TREASURY 1111100000000000000000000000aastra --keyring-backend $KEYRING
 astrad add-genesis-account $REWARDPROVIDER 3333300000000000000000000000aastra --keyring-backend $KEYRING
 
-astrad add-genesis-account $MASTERDEV 444440000000000000000000000aastra --keyring-backend $KEYRING
-astrad add-genesis-account $MASTERGENESIS 1333320000000000000000000000aastra --keyring-backend $KEYRING
-astrad add-genesis-account $MASTERTEAM 1333320000000000000000000000aastra --keyring-backend $KEYRING
+astrad add-genesis-account $MASTERDEV 444440000000000000000000001aastra --keyring-backend $KEYRING
+astrad add-genesis-account $MASTERGENESIS 1333320000000000000000000001aastra --keyring-backend $KEYRING
+astrad add-genesis-account $MASTERTEAM 1333320000000000000000000001aastra --keyring-backend $KEYRING
 
 
 
 # Sign genesis transaction
-astrad gentx $KEY 9250000000000000000000000aastra --keyring-backend $KEYRING --chain-id $CHAINID --moniker $MONIKER
-astrad gentx $KEYTEAM 26000000000000000000000000aastra --keyring-backend $KEYRING --chain-id $CHAINID --output-document team.json  --moniker "team validator"
-astrad gentx $KEYDEV 30000000000000000000000000aastra --keyring-backend $KEYRING  --chain-id $CHAINID --output-document dev.json  --moniker "community validator"
+astrad gentx $KEY 9250000000000000000000000aastra --keyring-backend $KEYRING --chain-id $CHAINID --moniker $MONIKER --pubkey="{\"@type\":\"/cosmos.crypto.ed25519.PubKey\",\"key\":\"82U/Lr9fAJ2knYbZfgpvQEjDCdRvi7kCUxqcr9dFPP8=\"}"
+astrad gentx $KEYTEAM 26000000000000000000000000aastra --keyring-backend $KEYRING --chain-id $CHAINID --output-document team.json  --moniker "team validator" --pubkey="{\"@type\":\"/cosmos.crypto.ed25519.PubKey\",\"key\":\"P1DPv1TkA8tN4oDliIt9RPZfOajRYs0LrEGw4Xiv57g=\"}"
+astrad gentx $KEYDEV 30000000000000000000000000aastra --keyring-backend $KEYRING  --chain-id $CHAINID --output-document dev.json  --moniker "community validator" --pubkey="{\"@type\":\"/cosmos.crypto.ed25519.PubKey\",\"key\":\"TAqTpkFSS/ogtptFso4w9XXlNxuN97c72B91xwnc5yE=\"}"
 
 # Collect genesis tx
 # astrad collect-gentxs
