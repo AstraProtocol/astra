@@ -31,6 +31,8 @@ import (
 
 const (
 	flagVestingStart = "vesting-start-time"
+	flagVestingEnd   = "vesting-end-time"
+	flagVestingAmt   = "vesting-amount"
 )
 
 // AddGenesisAccountCmd returns add-genesis-account cobra Command.
@@ -91,6 +93,19 @@ contain valid denominations. Accounts may optionally be supplied with vesting pa
 			if err != nil {
 				return err
 			}
+			vestingEnd, err := cmd.Flags().GetInt64(flagVestingEnd)
+			if err != nil {
+				return err
+			}
+			vestingAmtStr, err := cmd.Flags().GetString(flagVestingAmt)
+			if err != nil {
+				return err
+			}
+
+			vestingAmt, err := sdk.ParseCoinsNormalized(vestingAmtStr)
+			if err != nil {
+				return fmt.Errorf("failed to parse vesting amount: %w", err)
+			}
 
 			// create concrete account type based on input parameters
 			var genAccount authtypes.GenesisAccount
@@ -100,6 +115,7 @@ contain valid denominations. Accounts may optionally be supplied with vesting pa
 
 			clawback, _ := cmd.Flags().GetBool(vestingcli.FlagClawback)
 
+			vestingCoins := sdk.NewCoins()
 			// Create ClawbackvestingAccount, sdk.VestingAccount or EthAccount
 			switch {
 			case clawback:
@@ -147,7 +163,6 @@ contain valid denominations. Accounts may optionally be supplied with vesting pa
 				commonStart, _ := vestingtypes.AlignSchedules(lockupStart, vestingStart, lockupPeriods, vestingPeriods)
 
 				// Get total lockup and vesting from schedules
-				vestingCoins := sdk.NewCoins()
 				for _, period := range vestingPeriods {
 					vestingCoins = vestingCoins.Add(period.Amount...)
 				}
@@ -196,6 +211,25 @@ contain valid denominations. Accounts may optionally be supplied with vesting pa
 					lockupPeriods,
 					vestingPeriods,
 				)
+				// SDK vesting types
+			case !vestingAmt.IsZero():
+				baseVestingAccount := authvesting.NewBaseVestingAccount(baseAccount, vestingAmt.Sort(), vestingEnd)
+
+				if (balances.Coins.IsZero() && !baseVestingAccount.OriginalVesting.IsZero()) ||
+					baseVestingAccount.OriginalVesting.IsAnyGT(balances.Coins) {
+					return fmt.Errorf("vesting amount cannot be greater than total amount")
+				}
+
+				switch {
+				case vestingStart != 0 && vestingEnd != 0:
+					genAccount = authvesting.NewContinuousVestingAccountRaw(baseVestingAccount, vestingStart)
+
+				case vestingEnd != 0:
+					genAccount = authvesting.NewDelayedVestingAccountRaw(baseVestingAccount)
+
+				default:
+					return fmt.Errorf("invalid vesting parameters; must supply start and end time or end time")
+				}
 			default:
 				genAccount = &ethermint.EthAccount{
 					BaseAccount: baseAccount,
@@ -246,6 +280,20 @@ contain valid denominations. Accounts may optionally be supplied with vesting pa
 			bankGenState.Balances = append(bankGenState.Balances, balances)
 			bankGenState.Balances = banktypes.SanitizeGenesisBalances(bankGenState.Balances)
 			bankGenState.Supply = bankGenState.Supply.Add(balances.Coins...)
+
+			if clawback {
+				funderStr, err := cmd.Flags().GetString(vestingcli.FlagFunder)
+				if err != nil {
+					return fmt.Errorf("must specify the clawback vesting account funder with the --funder flag")
+				}
+				for i := range bankGenState.Balances {
+					if bankGenState.Balances[i].Address == funderStr {
+						bankGenState.Balances[i].Coins[0] = bankGenState.Balances[i].Coins[0].Sub(vestingCoins[0])
+					}
+				}
+				bankGenState.Balances = banktypes.SanitizeGenesisBalances(bankGenState.Balances)
+				bankGenState.Supply[0] = bankGenState.Supply[0].Sub(vestingCoins[0])
+			}
 
 			bankGenStateBz, err := clientCtx.Codec.MarshalJSON(bankGenState)
 			if err != nil {
