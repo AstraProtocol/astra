@@ -1,0 +1,19 @@
+syntax = "proto3";
+package channel.channel;
+
+import "cosmos/base/v1beta1/coin.proto";
+
+option go_package = "channel/x/channel/types";
+
+message Commitment {
+  string index = 1; 
+  string from = 2;
+  cosmos.base.v1beta1.Coin coinA = 3;
+  string toATimelock = 4; 
+  string toBHashlock = 5;
+  cosmos.base.v1beta1.Coin coinlock = 6;
+  uint64 blockheight = 7;
+  string hashcode = 8; 
+  
+}
+

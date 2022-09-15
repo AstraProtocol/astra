@@ -1,0 +1,77 @@
+syntax = "proto3";
+package channel.channel;
+
+import "cosmos/base/v1beta1/coin.proto";
+// this line is used by starport scaffolding # proto/tx/import
+
+option go_package = "channel/x/channel/types";
+
+// Msg defines the Msg service.
+service Msg {
+      rpc Commitment(MsgCommitment) returns (MsgCommitmentResponse);
+  rpc WithdrawTimelock(MsgWithdrawTimelock) returns (MsgWithdrawTimelockResponse);
+  rpc WithdrawHashlock(MsgWithdrawHashlock) returns (MsgWithdrawHashlockResponse);
+  rpc CloseChannel(MsgCloseChannel) returns (MsgCloseChannelResponse);
+  rpc OpenChannel(MsgOpenChannel) returns (MsgOpenChannelResponse);
+// this line is used by starport scaffolding # proto/tx/rpc
+}
+
+message MsgCommitment {
+  string creator = 1;
+  string from = 2;
+  cosmos.base.v1beta1.Coin coinA = 3;
+  string toATimelock = 4;
+  uint64 blockheight = 5;
+  string toBHashlock = 6;
+  string hashcode = 7;
+  cosmos.base.v1beta1.Coin coinlock = 8;
+}
+
+message MsgCommitmentResponse {
+  string index = 1;
+}
+
+message MsgWithdrawTimelock {
+  string creator = 1;
+  string to = 2;
+  string index = 3;
+}
+
+message MsgWithdrawTimelockResponse {
+}
+
+message MsgWithdrawHashlock {
+  string creator = 1;
+  string to = 2;
+  string index = 3;
+  string secret = 4;
+}
+
+message MsgWithdrawHashlockResponse {
+}
+
+message MsgCloseChannel {
+  string creator = 1;
+  string from = 2;
+  string toA = 3;
+  cosmos.base.v1beta1.Coin coinA = 4;
+  string toB = 5;
+  cosmos.base.v1beta1.Coin coinB = 6;
+}
+
+message MsgCloseChannelResponse {
+}
+
+message MsgOpenChannel {
+  string creator = 1;
+  string partA = 2;
+  string partB = 3;
+  cosmos.base.v1beta1.Coin coinA = 4;
+  cosmos.base.v1beta1.Coin coinB = 5;
+  string multisigAddr = 6;
+}
+
+message MsgOpenChannelResponse {
+}
+
+// this line is used by starport scaffolding # proto/tx/message

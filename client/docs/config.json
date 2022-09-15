@@ -134,6 +134,14 @@
           "Params": "StakingParams"
         }
       }
+    },
+    {
+      "url": "./tmp-swagger-gen/channel/query.swagger.json",
+      "operationIds": {
+        "rename": {
+          "Params": "ChannelParams"
+        }
+      }
     }
   ]
 }
