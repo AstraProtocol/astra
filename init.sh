@@ -92,4 +92,4 @@ if [[ $1 == "pending" ]]; then
 fi
 
 # Start the node (remove the --pruning=nothing flag if historical queries are not needed)
-astrad start --pruning=nothing $TRACE --log_level $LOGLEVEL --minimum-gas-prices=0.0001aevmos --json-rpc.api eth,txpool,personal,net,debug,web3
+astrad start --pruning=nothing $TRACE --log_level $LOGLEVEL --minimum-gas-prices=0.0001aastra --json-rpc.api eth,txpool,personal,net,debug,web3
