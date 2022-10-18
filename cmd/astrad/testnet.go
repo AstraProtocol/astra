@@ -87,7 +87,7 @@ type startArgs struct {
 }
 
 func addTestnetFlagsToCmd(cmd *cobra.Command) {
-	cmd.Flags().Int(flagNumValidators, 4, "Number of validators to initialize the testnet with")
+	cmd.Flags().Int(flagNumValidators, 3, "Number of validators to initialize the testnet with")
 	cmd.Flags().StringP(flagOutputDir, "o", "./.testnets", "Directory to store initialization data for the testnet")
 	cmd.Flags().String(flags.FlagChainID, "", "genesis file chain-id, if left blank will be randomly created")
 	cmd.Flags().String(sdkserver.FlagMinGasPrices, fmt.Sprintf("0.000006%s", cmdcfg.BaseDenom), "Minimum gas prices to accept for transactions; All fees in a tx must meet this minimum (e.g. 0.01photino,0.001stake)")
@@ -239,7 +239,10 @@ func initTestnetFiles(
 		gentxsDir := filepath.Join(args.outputDir, "gentxs")
 
 		nodeConfig.SetRoot(nodeDir)
-		nodeConfig.RPC.ListenAddress = "tcp://0.0.0.0:26657"
+		listenRpcPort := 50000 + i
+		nodeConfig.RPC.ListenAddress = fmt.Sprintf("tcp://0.0.0.0:%d", listenRpcPort)
+		listenP2pPort := 40000 + i
+		nodeConfig.P2P.ListenAddress = fmt.Sprintf("tcp://0.0.0.0:%d", listenP2pPort)
 
 		if err := os.MkdirAll(filepath.Join(nodeDir, "config"), nodeDirPerm); err != nil {
 			_ = os.RemoveAll(args.outputDir)
@@ -259,8 +262,9 @@ func initTestnetFiles(
 			_ = os.RemoveAll(args.outputDir)
 			return err
 		}
+		ip = "127.0.0.1"
 
-		memo := fmt.Sprintf("%s@%s:26656", nodeIDs[i], ip)
+		memo := fmt.Sprintf("%s@%s:%d", nodeIDs[i], ip, listenP2pPort)
 		genFiles = append(genFiles, nodeConfig.GenesisFile())
 
 		kb, err := keyring.New(sdk.KeyringServiceName(), args.keyringBackend, nodeDir, inBuf, astrakr.Option())
