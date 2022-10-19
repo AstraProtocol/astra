@@ -1,4 +1,4 @@
-package v1_1
+package v2
 
 import (
 	"github.com/AstraProtocol/astra/v2/types"
@@ -12,7 +12,7 @@ import (
 	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
 )
 
-// CreateUpgradeHandler creates an SDK upgrade handler for v1_1
+// CreateUpgradeHandler creates an SDK upgrade handler for v2
 func CreateUpgradeHandler(
 	mm *module.Manager,
 	configurator module.Configurator,
