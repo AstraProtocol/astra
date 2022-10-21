@@ -37,5 +37,18 @@ make install
     example:
         pytest -m staking -vv
 
+### Run debug local
+open 3 terminal and run it:
+
+    ./build/astrad start --home=.testnets/node0/astrad
+    ./build/astrad start --home=.testnets/node1/astrad
+    ./build/astrad start --home=.testnets/node2/astrad
+
+after 10 block you must stop and restart other astrad version:
+
+    astrad start --home=.testnets/node0/astrad
+    astrad start --home=.testnets/node1/astrad
+    astrad start --home=.testnets/node2/astrad
+
 
 Or check out the latest [release](https://github.com/AstraProtocol/astra/releases).
