@@ -38,13 +38,18 @@ make install
         pytest -m staking -vv
 
 ### Run debug local
-open 3 terminal and run it:
 
+ Run init
+    
+    ./scripts/multinode-local-testnet.sh
+
+Open 3 terminal and run it:
+    
     ./build/astrad start --home=.testnets/node0/astrad
     ./build/astrad start --home=.testnets/node1/astrad
     ./build/astrad start --home=.testnets/node2/astrad
 
-after 10 block you must stop and restart other astrad version:
+After 10 block you must stop and restart other astrad version:
 
     astrad start --home=.testnets/node0/astrad
     astrad start --home=.testnets/node1/astrad

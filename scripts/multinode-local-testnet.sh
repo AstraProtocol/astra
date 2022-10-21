@@ -3,7 +3,7 @@ rm -rf .testnets/
 killall screen
 
 # start a testnet
-astrad testnet init-files --keyring-backend=test
+./build/astrad testnet init-files --keyring-backend=test
 
 # change staking denom to ubaby
 cat .testnets/node0/astrad/config/genesis.json | jq '.app_state["staking"]["params"]["bond_denom"]="aastra"' > .testnets/node0/astrad/config/tmp_genesis.json && mv .testnets/node0/astrad/config/tmp_genesis.json .testnets/node0/astrad/config/genesis.json
@@ -18,8 +18,6 @@ cat .testnets/node0/astrad/config/genesis.json | jq '.app_state["gov"]["deposit_
 cat .testnets/node0/astrad/config/genesis.json | jq '.app_state["mint"]["params"]["mint_denom"]="aastra"' > .testnets/node0/astrad/config/tmp_genesis.json && mv .testnets/node0/astrad/config/tmp_genesis.json .testnets/node0/astrad/config/genesis.json
 
 cat .testnets/node0/astrad/config/genesis.json | jq '.app_state["slashing"]["params"]["signed_blocks_window"]="30"' > .testnets/node0/astrad/config/tmp_genesis.json && mv .testnets/node0/astrad/config/tmp_genesis.json .testnets/node0/astrad/config/genesis.json
-
-cat .testnets/node0/astrad/config/genesis.json | jq 'del()' > .testnets/node0/astrad/config/tmp_genesis.json && mv .testnets/node0/astrad/config/tmp_genesis.json .testnets/node0/astrad/config/genesis.json
 
 # change app.toml values
 
