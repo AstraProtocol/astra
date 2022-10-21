@@ -17,10 +17,13 @@ cat .testnets/node0/astrad/config/genesis.json | jq '.app_state["gov"]["deposit_
 # update mint genesis
 cat .testnets/node0/astrad/config/genesis.json | jq '.app_state["mint"]["params"]["mint_denom"]="aastra"' > .testnets/node0/astrad/config/tmp_genesis.json && mv .testnets/node0/astrad/config/tmp_genesis.json .testnets/node0/astrad/config/genesis.json
 
+cat .testnets/node0/astrad/config/genesis.json | jq '.app_state["slashing"]["params"]["signed_blocks_window"]="30"' > .testnets/node0/astrad/config/tmp_genesis.json && mv .testnets/node0/astrad/config/tmp_genesis.json .testnets/node0/astrad/config/genesis.json
+
 # change app.toml values
 
 # validator 1
 sed -i -E 's|swagger = false|swagger = true|g' .testnets/node0/astrad/config/app.toml
+sed -i -E 's|enabled-unsafe-cors = false|enabled-unsafe-cors = true|g' .testnets/node0/astrad/config/app.toml
 
 
 # validator2
@@ -78,6 +81,7 @@ sed -i -E 's|timeout_commit = "5s"|timeout_commit = "1s"|g' .testnets/node3/astr
 cp .testnets/node0/astrad/config/genesis.json .testnets/node1/astrad/config/genesis.json
 cp .testnets/node0/astrad/config/genesis.json .testnets/node2/astrad/config/genesis.json
 cp .testnets/node0/astrad/config/genesis.json .testnets/node3/astrad/config/genesis.json
+rm .testnets/node3/astrad/config/priv_validator_key.json
 
 echo "start all four validators"
 #screen -S validator1 -d -m astrad start --home=.testnets/node0/astrad
