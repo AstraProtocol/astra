@@ -239,7 +239,10 @@ func initTestnetFiles(
 		gentxsDir := filepath.Join(args.outputDir, "gentxs")
 
 		nodeConfig.SetRoot(nodeDir)
-		nodeConfig.RPC.ListenAddress = "tcp://0.0.0.0:26657"
+		listenRpcPort := 50000 + i
+		nodeConfig.RPC.ListenAddress = fmt.Sprintf("tcp://0.0.0.0:%d", listenRpcPort)
+		listenP2pPort := 40000 + i
+		nodeConfig.P2P.ListenAddress = fmt.Sprintf("tcp://0.0.0.0:%d", listenP2pPort)
 
 		if err := os.MkdirAll(filepath.Join(nodeDir, "config"), nodeDirPerm); err != nil {
 			_ = os.RemoveAll(args.outputDir)
@@ -259,8 +262,9 @@ func initTestnetFiles(
 			_ = os.RemoveAll(args.outputDir)
 			return err
 		}
+		ip = "127.0.0.1"
 
-		memo := fmt.Sprintf("%s@%s:26656", nodeIDs[i], ip)
+		memo := fmt.Sprintf("%s@%s:%d", nodeIDs[i], ip, listenP2pPort)
 		genFiles = append(genFiles, nodeConfig.GenesisFile())
 
 		kb, err := keyring.New(sdk.KeyringServiceName(), args.keyringBackend, nodeDir, inBuf, astrakr.Option())

@@ -20,7 +20,7 @@ jobs:
         with:
           go-version: 1.17
           check-latest: true
-      - uses: technote-space/get-diff-action@v6.1.0
+      - uses: technote-space/get-diff-action@v6.1.1
         id: git_diff
         with:
           PATTERNS: |

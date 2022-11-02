@@ -126,6 +126,7 @@ import (
 	channeltypes "github.com/AstraProtocol/channel/x/channel/types"
 
 	v1_1 "github.com/AstraProtocol/astra/v2/app/upgrades/v1_1"
+	v2 "github.com/AstraProtocol/astra/v2/app/upgrades/v2"
 )
 
 func init() {
@@ -972,4 +973,13 @@ func (app *Astra) setupUpgradeHandlers() {
 			app.configurator,
 			app.StakingKeeper,
 			app.ParamsKeeper))
+
+	// v2 upgrade handler
+	app.UpgradeKeeper.SetUpgradeHandler(
+		v2.UpgradeName,
+		v2.CreateUpgradeHandler(
+			app.mm, app.configurator,
+		),
+	)
+
 }

@@ -3,6 +3,7 @@ package main
 import (
 	"errors"
 	"fmt"
+	"github.com/cosmos/cosmos-sdk/client/pruning"
 	"io"
 	"os"
 	"path/filepath"
@@ -104,6 +105,10 @@ func NewRootCmd() (*cobra.Command, params.EncodingConfig) {
 	cfg := sdk.GetConfig()
 	cfg.Seal()
 
+	ac := appCreator{
+		encCfg: encodingConfig,
+	}
+
 	rootCmd.AddCommand(
 		ethermintclient.ValidateChainID(
 			InitCmd(app.ModuleBasics, app.DefaultNodeHome),
@@ -117,10 +122,10 @@ func NewRootCmd() (*cobra.Command, params.EncodingConfig) {
 		NewTestnetCmd(app.ModuleBasics, banktypes.GenesisBalancesIterator{}),
 		debug.Cmd(),
 		config.Cmd(),
+		pruning.PruningCmd(ac.newApp),
 	)
 
-	a := appCreator{encodingConfig}
-	ethermintserver.AddCommands(rootCmd, app.DefaultNodeHome, a.newApp, a.appExport, addModuleInitFlags)
+	ethermintserver.AddCommands(rootCmd, app.DefaultNodeHome, ac.newApp, ac.appExport, addModuleInitFlags)
 
 	// add keybase, auxiliary RPC, query, and tx child commands
 	rootCmd.AddCommand(
@@ -206,6 +211,7 @@ func initAppConfig() (string, interface{}) {
 
 	srvCfg.StateSync.SnapshotInterval = 1500
 	srvCfg.StateSync.SnapshotKeepRecent = 2
+	srvCfg.IAVLDisableFastNode = false
 
 	return customAppTemplate, srvCfg
 }
@@ -259,6 +265,8 @@ func (a appCreator) newApp(logger log.Logger, db dbm.DB, traceStore io.Writer, a
 		baseapp.SetSnapshotStore(snapshotStore),
 		baseapp.SetSnapshotInterval(cast.ToUint64(appOpts.Get(sdkserver.FlagStateSyncSnapshotInterval))),
 		baseapp.SetSnapshotKeepRecent(cast.ToUint32(appOpts.Get(sdkserver.FlagStateSyncSnapshotKeepRecent))),
+		baseapp.SetIAVLCacheSize(cast.ToInt(appOpts.Get(sdkserver.FlagIAVLCacheSize))),
+		baseapp.SetIAVLDisableFastNode(cast.ToBool(appOpts.Get(sdkserver.FlagIAVLFastNode))),
 	)
 
 	return astraApp

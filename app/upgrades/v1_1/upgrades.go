@@ -12,7 +12,7 @@ import (
 	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
 )
 
-// CreateUpgradeHandler creates an SDK upgrade handler for v4
+// CreateUpgradeHandler creates an SDK upgrade handler for v1_1
 func CreateUpgradeHandler(
 	mm *module.Manager,
 	configurator module.Configurator,
