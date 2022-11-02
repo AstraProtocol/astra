@@ -3,7 +3,7 @@ package channel.channel;
 
 import "gogoproto/gogo.proto";
 
-option go_package = "channel/x/channel/types";
+option go_package = "github.com/AstraProtocol/channel/x/channel/types";
 
 // Params defines the parameters for the module.
 message Params {

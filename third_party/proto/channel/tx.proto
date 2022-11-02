@@ -4,7 +4,7 @@ package channel.channel;
 import "cosmos/base/v1beta1/coin.proto";
 // this line is used by starport scaffolding # proto/tx/import
 
-option go_package = "channel/x/channel/types";
+option go_package = "github.com/AstraProtocol/channel/x/channel/types";
 
 // Msg defines the Msg service.
 service Msg {
@@ -13,18 +13,26 @@ service Msg {
   rpc WithdrawHashlock(MsgWithdrawHashlock) returns (MsgWithdrawHashlockResponse);
   rpc CloseChannel(MsgCloseChannel) returns (MsgCloseChannelResponse);
   rpc OpenChannel(MsgOpenChannel) returns (MsgOpenChannelResponse);
+  rpc Fund(MsgFund) returns (MsgFundResponse);
+  rpc Acceptfund(MsgAcceptfund) returns (MsgAcceptfundResponse);
+  rpc Sendercommit(MsgSendercommit) returns (MsgSendercommitResponse);
+  rpc Senderwithdrawtimelock(MsgSenderwithdrawtimelock) returns (MsgSenderwithdrawtimelockResponse);
+  rpc Senderwithdrawhashlock(MsgSenderwithdrawhashlock) returns (MsgSenderwithdrawhashlockResponse);
+  rpc Receiverwithdraw(MsgReceiverwithdraw) returns (MsgReceiverwithdrawResponse);
+  rpc Receivercommit(MsgReceivercommit) returns (MsgReceivercommitResponse);
 // this line is used by starport scaffolding # proto/tx/rpc
 }
 
 message MsgCommitment {
   string creator = 1;
   string from = 2;
-  cosmos.base.v1beta1.Coin coinA = 3;
-  string toATimelock = 4;
+  cosmos.base.v1beta1.Coin cointocreator = 3;
+  string toTimelock = 4;
   uint64 blockheight = 5;
-  string toBHashlock = 6;
+  string toHashlock = 6;
   string hashcode = 7;
-  cosmos.base.v1beta1.Coin coinlock = 8;
+  cosmos.base.v1beta1.Coin coinhtlc = 8;
+  string channelid = 9;
 }
 
 message MsgCommitmentResponse {
@@ -57,6 +65,7 @@ message MsgCloseChannel {
   cosmos.base.v1beta1.Coin coinA = 4;
   string toB = 5;
   cosmos.base.v1beta1.Coin coinB = 6;
+  string channelid = 7;
 }
 
 message MsgCloseChannelResponse {
@@ -69,9 +78,107 @@ message MsgOpenChannel {
   cosmos.base.v1beta1.Coin coinA = 4;
   cosmos.base.v1beta1.Coin coinB = 5;
   string multisigAddr = 6;
+  string sequence = 7;
 }
 
 message MsgOpenChannelResponse {
+  string index = 1;
+}
+
+message MsgFund {
+  string creator = 1;
+  string from = 2;
+  string channelid = 3;
+  cosmos.base.v1beta1.Coin coinlock = 4;
+  string hashcode = 5;
+  string timelock = 6;
+  string multisig = 7;
+}
+
+message MsgFundResponse {
+  string index = 1;
+}
+
+message MsgAcceptfund {
+  string creator = 1;
+  string from = 2;
+  string channelid = 3;
+  cosmos.base.v1beta1.Coin coin = 4;
+  string hashcode = 5;
+  string timelock = 6;
+  string multisig = 7;
+}
+
+message MsgAcceptfundResponse {
+  string index = 1;
+}
+
+message MsgSendercommit {
+  string creator = 1;
+  string from = 2;
+  string channelid = 3;
+  cosmos.base.v1beta1.Coin cointosender = 4;
+  cosmos.base.v1beta1.Coin cointohtlc = 5;
+  string hashcodehtlc = 6;
+  string timelockhtlc = 7;
+  cosmos.base.v1beta1.Coin cointransfer = 8;
+  string hashcodedest = 9;
+  string timelockreceiver = 10;
+  string timelocksender = 11;
+  string multisig = 12;
+}
+
+message MsgSendercommitResponse {
+  string indexhtlc = 1;
+  string indextransfer = 2;
+}
+
+message MsgSenderwithdrawtimelock {
+  string creator = 1;
+  string transferindex = 2;
+  string to = 3;
+}
+
+message MsgSenderwithdrawtimelockResponse {
+}
+
+message MsgSenderwithdrawhashlock {
+  string creator = 1;
+  string transferindex = 2;
+  string to = 3;
+  string secret = 4;
+}
+
+message MsgSenderwithdrawhashlockResponse {
+}
+
+message MsgReceiverwithdraw {
+  string creator = 1;
+  string transferindex = 2;
+  string to = 3;
+  string secret = 4;
+}
+
+message MsgReceiverwithdrawResponse {
+}
+
+message MsgReceivercommit {
+  string creator = 1;
+  string from = 2;
+  string channelid = 3;
+  cosmos.base.v1beta1.Coin cointoreceiver = 4;
+  cosmos.base.v1beta1.Coin cointohtlc = 5;
+  string hashcodehtlc = 6;
+  string timelockhtlc = 7;
+  cosmos.base.v1beta1.Coin cointransfer = 8;
+  string hashcodedest = 9;
+  string timelocksender = 10;
+  string multisig = 11;
+}
+
+message MsgReceivercommitResponse {
+  string indexhtlc = 1;
+  string indextransfer = 2;
 }
 
 // this line is used by starport scaffolding # proto/tx/message

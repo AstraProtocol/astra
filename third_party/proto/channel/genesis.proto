@@ -4,13 +4,17 @@ package channel.channel;
 import "gogoproto/gogo.proto";
 import "channel/params.proto";
 import "channel/commitment.proto";
+import "channel/channel.proto";
+import "channel/fwdcommit.proto";
 // this line is used by starport scaffolding # genesis/proto/import
 
-option go_package = "channel/x/channel/types";
+option go_package = "github.com/AstraProtocol/channel/x/channel/types";
 
 // GenesisState defines the channel module's genesis state.
 message GenesisState {
   Params params = 1 [(gogoproto.nullable) = false];
   repeated Commitment commitmentList = 2 [(gogoproto.nullable) = false];
+  repeated Channel channelList = 3 [(gogoproto.nullable) = false];
+  repeated Fwdcommit fwdcommitList = 4 [(gogoproto.nullable) = false];
   // this line is used by starport scaffolding # genesis/proto/state
 }
