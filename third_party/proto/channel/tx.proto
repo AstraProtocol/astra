@@ -24,161 +24,161 @@ service Msg {
 }
 
 message MsgCommitment {
-  string creator = 1;
-  string from = 2;
-  cosmos.base.v1beta1.Coin cointocreator = 3;
-  string toTimelock = 4;
-  uint64 blockheight = 5;
-  string toHashlock = 6;
-  string hashcode = 7;
-  cosmos.base.v1beta1.Coin coinhtlc = 8;
-  string channelid = 9;
+  string Creator = 1;
+  string From = 2;
+  cosmos.base.v1beta1.Coin CoinToCreator = 3;
+  string ToTimelockAddr = 4;
+  uint64 Timelock = 5;
+  string ToHashlockAddr = 6;
+  string Hashcode = 7;
+  cosmos.base.v1beta1.Coin CoinToHtlc = 8;
+  string ChannelID = 9;
 }
 
 message MsgCommitmentResponse {
-  string index = 1;
+  string Index = 1;
 }
 
 message MsgWithdrawTimelock {
-  string creator = 1;
-  string to = 2;
-  string index = 3;
+  string Creator = 1;
+  string To = 2;
+  string Index = 3;
 }
 
 message MsgWithdrawTimelockResponse {
 }
 
 message MsgWithdrawHashlock {
-  string creator = 1;
-  string to = 2;
-  string index = 3;
-  string secret = 4;
+  string Creator = 1;
+  string To = 2;
+  string Index = 3;
+  string Secret = 4;
 }
 
 message MsgWithdrawHashlockResponse {
 }
 
 message MsgCloseChannel {
-  string creator = 1;
-  string from = 2;
-  string toA = 3;
-  cosmos.base.v1beta1.Coin coinA = 4;
-  string toB = 5;
-  cosmos.base.v1beta1.Coin coinB = 6;
-  string channelid = 7;
+  string Creator = 1;
+  string From = 2;
+  string ToA = 3;
+  cosmos.base.v1beta1.Coin CoinA = 4;
+  string ToB = 5;
+  cosmos.base.v1beta1.Coin CoinB = 6;
+  string ChannelID = 7;
 }
 
 message MsgCloseChannelResponse {
 }
 
 message MsgOpenChannel {
-  string creator = 1;
-  string partA = 2;
-  string partB = 3;
-  cosmos.base.v1beta1.Coin coinA = 4;
-  cosmos.base.v1beta1.Coin coinB = 5;
-  string multisigAddr = 6;
-  string sequence = 7;
+  string Creator = 1;
+  string PartA = 2;
+  string PartB = 3;
+  cosmos.base.v1beta1.Coin CoinA = 4;
+  cosmos.base.v1beta1.Coin CoinB = 5;
+  string MultisigAddr = 6;
+  string Sequence = 7;
 }
 
 message MsgOpenChannelResponse {
-  string index = 1;
+  string Index = 1;
 }
 
 message MsgFund {
-  string creator = 1;
-  string from = 2;
-  string channelid = 3;
-  cosmos.base.v1beta1.Coin coinlock = 4;
-  string hashcode = 5;
-  string timelock = 6;
-  string multisig = 7;
+  string Creator = 1;
+  string From = 2;
+  string ChannelID = 3;
+  cosmos.base.v1beta1.Coin CoinToHtlc = 4;
+  string Hashcode = 5;
+  string Timelock = 6;
+  string Multisig = 7;
 }
 
 message MsgFundResponse {
-  string index = 1;
+  string Index = 1;
 }
 
 message MsgAcceptfund {
-  string creator = 1;
-  string from = 2;
-  string channelid = 3;
-  cosmos.base.v1beta1.Coin coin = 4;
-  string hashcode = 5;
-  string timelock = 6;
-  string multisig = 7;
+  string Creator = 1;
+  string From = 2;
+  string ChannelID = 3;
+  cosmos.base.v1beta1.Coin CoinToAcceptSide = 4;
+  string Hashcode = 5;
+  string Timelock = 6;
+  string Multisig = 7;
 }
 
 message MsgAcceptfundResponse {
-  string index = 1;
+  string Index = 1;
 }
 
 message MsgSendercommit {
-  string creator = 1;
-  string from = 2;
-  string channelid = 3;
-  cosmos.base.v1beta1.Coin cointosender = 4;
-  cosmos.base.v1beta1.Coin cointohtlc = 5;
-  string hashcodehtlc = 6;
-  string timelockhtlc = 7;
-  cosmos.base.v1beta1.Coin cointransfer = 8;
-  string hashcodedest = 9;
-  string timelockreceiver = 10;
-  string timelocksender = 11;
-  string multisig = 12;
+  string Creator = 1;
+  string From = 2;
+  string ChannelID = 3;
+  cosmos.base.v1beta1.Coin CoinToSender = 4;
+  cosmos.base.v1beta1.Coin CoinToHtlc = 5;
+  string HashcodeHtlc = 6;
+  string TimelockHtlc = 7;
+  cosmos.base.v1beta1.Coin CoinTransfer = 8;
+  string HashcodeDest = 9;
+  string TimelockReceiver = 10;
+  string TimelockSender = 11;
+  string Multisig = 12;
 }
 
 message MsgSendercommitResponse {
-  string indexhtlc = 1;
-  string indextransfer = 2;
+  string IndexHtlc = 1;
+  string IndexTransfer = 2;
 }
 
 message MsgSenderwithdrawtimelock {
-  string creator = 1;
-  string transferindex = 2;
-  string to = 3;
+  string Creator = 1;
+  string TransferIndex = 2;
+  string To = 3;
 }
 
 message MsgSenderwithdrawtimelockResponse {
 }
 
 message MsgSenderwithdrawhashlock {
-  string creator = 1;
-  string transferindex = 2;
-  string to = 3;
-  string secret = 4;
+  string Creator = 1;
+  string TransferIndex = 2;
+  string To = 3;
+  string Secret = 4;
 }
 
 message MsgSenderwithdrawhashlockResponse {
 }
 
 message MsgReceiverwithdraw {
-  string creator = 1;
-  string transferindex = 2;
-  string to = 3;
-  string secret = 4;
+  string Creator = 1;
+  string TransferIndex = 2;
+  string To = 3;
+  string Secret = 4;
 }
 
 message MsgReceiverwithdrawResponse {
 }
 
 message MsgReceivercommit {
-  string creator = 1;
-  string from = 2;
-  string channelid = 3;
-  cosmos.base.v1beta1.Coin cointoreceiver = 4;
-  cosmos.base.v1beta1.Coin cointohtlc = 5;
-  string hashcodehtlc = 6;
-  string timelockhtlc = 7;
-  cosmos.base.v1beta1.Coin cointransfer = 8;
-  string hashcodedest = 9;
-  string timelocksender = 10;
-  string multisig = 11;
+  string Creator = 1;
+  string From = 2;
+  string ChannelID = 3;
+  cosmos.base.v1beta1.Coin CoinToReceiver = 4;
+  cosmos.base.v1beta1.Coin CoinToHtlc = 5;
+  string HashcodeHtlc = 6;
+  string TimelockHtlc = 7;
+  cosmos.base.v1beta1.Coin CoinTransfer = 8;
+  string HashcodeDest = 9;
+  string TimelockSender = 10;
+  string Multisig = 11;
 }
 
 message MsgReceivercommitResponse {
-  string indexhtlc = 1;
-  string indextransfer = 2;
+  string IndexHtlc = 1;
+  string IndexTransfer = 2;
 }
 
 // this line is used by starport scaffolding # proto/tx/message

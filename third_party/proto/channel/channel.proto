@@ -4,11 +4,11 @@ package channel.channel;
 option go_package = "github.com/AstraProtocol/channel/x/channel/types";
 
 message Channel {
-  string index = 1;
-  string multisigAddr = 2;
-  string partA = 3;
-  string partB = 4;
-  string denom = 5;
-  string sequence = 6;
+  string Index = 1;
+  string MultisigAddr = 2;
+  string PartA = 3;
+  string PartB = 4;
+  string Denom = 5;
+  string Sequence = 6;
 }
 

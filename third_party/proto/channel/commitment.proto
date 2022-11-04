@@ -6,14 +6,14 @@ import "cosmos/base/v1beta1/coin.proto";
 option go_package = "github.com/AstraProtocol/channel/x/channel/types";
 
 message Commitment {
-  string index = 1; 
-  string from = 2;
-  cosmos.base.v1beta1.Coin cointocreator = 3;
-  string toTimelock = 4;
-  string toHashlock = 5;
-  cosmos.base.v1beta1.Coin coinhtlc = 6;
-  uint64 blockheight = 7;
-  string hashcode = 8;
-  string channelid = 9;
+  string Index = 1;
+  string From = 2;
+  cosmos.base.v1beta1.Coin CoinToCreator = 3;
+  string ToTimelockAddr = 4;
+  string ToHashlockAddr = 5;
+  cosmos.base.v1beta1.Coin CoinToHtlc = 6;
+  uint64 Timelock = 7;
+  string Hashcode = 8;
+  string ChannelID = 9;
 }
 
