@@ -1,4 +1,75 @@
 
+<a name="v2.1.3"></a>
+## [v2.1.3](https://github.com/AstraProtocol/astra/compare/v2.1.2...v2.1.3) (2022-11-11)
+
+### Chore
+
+* update go release amd64 ([#136](https://github.com/AstraProtocol/astra/issues/136))
+
+
+<a name="v2.1.2"></a>
+## [v2.1.2](https://github.com/AstraProtocol/astra/compare/v2.1.1...v2.1.2) (2022-10-24)
+
+### Deps
+
+* upgrade evmos to v6.1.3-astra ([#129](https://github.com/AstraProtocol/astra/issues/129))
+* upgrade evmos to cosmos-sdk v0.45.9 ([#128](https://github.com/AstraProtocol/astra/issues/128))
+
+
+<a name="v2.1.1"></a>
+## [v2.1.1](https://github.com/AstraProtocol/astra/compare/v2.1.0...v2.1.1) (2022-10-20)
+
+
+<a name="v2.1.0"></a>
+## [v2.1.0](https://github.com/AstraProtocol/astra/compare/v2.0.1...v2.1.0) (2022-09-19)
+
+
+<a name="v2.0.1"></a>
+## [v2.0.1](https://github.com/AstraProtocol/astra/compare/v2.0.0...v2.0.1) (2022-09-13)
+
+### Fix
+
+* double supply when add genesis vesting ([#108](https://github.com/AstraProtocol/astra/issues/108))
+
+
+<a name="v2.0.0"></a>
+## [v2.0.0](https://github.com/AstraProtocol/astra/compare/v1.2.2...v2.0.0) (2022-08-23)
+
+### Chore
+
+* update go version and remove package.json ([#100](https://github.com/AstraProtocol/astra/issues/100))
+
+### Deps
+
+* bump ethermint, go-ethereum version ([#98](https://github.com/AstraProtocol/astra/issues/98))
+
+### Docs
+
+* update inflation specs ([#96](https://github.com/AstraProtocol/astra/issues/96))
+
+
+<a name="v1.2.2"></a>
+## [v1.2.2](https://github.com/AstraProtocol/astra/compare/v1.2.1...v1.2.2) (2022-08-15)
+
+### Deps
+
+* Bump cosmos-sdk to v0.45.7, ibc-go to v3.2.0 ([#94](https://github.com/AstraProtocol/astra/issues/94))
+* Bump Ethermint version to v0.18.0 ([#90](https://github.com/AstraProtocol/astra/issues/90))
+
+### Docs
+
+* update tokenomics numbers ([#88](https://github.com/AstraProtocol/astra/issues/88))
+
+### Fix
+
+* update docs ([#87](https://github.com/AstraProtocol/astra/issues/87))
+* build tag rocksdb ([#84](https://github.com/AstraProtocol/astra/issues/84))
+
+### Test
+
+* update inflation unit-tests ([#92](https://github.com/AstraProtocol/astra/issues/92))
+
+
 <a name="v1.2.1"></a>
 ## [v1.2.1](https://github.com/AstraProtocol/astra/compare/v1.2.0...v1.2.1) (2022-08-03)
 
@@ -79,7 +150,7 @@
 
 
 <a name="v0.3.0"></a>
-## [v0.3.0](https://github.com/AstraProtocol/astra/compare/v0.2.1...v0.3.0) (2022-06-10)
+## [v0.3.0](https://github.com/AstraProtocol/astra/compare/v0.2.0...v0.3.0) (2022-06-10)
 
 ### Deps
 
@@ -90,12 +161,12 @@
 * buf protoc was moved to buf alpha protoc ([#25](https://github.com/AstraProtocol/astra/issues/25))
 
 
-<a name="v0.2.1"></a>
-## [v0.2.1](https://github.com/AstraProtocol/astra/compare/v0.2.0...v0.2.1) (2022-05-18)
-
-
 <a name="v0.2.0"></a>
-## [v0.2.0](https://github.com/AstraProtocol/astra/compare/v0.1.0...v0.2.0) (2022-05-18)
+## [v0.2.0](https://github.com/AstraProtocol/astra/compare/v0.2.1...v0.2.0) (2022-05-18)
+
+
+<a name="v0.2.1"></a>
+## [v0.2.1](https://github.com/AstraProtocol/astra/compare/v0.1.0...v0.2.1) (2022-05-18)
 
 ### Refactor
 
