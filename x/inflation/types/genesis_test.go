@@ -1,6 +1,8 @@
 package types
 
 import (
+	"github.com/AstraProtocol/astra/v2/cmd/config"
+	sdk "github.com/cosmos/cosmos-sdk/types"
 	"testing"
 
 	epochstypes "github.com/evmos/evmos/v6/x/epochs/types"
@@ -12,6 +14,7 @@ type GenesisTestSuite struct {
 }
 
 func (suite *GenesisTestSuite) SetupTest() {
+	config.SetBech32Prefixes(sdk.GetConfig())
 }
 
 func TestGenesisTestSuite(t *testing.T) {
