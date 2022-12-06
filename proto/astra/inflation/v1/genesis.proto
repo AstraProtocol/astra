@@ -28,6 +28,11 @@ message Params {
   // inflation_parameters consists of parameters which define how inflation is allocated.
   InflationParameters inflation_parameters = 2
       [ (gogoproto.nullable) = false ];
+  // inflation_distribution consists of parameters which block/epoch provision is distributed.
+  InflationDistribution inflation_distribution = 3
+      [ (gogoproto.nullable) = false ];
+  // foundation_address is the address of the Astra Foundation for a portion of receiving provision.
+  string foundation_address = 4;
   // enable_inflation is the parameter to enable inflation and halt increasing the skipped_epochs
-  bool enable_inflation = 3;
+  bool enable_inflation = 5;
 }

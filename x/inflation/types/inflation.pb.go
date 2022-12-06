@@ -25,16 +25,18 @@ var _ = math.Inf
 const _ = proto.GoGoProtoPackageIsVersion3 // please upgrade the proto package
 
 // InflationParameters defines the distribution along with the parameters in which inflation is
-// allocated through minting on each epoch. It excludes the genesis-enabled vesting distribution for team,
-// genesis partners or reward providers, as they are only minted once at genesis.
-// The rest of the total supply (i.e, 30%) will be gradually allocated for staking rewards through
-// epoch provisions (e.g, block rewards).
+// allocated through minting on each epoch. It excludes the genesis-enabled vesting distribution for Genesis Partners,
+// Strategic Partners, Astra Foundation, Core Team and Community Pool.
+// The rest of the total supply (i.e, 40%) will be gradually allocated for staking rewards through epoch provisions (e.g, block rewards).
+// It is estimated that 60% of total inflation will be minted in the first 3 years,
+// and this number will increase to 90% after 8 years.
+//
 // The epoch provision on each period is calculated as follows:
 // periodProvision  = exponentialDecay       *  totalInflation
 // f(x)             = r * (1 - r)^x  *  R
 type InflationParameters struct {
 	// max_staking_rewards defines the maximum amount of the staking reward inflation
-	// distributed through block rewards (i.e, R). The max_staking_rewards accounts for 20% of the total supply.
+	// distributed through block rewards (i.e, R). The max_staking_rewards accounts for 26% of the total supply.
 	MaxStakingRewards github_com_cosmos_cosmos_sdk_types.Dec `protobuf:"bytes,1,opt,name=max_staking_rewards,json=maxStakingRewards,proto3,customtype=github.com/cosmos/cosmos-sdk/types.Dec" json:"max_staking_rewards"`
 	// r holds the value of the decay factor.
 	R github_com_cosmos_cosmos_sdk_types.Dec `protobuf:"bytes,2,opt,name=r,proto3,customtype=github.com/cosmos/cosmos-sdk/types.Dec" json:"r"`
@@ -73,8 +75,58 @@ func (m *InflationParameters) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_InflationParameters proto.InternalMessageInfo
 
+// InflationDistribution defines how the block rewards are distributed to each module/component (i.e, Staking Rewards,
+// Astra Foundation, and the Community Pool).
+//
+// For each block/epoch reward:
+//    - 88% will be allocated as Staking Rewards;
+//    - 10% will be allocated to the Astra Foundation;
+//    - 2% will be allocated to the Community Pool.
+type InflationDistribution struct {
+	// staking_rewards defines the proportion of the minted minted_denom allocated to validators and delegators.
+	StakingRewards github_com_cosmos_cosmos_sdk_types.Dec `protobuf:"bytes,1,opt,name=staking_rewards,json=stakingRewards,proto3,customtype=github.com/cosmos/cosmos-sdk/types.Dec" json:"staking_rewards"`
+	// foundation defines the proportion of the minted minted_denom allocated to the Astra Foundation.
+	Foundation github_com_cosmos_cosmos_sdk_types.Dec `protobuf:"bytes,2,opt,name=foundation,proto3,customtype=github.com/cosmos/cosmos-sdk/types.Dec" json:"foundation"`
+	// community_pool defines the proportion of the minted minted_denom allocated to the community pool.
+	CommunityPool github_com_cosmos_cosmos_sdk_types.Dec `protobuf:"bytes,3,opt,name=community_pool,json=communityPool,proto3,customtype=github.com/cosmos/cosmos-sdk/types.Dec" json:"community_pool"`
+}
+
+func (m *InflationDistribution) Reset()         { *m = InflationDistribution{} }
+func (m *InflationDistribution) String() string { return proto.CompactTextString(m) }
+func (*InflationDistribution) ProtoMessage()    {}
+func (*InflationDistribution) Descriptor() ([]byte, []int) {
+	return fileDescriptor_84bff144568ff9d6, []int{1}
+}
+func (m *InflationDistribution) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *InflationDistribution) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_InflationDistribution.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *InflationDistribution) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_InflationDistribution.Merge(m, src)
+}
+func (m *InflationDistribution) XXX_Size() int {
+	return m.Size()
+}
+func (m *InflationDistribution) XXX_DiscardUnknown() {
+	xxx_messageInfo_InflationDistribution.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_InflationDistribution proto.InternalMessageInfo
+
 func init() {
 	proto.RegisterType((*InflationParameters)(nil), "astra.inflation.v1.InflationParameters")
+	proto.RegisterType((*InflationDistribution)(nil), "astra.inflation.v1.InflationDistribution")
 }
 
 func init() {
@@ -82,7 +134,7 @@ func init() {
 }
 
 var fileDescriptor_84bff144568ff9d6 = []byte{
-	// 242 bytes of a gzipped FileDescriptorProto
+	// 316 bytes of a gzipped FileDescriptorProto
 	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xe2, 0x52, 0x4a, 0x2c, 0x2e, 0x29,
 	0x4a, 0xd4, 0xcf, 0xcc, 0x4b, 0xcb, 0x49, 0x2c, 0xc9, 0xcc, 0xcf, 0xd3, 0x2f, 0x33, 0x44, 0x70,
 	0xf4, 0x0a, 0x8a, 0xf2, 0x4b, 0xf2, 0x85, 0x84, 0xc0, 0x6a, 0xf4, 0x10, 0xc2, 0x65, 0x86, 0x52,
@@ -93,12 +145,16 @@ var fileDescriptor_84bff144568ff9d6 = []byte{
 	0x0c, 0xb7, 0xee, 0xc9, 0xab, 0xa5, 0x67, 0x96, 0x64, 0x94, 0x26, 0xe9, 0x25, 0xe7, 0xe7, 0xea,
 	0x27, 0xe7, 0x17, 0xe7, 0xe6, 0x17, 0x43, 0x29, 0xdd, 0xe2, 0x94, 0x6c, 0xfd, 0x92, 0xca, 0x82,
 	0xd4, 0x62, 0x3d, 0x97, 0xd4, 0xe4, 0x20, 0xc1, 0xdc, 0xc4, 0x8a, 0x60, 0x88, 0x49, 0x41, 0x10,
-	0x83, 0x84, 0x6c, 0xb8, 0x18, 0x8b, 0x24, 0x98, 0xc8, 0x32, 0x8d, 0xb1, 0xc8, 0xc9, 0xeb, 0xc4,
-	0x23, 0x39, 0xc6, 0x0b, 0x8f, 0xe4, 0x18, 0x1f, 0x3c, 0x92, 0x63, 0x9c, 0xf0, 0x58, 0x8e, 0xe1,
-	0xc2, 0x63, 0x39, 0x86, 0x1b, 0x8f, 0xe5, 0x18, 0xa2, 0x0c, 0x90, 0x0c, 0x71, 0x04, 0x05, 0x42,
-	0x00, 0xc8, 0x9b, 0xc9, 0xf9, 0x39, 0xfa, 0x90, 0x60, 0xab, 0x40, 0x0a, 0x38, 0xb0, 0x91, 0x49,
-	0x6c, 0xe0, 0x80, 0x30, 0x06, 0x04, 0x00, 0x00, 0xff, 0xff, 0x84, 0x35, 0x6b, 0xa4, 0x58, 0x01,
-	0x00, 0x00,
+	0x83, 0x84, 0x6c, 0xb8, 0x18, 0x8b, 0x24, 0x98, 0xc8, 0x32, 0x8d, 0xb1, 0x48, 0x69, 0x3a, 0x13,
+	0x97, 0x28, 0xdc, 0xd5, 0x2e, 0x99, 0xc5, 0x25, 0x45, 0x99, 0x49, 0xa5, 0x20, 0xb6, 0x50, 0x38,
+	0x17, 0x3f, 0x75, 0xdc, 0xcc, 0x57, 0x8c, 0xea, 0x60, 0x3f, 0x2e, 0xae, 0xb4, 0xfc, 0xd2, 0xbc,
+	0x14, 0xb0, 0x95, 0x64, 0xba, 0x1c, 0xc9, 0x04, 0xa1, 0x50, 0x2e, 0xbe, 0xe4, 0xfc, 0xdc, 0xdc,
+	0xd2, 0xbc, 0xcc, 0x92, 0xca, 0xf8, 0x82, 0xfc, 0xfc, 0x1c, 0x09, 0x66, 0xb2, 0xcc, 0xe4, 0x85,
+	0x9b, 0x12, 0x90, 0x9f, 0x9f, 0xe3, 0xe4, 0x75, 0xe2, 0x91, 0x1c, 0xe3, 0x85, 0x47, 0x72, 0x8c,
+	0x0f, 0x1e, 0xc9, 0x31, 0x4e, 0x78, 0x2c, 0xc7, 0x70, 0xe1, 0xb1, 0x1c, 0xc3, 0x8d, 0xc7, 0x72,
+	0x0c, 0x51, 0x06, 0x48, 0x06, 0x3a, 0x82, 0x92, 0x47, 0x00, 0x28, 0x01, 0x24, 0xe7, 0xe7, 0xe8,
+	0x43, 0x12, 0x54, 0x05, 0x52, 0x92, 0x02, 0x1b, 0x9f, 0xc4, 0x06, 0x4e, 0x22, 0xc6, 0x80, 0x00,
+	0x00, 0x00, 0xff, 0xff, 0x42, 0x07, 0x0a, 0x91, 0x72, 0x02, 0x00, 0x00,
 }
 
 func (m *InflationParameters) Marshal() (dAtA []byte, err error) {
@@ -144,6 +200,59 @@ func (m *InflationParameters) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	return len(dAtA) - i, nil
 }
 
+func (m *InflationDistribution) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *InflationDistribution) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *InflationDistribution) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	{
+		size := m.CommunityPool.Size()
+		i -= size
+		if _, err := m.CommunityPool.MarshalTo(dAtA[i:]); err != nil {
+			return 0, err
+		}
+		i = encodeVarintInflation(dAtA, i, uint64(size))
+	}
+	i--
+	dAtA[i] = 0x1a
+	{
+		size := m.Foundation.Size()
+		i -= size
+		if _, err := m.Foundation.MarshalTo(dAtA[i:]); err != nil {
+			return 0, err
+		}
+		i = encodeVarintInflation(dAtA, i, uint64(size))
+	}
+	i--
+	dAtA[i] = 0x12
+	{
+		size := m.StakingRewards.Size()
+		i -= size
+		if _, err := m.StakingRewards.MarshalTo(dAtA[i:]); err != nil {
+			return 0, err
+		}
+		i = encodeVarintInflation(dAtA, i, uint64(size))
+	}
+	i--
+	dAtA[i] = 0xa
+	return len(dAtA) - i, nil
+}
+
 func encodeVarintInflation(dAtA []byte, offset int, v uint64) int {
 	offset -= sovInflation(v)
 	base := offset
@@ -164,6 +273,21 @@ func (m *InflationParameters) Size() (n int) {
 	l = m.MaxStakingRewards.Size()
 	n += 1 + l + sovInflation(uint64(l))
 	l = m.R.Size()
+	n += 1 + l + sovInflation(uint64(l))
+	return n
+}
+
+func (m *InflationDistribution) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	l = m.StakingRewards.Size()
+	n += 1 + l + sovInflation(uint64(l))
+	l = m.Foundation.Size()
+	n += 1 + l + sovInflation(uint64(l))
+	l = m.CommunityPool.Size()
 	n += 1 + l + sovInflation(uint64(l))
 	return n
 }
@@ -268,6 +392,158 @@ func (m *InflationParameters) Unmarshal(dAtA []byte) error {
 				return io.ErrUnexpectedEOF
 			}
 			if err := m.R.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipInflation(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthInflation
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *InflationDistribution) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowInflation
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: InflationDistribution: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: InflationDistribution: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field StakingRewards", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowInflation
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthInflation
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthInflation
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if err := m.StakingRewards.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		case 2:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Foundation", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowInflation
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthInflation
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthInflation
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if err := m.Foundation.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		case 3:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field CommunityPool", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowInflation
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthInflation
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthInflation
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if err := m.CommunityPool.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
 				return err
 			}
 			iNdEx = postIndex

@@ -6,16 +6,18 @@ import "gogoproto/gogo.proto";
 option go_package = "github.com/AstraProtocol/astra/x/inflation/types";
 
 // InflationParameters defines the distribution along with the parameters in which inflation is
-// allocated through minting on each epoch. It excludes the genesis-enabled vesting distribution for team,
-// genesis partners or reward providers, as they are only minted once at genesis.
-// The rest of the total supply (i.e, 30%) will be gradually allocated for staking rewards through
-// epoch provisions (e.g, block rewards).
+// allocated through minting on each epoch. It excludes the genesis-enabled vesting distribution for Genesis Partners,
+// Strategic Partners, Astra Foundation, Core Team and Community Pool.
+// The rest of the total supply (i.e, 40%) will be gradually allocated for staking rewards through epoch provisions (e.g, block rewards).
+// It is estimated that 60% of total inflation will be minted in the first 3 years,
+// and this number will increase to 90% after 8 years.
+//
 // The epoch provision on each period is calculated as follows:
 // periodProvision  = exponentialDecay       *  totalInflation
 // f(x)             = r * (1 - r)^x  *  R
 message InflationParameters {
   // max_staking_rewards defines the maximum amount of the staking reward inflation
-  // distributed through block rewards (i.e, R). The max_staking_rewards accounts for 20% of the total supply.
+  // distributed through block rewards (i.e, R). The max_staking_rewards accounts for 26% of the total supply.
   string max_staking_rewards = 1 [
     (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
     (gogoproto.nullable) = false
@@ -26,4 +28,29 @@ message InflationParameters {
     (gogoproto.nullable) = false
   ];
 
+}
+
+// InflationDistribution defines how the block rewards are distributed to each module/component (i.e, Staking Rewards,
+// Astra Foundation, and the Community Pool).
+//
+// For each block/epoch reward:
+//    - 88% will be allocated as Staking Rewards;
+//    - 10% will be allocated to the Astra Foundation;
+//    - 2% will be allocated to the Community Pool.
+message InflationDistribution {
+  // staking_rewards defines the proportion of the minted minted_denom allocated to validators and delegators.
+  string staking_rewards = 1 [
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
+    (gogoproto.nullable) = false
+  ];
+  // foundation defines the proportion of the minted minted_denom allocated to the Astra Foundation.
+  string foundation = 2 [
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
+    (gogoproto.nullable) = false
+  ];
+  // community_pool defines the proportion of the minted minted_denom allocated to the community pool.
+  string community_pool = 3 [
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
+    (gogoproto.nullable) = false
+  ];
 }

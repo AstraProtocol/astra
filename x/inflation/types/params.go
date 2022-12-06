@@ -12,9 +12,11 @@ var DefaultInflationDenom = config.BaseDenom
 
 // Parameter store keys
 var (
-	ParamStoreKeyMintDenom           = []byte("ParamStoreKeyMintDenom")
-	ParamStoreKeyInflationParameters = []byte("ParamStoreKeyInflationParameters")
-	ParamStoreKeyEnableInflation     = []byte("ParamStoreKeyEnableInflation")
+	ParamStoreKeyMintDenom             = []byte("ParamStoreKeyMintDenom")
+	ParamStoreKeyInflationParameters   = []byte("ParamStoreKeyInflationParameters")
+	ParamStoreKeyInflationDistribution = []byte("ParamStoreKeyInflationDistribution")
+	ParamStoreKeyFoundationAddress     = []byte("ParamStoreKeyFoundationAddress")
+	ParamStoreKeyEnableInflation       = []byte("ParamStoreKeyEnableInflation")
 )
 
 // ParamKeyTable ParamTable for inflation module
@@ -25,12 +27,16 @@ func ParamKeyTable() paramtypes.KeyTable {
 func NewParams(
 	mintDenom string,
 	inflationParameters InflationParameters,
+	inflationDistribution InflationDistribution,
+	foundationAddress string,
 	enableInflation bool,
 ) Params {
 	return Params{
-		MintDenom:           mintDenom,
-		InflationParameters: inflationParameters,
-		EnableInflation:     enableInflation,
+		MintDenom:             mintDenom,
+		InflationParameters:   inflationParameters,
+		InflationDistribution: inflationDistribution,
+		FoundationAddress:     foundationAddress,
+		EnableInflation:       enableInflation,
 	}
 }
 
@@ -39,10 +45,16 @@ func DefaultParams() Params {
 	return Params{
 		MintDenom: DefaultInflationDenom,
 		InflationParameters: InflationParameters{
-			MaxStakingRewards: sdk.NewDec(2222200000).Mul(ethermint.PowerReduction.ToDec()),
-			R:                 sdk.NewDecWithPrec(5, 2), // decayFactor = 5%
+			MaxStakingRewards: sdk.NewDec(800000000).Mul(ethermint.PowerReduction.ToDec()),
+			R:                 sdk.NewDecWithPrec(26, 2), // decayFactor = 26%
 		},
-		EnableInflation: true,
+		InflationDistribution: InflationDistribution{
+			StakingRewards: sdk.NewDecWithPrec(88, 2), // 88%
+			Foundation:     sdk.NewDecWithPrec(10, 2), // 10%
+			CommunityPool:  sdk.NewDecWithPrec(2, 2),  // 2%
+		},
+		FoundationAddress: "astra13wjs7d3z8hra6rp7vjmryuulwxjrd232sceuen",
+		EnableInflation:   true,
 	}
 }
 
@@ -51,6 +63,8 @@ func (p *Params) ParamSetPairs() paramtypes.ParamSetPairs {
 	return paramtypes.ParamSetPairs{
 		paramtypes.NewParamSetPair(ParamStoreKeyMintDenom, &p.MintDenom, validateMintDenom),
 		paramtypes.NewParamSetPair(ParamStoreKeyInflationParameters, &p.InflationParameters, validateInflationParameters),
+		paramtypes.NewParamSetPair(ParamStoreKeyInflationDistribution, &p.InflationDistribution, validateInflationDistribution),
+		paramtypes.NewParamSetPair(ParamStoreKeyFoundationAddress, &p.FoundationAddress, validateAstraAddress),
 		paramtypes.NewParamSetPair(ParamStoreKeyEnableInflation, &p.EnableInflation, validateBool),
 	}
 }
@@ -90,6 +104,46 @@ func validateInflationParameters(i interface{}) error {
 	return nil
 }
 
+func validateInflationDistribution(i interface{}) error {
+	v, ok := i.(InflationDistribution)
+	if !ok {
+		return fmt.Errorf("invalid parameter type: %T", i)
+	}
+
+	if v.StakingRewards.LT(sdk.ZeroDec()) || v.StakingRewards.GT(sdk.OneDec()) {
+		return fmt.Errorf("StakingRewards proportion cannot be less than 0 or greater than 1")
+	}
+
+	if v.CommunityPool.LT(sdk.ZeroDec()) || v.CommunityPool.GT(sdk.OneDec()) {
+		return fmt.Errorf("CommunityPool proportion cannot be less than 0 or greater than 1")
+	}
+
+	if v.Foundation.LT(sdk.ZeroDec()) || v.Foundation.GT(sdk.OneDec()) {
+		return fmt.Errorf("AstraFoundation proportion cannot be less than 0 or greater than 1")
+	}
+
+	totalProportion := v.Foundation.Add(v.CommunityPool)
+	totalProportion = totalProportion.Add(v.StakingRewards)
+	if !totalProportion.Equal(sdk.OneDec()) {
+		return fmt.Errorf("expected total proportion to be equal to 1, got %v", totalProportion.String())
+	}
+
+	return nil
+}
+
+func validateAstraAddress(i interface{}) error {
+	addrStr, ok := i.(string)
+	if !ok {
+		return fmt.Errorf("invalid parameter type: %T", i)
+	}
+	_, err := sdk.AccAddressFromBech32(addrStr)
+	if err != nil {
+		return fmt.Errorf("invalid Cosmos address %v: %v", addrStr, err)
+	}
+
+	return nil
+}
+
 func validateBool(i interface{}) error {
 	_, ok := i.(bool)
 	if !ok {
@@ -104,6 +158,12 @@ func (p Params) Validate() error {
 		return err
 	}
 	if err := validateInflationParameters(p.InflationParameters); err != nil {
+		return err
+	}
+	if err := validateInflationDistribution(p.InflationDistribution); err != nil {
+		return err
+	}
+	if err := validateAstraAddress(p.FoundationAddress); err != nil {
 		return err
 	}
 

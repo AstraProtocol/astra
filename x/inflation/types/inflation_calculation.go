@@ -17,12 +17,16 @@ func CalculateEpochMintProvision(
 	x := period                       // period
 	r := params.InflationParameters.R // reduction factor
 
-	// exponentialDecay := r * (1 - r) ^ x
+	// periodProvision = exponentialDecay * MaxStakingRewards
+	// where exponentialDecay := r * (1 - r) ^ x
+	//
+	// to work-around float-point precision loss, we recursively multiply periodProvision with `decay`
+	// instead of calculating the whole exponentialDecay := r * (1 - r) ^ x.
+	periodProvision := r.Mul(params.InflationParameters.MaxStakingRewards)
 	decay := sdk.OneDec().Sub(r)
-	exponentialDecay := r.Mul(decay.Power(x))
-
-	// periodProvision = exponentialDecay * maxStakingRewards
-	periodProvision := exponentialDecay.Mul(params.InflationParameters.MaxStakingRewards)
+	for i := uint64(0); i < x; i++ {
+		periodProvision = periodProvision.Mul(decay)
+	}
 
 	// epochProvision = periodProvision / epochsPerPeriod
 	epochProvision := periodProvision.Quo(sdk.NewDec(epochsPerPeriod))
