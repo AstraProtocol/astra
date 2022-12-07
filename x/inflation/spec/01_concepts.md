@@ -25,27 +25,29 @@ governance proposals is distributed amongst more people.
 The Astra Token Model outlines how the Astra network is secured through a
 balanced incentivized interest from users, developers and validators. In this
 model, inflation plays a major role in sustaining this balance. With an initial
-supply of 8,888,800,000 Astras and 111,111,000 Astras being issued through inflation
+supply of 1,200,000,000 ASAs and 208,000,000 ASAs being issued through inflation
 during the first year, the model suggests an exponential decline in inflation to
-the rest of Astras in subsequent years.
+the rest of ASAs in subsequent years.
 
-Here are the detail of the tokenomics:
+### Genesis Distribution
+At genesis launch, there is a total of 1,200,000,000 distributed to Genesis Partners, Strategic Partners (Backers), 
+Astra Foundation, Core Team and the Community Pool. Here are the details:
 
+|                        |    % |         #ASAs | Minted at genesis |                                                                                  Vesting schedule |
+|:-----------------------|-----:|--------------:|------------------:|--------------------------------------------------------------------------------------------------:|
+| **Genesis Partners**   |  35% |   420,000,000 |       420,000,000 |                                                               100% minted and unlocked at genesis |
+| **Strategic Partners** |  40% |   480,000,000 |       480,000,000 |                                                               100% minted and unlocked at genesis |
+| **Astra Foundation**   |  10% |   120,000,000 |       120,000,000 |                                                               100% minted and unlocked at genesis |
+| **Core Team**          |  10% |   120,000,000 |        60,000,000 |                                                50% unlocked at genesis, 50% unlocked after 1 year |
+| **Community Pool**     |   5% |    60,000,000 |        60,000,000 |                                          100% minted & locked at genesis, unlocked with GOV rules |
+| **Total**              | 100% | 1,200,000,000 |     1,200,000,000 |                                                                                                   |
 
-|                              |    % |            #ASA | Minted at genesis |                                                                Vesting schedule |
-|:-----------------------------|-----:|----------------:|------------------:|--------------------------------------------------------------------------------:|
-| **Core Contributors**        |  15% |   1,666,650,000 |     1,666,650,000 | 100% minted at genesis: 20% unlocked at genesis, 80% linearly vested in 8 years |
-| **Genesis Partners**         |  15% |   1,666,650,000 |     1,666,650,000 | 100% minted at genesis: 20% unlocked at genesis, 80% linearly vested in 8 years |
-| **Dev/Community Incentives** |   5% |     555,550,000 |       555,550,000 | 100% minted at genesis: 20% unlocked at genesis, 80% linearly vested in 8 years |
-| **Staking Rewards**          |  20% |   2,222,220,000 |                 0 |                              100% exponentially vested with `decay_factor = 5%` |
-| **Reward Providers**         |  30% |   3,333,330,000 |     3,333,330,000 |                        100% minted & locked at genesis, unlocked with GOV rules |
-| **Reserve Treasury**         |  10% |   1,111,110,000 |     1,111,110,000 |                        100% minted & locked at genesis, unlocked with GOV rules |
-| **LP Rewards**               |   5% |     555,550,000 |       555,550,000 |                        100% minted & locked at genesis, unlocked with GOV rules |
-| **Total**                    | 100% |  11,111,000,000 |     8,888,800,000 |                                                                                 |
-
+##
+![Genesis distribution](img/genesisdistribution.png)
 
 ### Exponential Inflation - Block Rewards
-There will be a total of 20% of the total supply that will be distributed as block rewards which are mainly 
+#### Inflation Calculation
+There will be a total of 40% of the total supply that will be distributed as block rewards which are mainly 
 distributed as Staking Rewards. This module is dedicated to this allocation.
 
 Block rewards are minted in `daily` epochs, via a decay function. During a period of 365 epochs (i.e, one year), a
@@ -61,10 +63,26 @@ where
 ```
 
 With the given formula of `f(x)`, we can make sure that the total of minted block rewards never exceeds `R`, as:
+
 ![Total inflation calculation](img/total_inflation.png)
 
-With a decay factor of `0.05`, there will be a total of 40%, 64%, 87% and 98% of block rewards minted after the first 10, 
-20, 40, and 80 years,
-respectively. As a result, most of the block rewards will be distributed after 80 years. The decay factor can be changed via 
-governance voting. A higher decay factor means it takes less time to mint most of the block rewards while a lower
-decay factor results in a longer minting period.
+With a decay factor of `0.26`, there will be a total of 78%, 95% and 99% of block rewards minted after the first 5, 
+10, 15 years, respectively. As a result, most of the block rewards will be distributed after 20 years. 
+The decay factor can be changed via governance voting. A higher decay factor means it takes less time to mint most of 
+the block rewards while a lower decay factor results in a longer minting period.
+
+With the setting for `decayFactor = 0.26`, we can visualize the block rewards minted over years as follows:
+
+![Staking rewards by years](img/stakingrewardsbyyears.png)
+
+#### Inflation Distribution
+Each epoch provision is divided and distributed to 3 entities:
+- Staking Rewards: 88%
+- Astra Foundation: 10%
+- Community Pool: 2%
+
+For example, if `epochProvision = 100 ASAs` then 88 ASAs are distributed validators/delegators, 10 ASAs will go to the 
+Astra Foundation, and the remaining 2 ASAs are added to the Community Pool.
+Following is the proportions distributed to each category by years:
+
+![ASA distribution by years](img/astradistributionbyyears.png)
