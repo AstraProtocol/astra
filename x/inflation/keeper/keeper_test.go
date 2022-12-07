@@ -25,6 +25,7 @@ import (
 )
 
 var denomMint = types.DefaultInflationDenom
+var numRandTests = 10
 
 type KeeperTestSuite struct {
 	suite.Suite

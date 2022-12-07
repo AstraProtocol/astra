@@ -7,6 +7,6 @@ import (
 func (suite *KeeperTestSuite) TestInitGenesis() {
 	// check calculated epochMintProvision at genesis
 	epochMintProvision, _ := suite.app.InflationKeeper.GetEpochMintProvision(suite.ctx)
-	expMintProvision := sdk.MustNewDecFromStr("304410958904109589041095.000000000000000000")
+	expMintProvision := sdk.MustNewDecFromStr("569863013698630136986301.000000000000000000")
 	suite.Require().Equal(expMintProvision, epochMintProvision)
 }

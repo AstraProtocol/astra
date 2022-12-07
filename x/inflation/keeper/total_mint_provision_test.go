@@ -2,12 +2,11 @@ package keeper_test
 
 import (
 	"fmt"
-
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
-func (suite *KeeperTestSuite) TestSetGetEpochMintProvision() {
-	expEpochMintProvision := sdk.NewDec(1_000_000)
+func (suite *KeeperTestSuite) TestSetGetTotalMintProvision() {
+	totalMintProvision := sdk.NewDec(1_000_000)
 
 	testCases := []struct {
 		name     string
@@ -22,13 +21,13 @@ func (suite *KeeperTestSuite) TestSetGetEpochMintProvision() {
 		{
 			"newly set EpochMintProvision",
 			func() {
-				suite.app.InflationKeeper.SetEpochMintProvision(suite.ctx, expEpochMintProvision)
+				suite.app.InflationKeeper.SetTotalMintProvision(suite.ctx, totalMintProvision)
 			},
 			false,
 		},
 	}
 
-	genesisProvision := sdk.MustNewDecFromStr("569863013698630136986301.000000000000000000")
+	genesisProvision := sdk.MustNewDecFromStr("0.000000000000000000")
 
 	for _, tc := range testCases {
 		suite.Run(fmt.Sprintf("Case %s", tc.name), func() {
@@ -36,13 +35,12 @@ func (suite *KeeperTestSuite) TestSetGetEpochMintProvision() {
 
 			tc.malleate()
 
-			provision, found := suite.app.InflationKeeper.GetEpochMintProvision(suite.ctx)
-			suite.Require().True(found)
+			provision := suite.app.InflationKeeper.GetTotalMintProvision(suite.ctx)
 
 			if tc.genesis {
 				suite.Require().Equal(genesisProvision, provision, tc.name)
 			} else {
-				suite.Require().Equal(expEpochMintProvision, provision, tc.name)
+				suite.Require().Equal(totalMintProvision, provision, tc.name)
 			}
 		})
 	}
