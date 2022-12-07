@@ -30,8 +30,8 @@ during the first year, the model suggests an exponential decline in inflation to
 the rest of ASAs in subsequent years.
 
 ### Genesis Distribution
-At genesis launch, there is a total of 1,200,000,000 distributed to Genesis Partners, Strategic Partners (Backers), 
-Astra Foundation, Core Team and the Community Pool. Here are the details:
+At the genesis launch, there is a total of 1,200,000,000 distributed to Genesis Partners, Strategic Partners (Backers),
+Astra Foundation, Core Team, and the Community Pool. Here are the details:
 
 |                        |    % |         #ASAs | Minted at genesis |                                                                                  Vesting schedule |
 |:-----------------------|-----:|--------------:|------------------:|--------------------------------------------------------------------------------------------------:|
@@ -47,13 +47,14 @@ Astra Foundation, Core Team and the Community Pool. Here are the details:
 
 ### Exponential Inflation - Block Rewards
 #### Inflation Calculation
-There will be a total of 40% of the total supply that will be distributed as block rewards which are mainly 
-distributed as Staking Rewards. This module is dedicated to this allocation.
+A total of 40% of the total supply will be distributed as block rewards which are mainly distributed as Staking Rewards. 
+This module is dedicated to this allocation.
 
 Block rewards are minted in `daily` epochs, via a decay function. During a period of 365 epochs (i.e, one year), a
 daily provision of Astra tokens is minted and allocated to staking rewards and reserve treasury. Within a period,
-the epoch provision does not change. The epoch provision is then reduced by a factor of `(1-r)` for subsequent years, 
+the epoch provision does not change. The epoch provision is then reduced by a factor of `(1-r)` for subsequent years,
 with a decay factor `r`. Precisely, at the end of each period, the provision is recalculated as follows:
+
 ```latex
 f(x) = r * (1 - r)^x * R
 where
@@ -66,9 +67,9 @@ With the given formula of `f(x)`, we can make sure that the total of minted bloc
 
 ![Total inflation calculation](img/total_inflation.png)
 
-With a decay factor of `0.26`, there will be a total of 78%, 95% and 99% of block rewards minted after the first 5, 
-10, 15 years, respectively. As a result, most of the block rewards will be distributed after 20 years. 
-The decay factor can be changed via governance voting. A higher decay factor means it takes less time to mint most of 
+With a decay factor of `0.26`, there will be a total of 78%, 95%, and 99% of block rewards minted after the first 5,
+10, and 15 years, respectively. As a result, most of the block rewards will be distributed after 20 years.
+The decay factor can be changed via governance voting. A higher decay factor means it takes less time to mint most of
 the block rewards while a lower decay factor results in a longer minting period.
 
 With the setting for `decayFactor = 0.26`, we can visualize the block rewards minted over years as follows:
@@ -81,8 +82,8 @@ Each epoch provision is divided and distributed to 3 entities:
 - Astra Foundation: 10%
 - Community Pool: 2%
 
-For example, if `epochProvision = 100 ASAs` then 88 ASAs are distributed validators/delegators, 10 ASAs will go to the 
+For example, if `epochProvision = 100 ASAs` then 88 ASAs are distributed to validators/delegators, 10 ASAs will go to the
 Astra Foundation, and the remaining 2 ASAs are added to the Community Pool.
-Following is the proportions distributed to each category by years:
+Following are the proportions distributed to each category by years:
 
 ![ASA distribution by years](img/astradistributionbyyears.png)
