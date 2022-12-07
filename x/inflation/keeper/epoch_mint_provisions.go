@@ -8,6 +8,7 @@ import (
 )
 
 // GetEpochMintProvision gets the current EpochMintProvision.
+// The returned amount is measured in config.BaseDenom (i.e, aastra).
 func (k Keeper) GetEpochMintProvision(ctx sdk.Context) (sdk.Dec, bool) {
 	store := ctx.KVStore(k.storeKey)
 	bz := store.Get(types.KeyPrefixEpochMintProvision)
@@ -25,6 +26,7 @@ func (k Keeper) GetEpochMintProvision(ctx sdk.Context) (sdk.Dec, bool) {
 }
 
 // SetEpochMintProvision sets the current EpochMintProvision.
+// The base denom must be in config.BaseDenom (i.e, aastra).
 func (k Keeper) SetEpochMintProvision(ctx sdk.Context, epochMintProvision sdk.Dec) {
 	bz, err := epochMintProvision.Marshal()
 	if err != nil {

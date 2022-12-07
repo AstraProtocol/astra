@@ -1,10 +1,24 @@
 package keeper
 
 import (
+	"fmt"
 	"github.com/AstraProtocol/astra/v2/cmd/config"
 	"github.com/AstraProtocol/astra/v2/x/inflation/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	ethermint "github.com/evmos/ethermint/types"
 )
+
+// GetProportions returns the amount of coins given its distribution and the total amount of coins.
+func (k Keeper) GetProportions(
+	_ sdk.Context,
+	coin sdk.Coin,
+	distribution sdk.Dec,
+) sdk.Coin {
+	return sdk.NewCoin(
+		coin.Denom,
+		sdk.NewDecFromInt(coin.Amount).Mul(distribution).TruncateInt(),
+	)
+}
 
 // MintAndAllocateInflation performs inflation minting and allocation
 func (k Keeper) MintAndAllocateInflation(ctx sdk.Context, coin sdk.Coin) error {
@@ -33,18 +47,62 @@ func (k Keeper) MintCoins(ctx sdk.Context, newCoin sdk.Coin) error {
 // AllocateInflation allocates coins from the inflation to external
 // modules according to allocation proportions:
 //   - staking rewards -> sdk `auth` module fee collector
+// 	 - foundation -> a multi-sig address of the Astra Foundation
+//	 - community pool -> sdk `dist` module community pool
 func (k Keeper) AllocateInflation(ctx sdk.Context, mintedCoin sdk.Coin) error {
-	// Allocate staking rewards into fee collector account
-	stakingRewardsAmt := sdk.NewCoins(sdk.NewCoin(
-		mintedCoin.Denom,
-		mintedCoin.Amount,
-	))
-	return k.bankKeeper.SendCoinsFromModuleToModule(
+	params := k.GetParams(ctx)
+	distribution := params.InflationDistribution
+
+	// allocate staking rewards to the fee collector account
+	stakingRewardsAmt := sdk.NewCoins(k.GetProportions(ctx, mintedCoin, distribution.StakingRewards))
+	err := k.bankKeeper.SendCoinsFromModuleToModule(
 		ctx,
 		types.ModuleName,
 		k.feeCollectorName,
 		stakingRewardsAmt,
 	)
+	if err != nil {
+		return err
+	}
+
+	// allocate a portion of mintedProvision to the Foundation
+	foundationAmt := sdk.NewCoins(k.GetProportions(ctx, mintedCoin, distribution.Foundation))
+	foundationAddr, err := sdk.AccAddressFromBech32(params.FoundationAddress)
+	if err != nil {
+		return fmt.Errorf("invalid foudation address %v: %v", params.FoundationAddress, err)
+	}
+	err = k.bankKeeper.SendCoinsFromModuleToAccount(
+		ctx,
+		types.ModuleName,
+		foundationAddr,
+		foundationAmt,
+	)
+	if err != nil {
+		return err
+	}
+
+	// allocate the remaining balance of this module for the community pool
+	moduleAddr := k.accountKeeper.GetModuleAddress(types.ModuleName)
+	communityAmt := k.bankKeeper.GetAllBalances(ctx, moduleAddr)
+	err = k.distrKeeper.FundCommunityPool(
+		ctx,
+		communityAmt,
+		moduleAddr,
+	)
+	if err != nil {
+		return err
+	}
+
+	// update the total minted provision
+	totalMintedProvision := k.GetTotalMintProvision(ctx)
+	mintedAmt := mintedCoin.Amount.ToDec()
+	if mintedCoin.Denom == config.DisplayDenom {
+		mintedAmt = mintedAmt.Mul(ethermint.PowerReduction.ToDec())
+	}
+	newTotalMintedProvision := totalMintedProvision.Add(mintedAmt)
+	k.SetTotalMintProvision(ctx, newTotalMintedProvision)
+
+	return nil
 }
 
 // GetCirculatingSupply returns the bank supply.

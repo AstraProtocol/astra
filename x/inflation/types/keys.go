@@ -19,13 +19,15 @@ const (
 	prefixEpochIdentifier
 	prefixEpochsPerPeriod
 	prefixSkippedEpochs
+	prefixTotalMintedProvision
 )
 
 // KVStore key prefixes
 var (
-	KeyPrefixPeriod             = []byte{prefixPeriod}
-	KeyPrefixEpochMintProvision = []byte{prefixEpochMintProvision}
-	KeyPrefixEpochIdentifier    = []byte{prefixEpochIdentifier}
-	KeyPrefixEpochsPerPeriod    = []byte{prefixEpochsPerPeriod}
-	KeyPrefixSkippedEpochs      = []byte{prefixSkippedEpochs}
+	KeyPrefixPeriod               = []byte{prefixPeriod}
+	KeyPrefixEpochMintProvision   = []byte{prefixEpochMintProvision}
+	KeyPrefixEpochIdentifier      = []byte{prefixEpochIdentifier}
+	KeyPrefixEpochsPerPeriod      = []byte{prefixEpochsPerPeriod}
+	KeyPrefixSkippedEpochs        = []byte{prefixSkippedEpochs}
+	KeyPrefixTotalMintedProvision = []byte{prefixTotalMintedProvision}
 )
