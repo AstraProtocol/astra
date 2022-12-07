@@ -514,33 +514,37 @@ paths:
                           staking reward inflation
 
                           distributed through block rewards (i.e, R). The
-                          max_staking_rewards accounts for 20% of the total
+                          max_staking_rewards accounts for 26% of the total
                           supply.
                       r:
                         type: string
                         description: r holds the value of the decay factor.
-                    title: >-
-                      InflationParameters defines the distribution along with
-                      the parameters in which inflation is
-
-                      allocated through minting on each epoch. It excludes the
-                      genesis-enabled vesting distribution for team,
-
-                      genesis partners or reward providers, as they are only
-                      minted once at genesis.
-
-                      The rest of the total supply (i.e, 30%) will be gradually
-                      allocated for staking rewards through
-
-                      epoch provisions (e.g, block rewards).
-
-                      The epoch provision on each period is calculated as
-                      follows:
-
-                      periodProvision  = exponentialDecay       * 
-                      totalInflation
-
-                      f(x)             = r * (1 - r)^x  *  R
+                  inflation_distribution:
+                    description: >-
+                      inflation_distribution consists of parameters which
+                      block/epoch provision is distributed.
+                    type: object
+                    properties:
+                      staking_rewards:
+                        type: string
+                        description: >-
+                          staking_rewards defines the proportion of the minted
+                          minted_denom allocated to validators and delegators.
+                      foundation:
+                        type: string
+                        description: >-
+                          foundation defines the proportion of the minted
+                          minted_denom allocated to the Astra Foundation.
+                      community_pool:
+                        type: string
+                        description: >-
+                          community_pool defines the proportion of the minted
+                          minted_denom allocated to the community pool.
+                  foundation_address:
+                    type: string
+                    description: >-
+                      foundation_address is the address of the Astra Foundation
+                      for a portion of receiving provision.
                   enable_inflation:
                     type: boolean
                     title: >-
@@ -592,6 +596,51 @@ paths:
               Query/SkippedEpochs
 
               RPC method.
+        default:
+          description: An unexpected error response.
+          schema:
+            type: object
+            properties:
+              error:
+                type: string
+              code:
+                type: integer
+                format: int32
+              message:
+                type: string
+              details:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    type_url:
+                      type: string
+                    value:
+                      type: string
+                      format: byte
+      tags:
+        - Query
+  /astra/inflation/v1/total_minted_provision:
+    get:
+      summary: Params retrieves the total set of minting parameters.
+      operationId: TotalMintedProvision
+      responses:
+        '200':
+          description: A successful response.
+          schema:
+            type: object
+            properties:
+              total_minted_provision:
+                description: total amount of provisions minted via block rewards.
+                type: object
+                properties:
+                  denom:
+                    type: string
+                  amount:
+                    type: string
+            description: >-
+              QueryTotalMintedProvisionResponse is the response type for the
+              Query/TotalMintedProvision RPC method.
         default:
           description: An unexpected error response.
           schema:
@@ -28376,6 +28425,35 @@ definitions:
                   "@type": "type.googleapis.com/google.protobuf.Duration",
                   "value": "1.212s"
                 }
+  astra.inflation.v1.InflationDistribution:
+    type: object
+    properties:
+      staking_rewards:
+        type: string
+        description: >-
+          staking_rewards defines the proportion of the minted minted_denom
+          allocated to validators and delegators.
+      foundation:
+        type: string
+        description: >-
+          foundation defines the proportion of the minted minted_denom allocated
+          to the Astra Foundation.
+      community_pool:
+        type: string
+        description: >-
+          community_pool defines the proportion of the minted minted_denom
+          allocated to the community pool.
+    description: >-
+      InflationDistribution defines how the block rewards are distributed to
+      each module/component (i.e, Staking Rewards,
+
+      Astra Foundation, and the Community Pool).
+
+
+      For each block/epoch reward:
+         - 88% will be allocated as Staking Rewards;
+         - 10% will be allocated to the Astra Foundation;
+         - 2% will be allocated to the Community Pool.
   astra.inflation.v1.InflationParameters:
     type: object
     properties:
@@ -28386,24 +28464,27 @@ definitions:
           inflation
 
           distributed through block rewards (i.e, R). The max_staking_rewards
-          accounts for 20% of the total supply.
+          accounts for 26% of the total supply.
       r:
         type: string
         description: r holds the value of the decay factor.
-    title: >-
+    description: >-
       InflationParameters defines the distribution along with the parameters in
       which inflation is
 
       allocated through minting on each epoch. It excludes the genesis-enabled
-      vesting distribution for team,
+      vesting distribution for Genesis Partners,
 
-      genesis partners or reward providers, as they are only minted once at
-      genesis.
+      Strategic Partners, Astra Foundation, Core Team and Community Pool.
 
-      The rest of the total supply (i.e, 30%) will be gradually allocated for
-      staking rewards through
+      The rest of the total supply (i.e, 40%) will be gradually allocated for
+      staking rewards through epoch provisions (e.g, block rewards).
 
-      epoch provisions (e.g, block rewards).
+      It is estimated that 60% of total inflation will be minted in the first 3
+      years,
+
+      and this number will increase to 90% after 8 years.
+
 
       The epoch provision on each period is calculated as follows:
 
@@ -28429,30 +28510,36 @@ definitions:
               reward inflation
 
               distributed through block rewards (i.e, R). The
-              max_staking_rewards accounts for 20% of the total supply.
+              max_staking_rewards accounts for 26% of the total supply.
           r:
             type: string
             description: r holds the value of the decay factor.
-        title: >-
-          InflationParameters defines the distribution along with the parameters
-          in which inflation is
-
-          allocated through minting on each epoch. It excludes the
-          genesis-enabled vesting distribution for team,
-
-          genesis partners or reward providers, as they are only minted once at
-          genesis.
-
-          The rest of the total supply (i.e, 30%) will be gradually allocated
-          for staking rewards through
-
-          epoch provisions (e.g, block rewards).
-
-          The epoch provision on each period is calculated as follows:
-
-          periodProvision  = exponentialDecay       *  totalInflation
-
-          f(x)             = r * (1 - r)^x  *  R
+      inflation_distribution:
+        description: >-
+          inflation_distribution consists of parameters which block/epoch
+          provision is distributed.
+        type: object
+        properties:
+          staking_rewards:
+            type: string
+            description: >-
+              staking_rewards defines the proportion of the minted minted_denom
+              allocated to validators and delegators.
+          foundation:
+            type: string
+            description: >-
+              foundation defines the proportion of the minted minted_denom
+              allocated to the Astra Foundation.
+          community_pool:
+            type: string
+            description: >-
+              community_pool defines the proportion of the minted minted_denom
+              allocated to the community pool.
+      foundation_address:
+        type: string
+        description: >-
+          foundation_address is the address of the Astra Foundation for a
+          portion of receiving provision.
       enable_inflation:
         type: boolean
         title: >-
@@ -28545,30 +28632,36 @@ definitions:
                   reward inflation
 
                   distributed through block rewards (i.e, R). The
-                  max_staking_rewards accounts for 20% of the total supply.
+                  max_staking_rewards accounts for 26% of the total supply.
               r:
                 type: string
                 description: r holds the value of the decay factor.
-            title: >-
-              InflationParameters defines the distribution along with the
-              parameters in which inflation is
-
-              allocated through minting on each epoch. It excludes the
-              genesis-enabled vesting distribution for team,
-
-              genesis partners or reward providers, as they are only minted once
-              at genesis.
-
-              The rest of the total supply (i.e, 30%) will be gradually
-              allocated for staking rewards through
-
-              epoch provisions (e.g, block rewards).
-
-              The epoch provision on each period is calculated as follows:
-
-              periodProvision  = exponentialDecay       *  totalInflation
-
-              f(x)             = r * (1 - r)^x  *  R
+          inflation_distribution:
+            description: >-
+              inflation_distribution consists of parameters which block/epoch
+              provision is distributed.
+            type: object
+            properties:
+              staking_rewards:
+                type: string
+                description: >-
+                  staking_rewards defines the proportion of the minted
+                  minted_denom allocated to validators and delegators.
+              foundation:
+                type: string
+                description: >-
+                  foundation defines the proportion of the minted minted_denom
+                  allocated to the Astra Foundation.
+              community_pool:
+                type: string
+                description: >-
+                  community_pool defines the proportion of the minted
+                  minted_denom allocated to the community pool.
+          foundation_address:
+            type: string
+            description: >-
+              foundation_address is the address of the Astra Foundation for a
+              portion of receiving provision.
           enable_inflation:
             type: boolean
             title: >-
@@ -28587,6 +28680,20 @@ definitions:
       Query/SkippedEpochs
 
       RPC method.
+  astra.inflation.v1.QueryTotalMintedProvisionResponse:
+    type: object
+    properties:
+      total_minted_provision:
+        description: total amount of provisions minted via block rewards.
+        type: object
+        properties:
+          denom:
+            type: string
+          amount:
+            type: string
+    description: >-
+      QueryTotalMintedProvisionResponse is the response type for the
+      Query/TotalMintedProvision RPC method.
   cosmos.base.v1beta1.DecCoin:
     type: object
     properties:
