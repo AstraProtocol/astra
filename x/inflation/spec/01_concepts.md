@@ -51,9 +51,9 @@ A total of 40% of the total supply will be distributed as block rewards which ar
 This module is dedicated to this allocation.
 
 Block rewards are minted in `daily` epochs, via a decay function. During a period of 365 epochs (i.e, one year), a
-daily provision of Astra tokens is minted and allocated to staking rewards and reserve treasury. Within a period,
-the epoch provision does not change. The epoch provision is then reduced by a factor of `(1-r)` for subsequent years,
-with a decay factor `r`. Precisely, at the end of each period, the provision is recalculated as follows:
+daily provision of Astra tokens is minted and allocated to staking rewards, the Astra Foundation and the Community Pool. 
+Within a period, the epoch provision does not change. The epoch provision is then reduced by a factor of `(1-r)` for each 
+subsequent period, with a decay factor `r`. Precisely, at the end of each period, the provision is recalculated as follows:
 
 ```latex
 f(x) = r * (1 - r)^x * R
