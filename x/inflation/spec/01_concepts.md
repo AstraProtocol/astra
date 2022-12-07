@@ -58,8 +58,8 @@ with a decay factor `r`. Precisely, at the end of each period, the provision is 
 f(x) = r * (1 - r)^x * R
 where
     x = variable = period (i.e, year)
-    r = 0.05 = decay factor
-    R = total amount of block rewards
+    r = 0.26 = decay factor
+    R = 800,000,000 = total amount of block rewards
 ```
 
 With the given formula of `f(x)`, we can make sure that the total of minted block rewards never exceeds `R`, as:
