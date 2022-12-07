@@ -44,6 +44,11 @@ service Query {
   rpc Params(QueryParamsRequest) returns (QueryParamsResponse) {
     option (google.api.http).get = "/astra/inflation/v1/params";
   }
+
+  // Params retrieves the total set of minting parameters.
+  rpc TotalMintedProvision(QueryTotalMintedProvisionRequest) returns (QueryTotalMintedProvisionResponse) {
+    option (google.api.http).get = "/astra/inflation/v1/total_minted_provision";
+  }
 }
 
 // QueryInflationPeriodRequest is the request type for the Query/InflationPeriod RPC method.
@@ -119,4 +124,16 @@ message QueryParamsRequest {}
 message QueryParamsResponse {
   // params defines the parameters of the module.
   Params params = 1 [ (gogoproto.nullable) = false ];
+}
+
+// QueryTotalMintedProvision is the request type for the Query/TotalMintedProvision RPC method.
+message QueryTotalMintedProvisionRequest {}
+
+// QueryTotalMintedProvisionResponse is the response type for the Query/TotalMintedProvision RPC method.
+message QueryTotalMintedProvisionResponse {
+  // total amount of provisions minted via block rewards.
+  cosmos.base.v1beta1.DecCoin total_minted_provision = 1 [
+    (gogoproto.nullable) = false,
+    (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.DecCoins"
+  ];
 }

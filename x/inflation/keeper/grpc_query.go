@@ -88,3 +88,13 @@ func (k Keeper) Params(
 	params := k.GetParams(ctx)
 	return &types.QueryParamsResponse{Params: params}, nil
 }
+
+// TotalMintedProvision returns the total amount of provisions minted via block rewards.
+func (k Keeper) TotalMintedProvision(
+	c context.Context,
+	_ *types.QueryTotalMintedProvisionRequest,
+) (*types.QueryTotalMintedProvisionResponse, error) {
+	ctx := sdk.UnwrapSDKContext(c)
+	totalMintedProvision := k.GetTotalMintProvision(ctx)
+	return &types.QueryTotalMintedProvisionResponse{TotalMintedProvision: sdk.NewDecCoinFromDec(config.BaseDenom, totalMintedProvision)}, nil
+}

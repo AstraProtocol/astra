@@ -250,11 +250,11 @@ func (suite *KeeperTestSuite) TestQueryInflationRate() {
 
 	// Mint coins to increase supply
 	mintDenom := suite.app.InflationKeeper.GetParams(suite.ctx).MintDenom
-	mintCoin := sdk.NewCoin(mintDenom, sdk.TokensFromConsensusPower(int64(400_000_000), sdk.DefaultPowerReduction))
+	mintCoin := sdk.NewCoin(mintDenom, sdk.TokensFromConsensusPower(int64(1_200_000_000), sdk.DefaultPowerReduction))
 	err := suite.app.InflationKeeper.MintCoins(suite.ctx, mintCoin)
 	suite.Require().NoError(err)
 
-	expInflationRate := sdk.MustNewDecFromStr("27.777500000000000000")
+	expInflationRate := sdk.MustNewDecFromStr("17.333333333333333300")
 	res, err := suite.queryClient.InflationRate(ctx, &types.QueryInflationRateRequest{})
 	suite.Require().NoError(err)
 	suite.Require().Equal(expInflationRate, res.InflationRate)
@@ -267,4 +267,50 @@ func (suite *KeeperTestSuite) TestQueryParams() {
 	res, err := suite.queryClient.Params(ctx, &types.QueryParamsRequest{})
 	suite.Require().NoError(err)
 	suite.Require().Equal(expParams, res.Params)
+}
+
+func (suite *KeeperTestSuite) TestGetSetTotalMintedProvision() {
+	var (
+		req    *types.QueryTotalMintedProvisionRequest
+		expRes *types.QueryTotalMintedProvisionResponse
+	)
+
+	testCases := []struct {
+		name     string
+		malleate func()
+	}{
+		{
+			"genesis value",
+			func() {
+				req = &types.QueryTotalMintedProvisionRequest{}
+				expRes = &types.QueryTotalMintedProvisionResponse{
+					TotalMintedProvision: sdk.NewDecCoinFromDec(denomMint, sdk.NewDec(0)),
+				}
+			},
+		},
+		{
+			"newly set total minted provision",
+			func() {
+				newTotalMintedProvision := sdk.NewDec(1_000_000)
+				suite.app.InflationKeeper.SetTotalMintProvision(suite.ctx, newTotalMintedProvision)
+				suite.Commit()
+
+				req = &types.QueryTotalMintedProvisionRequest{}
+				expRes = &types.QueryTotalMintedProvisionResponse{
+					TotalMintedProvision: sdk.NewDecCoinFromDec(types.DefaultInflationDenom, newTotalMintedProvision)}
+			},
+		},
+	}
+	for _, tc := range testCases {
+		suite.Run(fmt.Sprintf("Case %s", tc.name), func() {
+			suite.SetupTest() // reset
+
+			ctx := sdk.WrapSDKContext(suite.ctx)
+			tc.malleate()
+
+			res, err := suite.queryClient.TotalMintedProvision(ctx, req)
+			suite.Require().NoError(err)
+			suite.Require().Equal(expRes, res)
+		})
+	}
 }
