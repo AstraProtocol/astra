@@ -28,6 +28,7 @@ func GetQueryCmd() *cobra.Command {
 		GetCirculatingSupply(),
 		GetInflationRate(),
 		GetParams(),
+		GetTotalMintedProvision(),
 	)
 
 	return cmd
@@ -194,6 +195,34 @@ func GetParams() *cobra.Command {
 			}
 
 			return clientCtx.PrintProto(&res.Params)
+		},
+	}
+
+	flags.AddQueryFlagsToCmd(cmd)
+
+	return cmd
+}
+
+// GetTotalMintedProvision implements a command to return the total minted provision.
+func GetTotalMintedProvision() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "total-minted-provision",
+		Short: "Query the total minted ASAs through inflation module",
+		Args:  cobra.NoArgs,
+		RunE: func(cmd *cobra.Command, args []string) error {
+			clientCtx, err := client.GetClientQueryContext(cmd)
+			if err != nil {
+				return err
+			}
+			queryClient := types.NewQueryClient(clientCtx)
+
+			params := &types.QueryTotalMintedProvisionRequest{}
+			res, err := queryClient.TotalMintedProvision(context.Background(), params)
+			if err != nil {
+				return err
+			}
+
+			return clientCtx.PrintProto(&res.TotalMintedProvision)
 		},
 	}
 
