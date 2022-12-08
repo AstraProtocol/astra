@@ -82,7 +82,7 @@ func GetEpochMintProvision() *cobra.Command {
 				return err
 			}
 
-			return clientCtx.PrintString(fmt.Sprintf("%s\n", res.EpochMintProvision))
+			return clientCtx.PrintProto(&res.EpochMintProvision)
 		},
 	}
 
@@ -138,7 +138,7 @@ func GetCirculatingSupply() *cobra.Command {
 				return err
 			}
 
-			return clientCtx.PrintString(fmt.Sprintf("%s\n", res.CirculatingSupply))
+			return clientCtx.PrintProto(&res.CirculatingSupply)
 		},
 	}
 
