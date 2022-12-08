@@ -1,11 +1,12 @@
 import random
+from pathlib import Path
 
 import pytest
-from pathlib import Path
+
 from .network import setup_astra
 from .utils import DEFAULT_BASE_PORT, \
     wait_for_new_epochs, \
-    wait_for_new_inflation_periods
+    wait_for_new_inflation_periods, parse_int
 
 pytestmark = pytest.mark.reward
 
@@ -17,15 +18,21 @@ def astra(tmp_path_factory):
     yield from setup_astra(path, DEFAULT_BASE_PORT, cfg)
 
 
-def get_provisions(inflation_params, period):
-    max_staking_rewards = float(inflation_params["inflation_parameters"]["max_staking_rewards"])
-    r = float(inflation_params["inflation_parameters"]["r"])
+def get_provisions(inflation_params, period, base=int(100)):
+    max_staking_rewards = parse_int(inflation_params["inflation_parameters"]["max_staking_rewards"])
+    r = int(float(inflation_params["inflation_parameters"]["r"]) * base)
 
-    provision = max_staking_rewards * r
+    # to avoid precision loss, we use repeated multiplication instead of power
+    provision = max_staking_rewards * r // base
     for i in range(period):
-        provision = provision * (1 - r)
+        provision = provision * (base - r) // base
 
     return int(provision)
+
+
+def mult(a, b, base=int(100)):
+    b = int(b * base)
+    return a * b // base
 
 
 def get_astra_foundation_address(inflation_params):
@@ -41,7 +48,7 @@ def get_inflation_distribution(inflation_params):
     ]
 
 
-def approximate_equal(a, b, diff_rate=1e-9):
+def approximate_equal(a, b, diff_rate=1e-18):
     if b == 0:
         assert a == b
     else:
@@ -94,7 +101,7 @@ def test_correct_mint_provisions(astra):
 
         mint_provision = astra.cosmos_cli(0).get_epoch_mint_provision()
 
-        expected_mint_provision = get_provisions(inflation_params, period) / epochs_per_period
+        expected_mint_provision = get_provisions(inflation_params, period) // epochs_per_period
         print("old_period, period, num_periods, mint_provision, expected_provision:", old_period, period, num_periods,
               mint_provision, expected_mint_provision)
 
@@ -108,7 +115,7 @@ def test_correct_supplies(astra):
     epoch_identifier = astra.cosmos_cli(0).get_inflation_epoch_identifier()
     for i in range(0, num_epochs):
         old_circulating_supply = astra.cosmos_cli(0).get_circulating_supply()
-        old_total_supply = int(float(astra.cosmos_cli(0).total_supply()["supply"][0]["amount"]))
+        old_total_supply = parse_int(astra.cosmos_cli(0).total_supply()["supply"][0]["amount"])
 
         current_mint_provision = astra.cosmos_cli(0).get_epoch_mint_provision()
 
@@ -117,7 +124,7 @@ def test_correct_supplies(astra):
 
         # calculate new supplies
         new_circulating_supply = astra.cosmos_cli(0).get_circulating_supply()
-        new_total_supply = int(float(astra.cosmos_cli(0).total_supply()["supply"][0]["amount"]))
+        new_total_supply = parse_int(astra.cosmos_cli(0).total_supply()["supply"][0]["amount"])
 
         cir_supply_diff = new_circulating_supply - old_circulating_supply
         total_supply_diff = new_total_supply - old_total_supply
@@ -127,6 +134,42 @@ def test_correct_supplies(astra):
 
         # circulating supply increase should be approximately equal to the current mint provision.
         assert approximate_equal(cir_supply_diff, current_mint_provision)
+        print("SUCCEEDED WITH i =", i, "\n\n")
+
+
+def test_correct_total_minted_provision(astra):
+    num_epochs = random.randint(1, 10)
+    print("num_epochs:", num_epochs)
+    epoch_identifier = astra.cosmos_cli(0).get_inflation_epoch_identifier()
+    for i in range(0, num_epochs):
+        # wait for the current epoch to pass
+        wait_for_new_epochs(astra.cosmos_cli(0),
+                            epoch_identifier=astra.cosmos_cli(0).get_inflation_epoch_identifier())
+
+        # retrieve old total minted provisions
+        old_total_minted_provision = astra.cosmos_cli(0).get_total_minted_provision()
+
+        current_mint_provision = astra.cosmos_cli(0).get_epoch_mint_provision()
+
+        # sleep for an epoch
+        wait_for_new_epochs(astra.cosmos_cli(0), epoch_identifier=epoch_identifier)
+
+        # retrieve new total minted provisions
+        new_total_minted_provision = astra.cosmos_cli(0).get_total_minted_provision()
+
+        print(
+            "old_total: {old_total_minted_provision}, new_total: {new_total_minted_provision}, total_diff: {"
+            "total_diff}, current_provision: {current_mint_provision}".format(
+                old_total_minted_provision=old_total_minted_provision,
+                new_total_minted_provision=new_total_minted_provision,
+                total_diff=new_total_minted_provision - old_total_minted_provision,
+                current_mint_provision=current_mint_provision
+            ))
+
+        # increased total minted provision should be approximately equal to the current mint provision.
+        assert approximate_equal(new_total_minted_provision - old_total_minted_provision,
+                                 current_mint_provision,
+                                 )
         print("SUCCEEDED WITH i =", i, "\n\n")
 
 
@@ -154,17 +197,17 @@ def test_should_distribute_rewards_to_validators_when_new_epochs_arrive(astra):
         )
 
         # calculate the old reward amounts
-        old_reward_amount = int(astra.cosmos_cli(0).distribution_reward(validator1_address))
-        old_reward_amount2 = int(astra.cosmos_cli(0).distribution_reward(validator2_address))
-        old_commission_amount = int(astra.cosmos_cli(0).distribution_commission(validator1_operator_address))
-        old_commission_amount2 = int(astra.cosmos_cli(0).distribution_commission(
+        old_reward_amount = astra.cosmos_cli(0).distribution_reward(validator1_address)
+        old_reward_amount2 = astra.cosmos_cli(0).distribution_reward(validator2_address)
+        old_commission_amount = astra.cosmos_cli(0).distribution_commission(validator1_operator_address)
+        old_commission_amount2 = astra.cosmos_cli(0).distribution_commission(
             validator2_operator_address,
-        ))
+        )
         old_total_amount = old_reward_amount + old_commission_amount
         old_total_amount2 = old_reward_amount2 + old_commission_amount2
 
-        old_community_amount = int(astra.cosmos_cli(0).distribution_community())
-        old_foundation_amount = int(astra.cosmos_cli(0).balance(foundation_address))
+        old_community_amount = astra.cosmos_cli(0).distribution_community()
+        old_foundation_amount = astra.cosmos_cli(0).balance(foundation_address)
         print("[old]", old_foundation_amount, old_community_amount, old_total_amount, old_total_amount2)
 
         # get the current mint-provision
@@ -181,21 +224,20 @@ def test_should_distribute_rewards_to_validators_when_new_epochs_arrive(astra):
                 epoch_identifier=astra.cosmos_cli(0).get_inflation_epoch_identifier()
             )
 
-
         # calculate the current reward amounts
-        reward_amount = int(astra.cosmos_cli(0).distribution_reward(validator1_address))
-        reward_amount2 = int(astra.cosmos_cli(0).distribution_reward(validator2_address))
-        commission_amount = int(astra.cosmos_cli(0).distribution_commission(validator1_operator_address))
-        commission_amount2 = int(astra.cosmos_cli(0).distribution_commission(
+        reward_amount = astra.cosmos_cli(0).distribution_reward(validator1_address)
+        reward_amount2 = astra.cosmos_cli(0).distribution_reward(validator2_address)
+        commission_amount = astra.cosmos_cli(0).distribution_commission(validator1_operator_address)
+        commission_amount2 = astra.cosmos_cli(0).distribution_commission(
             validator2_operator_address,
-        ))
+        )
         total_amount = reward_amount + commission_amount
         total_amount2 = reward_amount2 + commission_amount2
 
         # retrieve the new balance of the community pool
-        community_amount = int(astra.cosmos_cli(0).distribution_community())
+        community_amount = astra.cosmos_cli(0).distribution_community()
         # retrieve the new balance of the foundation
-        foundation_amount = int(astra.cosmos_cli(0).balance(foundation_address))
+        foundation_amount = astra.cosmos_cli(0).balance(foundation_address)
         print("[new]", foundation_amount, community_amount, total_amount, total_amount2)
 
         reward_increase = total_amount + total_amount2 - old_total_amount - old_total_amount2
@@ -204,19 +246,18 @@ def test_should_distribute_rewards_to_validators_when_new_epochs_arrive(astra):
         print("[increase]", foundation_increase, community_increase, reward_increase, current_mint_provision)
 
         # mint_provision should be distributed to all validators + community_tax
-        expected_reward_amount_for_validators_increase = int(inflation_distribution[0] * current_mint_provision)
-        expected_foundation_amount_increase = int(inflation_distribution[1] * current_mint_provision)
+        expected_reward_amount_for_validators_increase = mult(current_mint_provision, inflation_distribution[0])
+        expected_foundation_amount_increase = mult(current_mint_provision, inflation_distribution[1])
 
-        expected_community_amount_increase = int(inflation_distribution[2] * current_mint_provision) + \
-                                             community_tax * expected_reward_amount_for_validators_increase
-        expected_reward_amount_for_validators_increase = int(
-            (1 - community_tax) * float(expected_reward_amount_for_validators_increase))
+        expected_community_amount_increase = mult(current_mint_provision, inflation_distribution[2]) + \
+                                             mult(expected_reward_amount_for_validators_increase, community_tax)
+        expected_reward_amount_for_validators_increase = mult(expected_reward_amount_for_validators_increase,
+                                                              (1 - community_tax))
 
-        assert approximate_equal(foundation_increase, expected_foundation_amount_increase, diff_rate=1e-12)
-        assert approximate_equal(reward_increase, expected_reward_amount_for_validators_increase, diff_rate=1e-12)
-        assert approximate_equal(community_increase, expected_community_amount_increase, diff_rate=1e-12)
-        assert approximate_equal(reward_increase + community_increase + foundation_increase, current_mint_provision,
-                                 diff_rate=1e-12)
+        assert approximate_equal(foundation_increase, expected_foundation_amount_increase)
+        assert approximate_equal(reward_increase, expected_reward_amount_for_validators_increase)
+        assert approximate_equal(community_increase, expected_community_amount_increase)
+        assert approximate_equal(reward_increase + community_increase + foundation_increase, current_mint_provision)
         print("SUCCEEDED WITH i =", i, "\n\n")
 
 
@@ -251,8 +292,8 @@ def test_should_distribute_fees_to_validators_when_execute_tx(astra):
         )
 
         # calculate old balances
-        old_sender_balance = int(astra.cosmos_cli(0).balance(sender_address))
-        old_receiver_balance = int(astra.cosmos_cli(0).balance(receiver_address))
+        old_sender_balance = parse_int(astra.cosmos_cli(0).balance(sender_address))
+        old_receiver_balance = parse_int(astra.cosmos_cli(0).balance(receiver_address))
         print("[old_balances]", old_sender_balance, old_receiver_balance)
 
         amount_to_send = random.randint(1, 20) * 10 ** 15
@@ -260,12 +301,12 @@ def test_should_distribute_fees_to_validators_when_execute_tx(astra):
         print("amount_to_send, tx_fee:", amount_to_send, tx_fee)
 
         # calculate the old reward amounts
-        old_reward_amount = int(astra.cosmos_cli(0).distribution_reward(validator1_address))
-        old_reward_amount2 = int(astra.cosmos_cli(0).distribution_reward(validator2_address))
-        old_commission_amount = int(astra.cosmos_cli(0).distribution_commission(validator1_operator_address))
-        old_commission_amount2 = int(astra.cosmos_cli(0).distribution_commission(
+        old_reward_amount = astra.cosmos_cli(0).distribution_reward(validator1_address)
+        old_reward_amount2 = astra.cosmos_cli(0).distribution_reward(validator2_address)
+        old_commission_amount = astra.cosmos_cli(0).distribution_commission(validator1_operator_address)
+        old_commission_amount2 = astra.cosmos_cli(0).distribution_commission(
             validator2_operator_address,
-        ))
+        )
         old_total_amount = old_reward_amount + old_commission_amount
         old_total_amount2 = old_reward_amount2 + old_commission_amount2
         print("[old_rewards]", old_total_amount, old_total_amount2)
@@ -299,19 +340,19 @@ def test_should_distribute_fees_to_validators_when_execute_tx(astra):
             )
 
         # assert the balances
-        sender_balance = int(astra.cosmos_cli(0).balance(sender_address))
-        receiver_balance = int(astra.cosmos_cli(0).balance(receiver_address))
+        sender_balance = parse_int(astra.cosmos_cli(0).balance(sender_address))
+        receiver_balance = parse_int(astra.cosmos_cli(0).balance(receiver_address))
         print("[new_balances]", sender_balance, receiver_balance)
         assert receiver_balance == old_receiver_balance + amount_to_send
         assert sender_balance == old_sender_balance - amount_to_send - tx_fee
 
         # calculate the current reward amounts
-        reward_amount = int(astra.cosmos_cli(0).distribution_reward(validator1_address))
-        reward_amount2 = int(astra.cosmos_cli(0).distribution_reward(validator2_address))
-        commission_amount = int(astra.cosmos_cli(0).distribution_commission(validator1_operator_address))
-        commission_amount2 = int(astra.cosmos_cli(0).distribution_commission(
+        reward_amount = astra.cosmos_cli(0).distribution_reward(validator1_address)
+        reward_amount2 = astra.cosmos_cli(0).distribution_reward(validator2_address)
+        commission_amount = astra.cosmos_cli(0).distribution_commission(validator1_operator_address)
+        commission_amount2 = astra.cosmos_cli(0).distribution_commission(
             validator2_operator_address,
-        ))
+        )
         total_amount = reward_amount + commission_amount
         total_amount2 = reward_amount2 + commission_amount2
         print("[new_rewards]", total_amount, total_amount2)
@@ -319,11 +360,11 @@ def test_should_distribute_fees_to_validators_when_execute_tx(astra):
         reward_increase = total_amount + total_amount2 - old_total_amount - old_total_amount2
 
         # all staking rewards now: inflation_distribution[0] * mint_provision + tx_fee
-        all_rewards = int(current_mint_provision * inflation_distribution[0]) + tx_fee
+        all_rewards = mult(current_mint_provision, inflation_distribution[0]) + tx_fee
         assert approximate_equal(all_rewards, reward_increase)
 
         # all_rewards should be distributed to all validators + community_tax
-        expected_reward_amount_for_validators = int((1 - community_tax) * all_rewards)
+        expected_reward_amount_for_validators = mult(all_rewards, (1 - community_tax))
 
         assert approximate_equal(reward_increase, expected_reward_amount_for_validators)
         print("SUCCEEDED WITH i =", i, "\n\n")

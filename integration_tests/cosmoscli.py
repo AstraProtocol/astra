@@ -15,7 +15,7 @@ from dateutil.parser import isoparse
 from pystarport.utils import build_cli_args_safe, format_doc_string, interact
 from pystarport import ports
 import tomlkit
-from .utils import DEFAULT_GAS_PRICE, SUPERVISOR_CONFIG_FILE, DEFAULT_GAS
+from .utils import DEFAULT_GAS_PRICE, SUPERVISOR_CONFIG_FILE, DEFAULT_GAS, parse_int
 
 COMMON_PROG_OPTIONS = {
     # redirect to supervisord's stdout, easier to collect all logs
@@ -297,7 +297,7 @@ class CosmosCLI:
                 node=self.node_rpc,
             )
         )["commission"][0]
-        return float(coin["amount"])
+        return parse_int(coin["amount"])
 
     def distribution_community(self):
         coin = json.loads(
@@ -310,9 +310,9 @@ class CosmosCLI:
             )
         )["pool"]
         if len(coin) > 0:
-            return float(coin[0]["amount"])
+            return parse_int(coin[0]["amount"])
 
-        return float(0.0)
+        return 0
 
     def distribution_reward(self, delegator_addr):
         coin = json.loads(
@@ -325,7 +325,7 @@ class CosmosCLI:
                 node=self.node_rpc,
             )
         )["total"][0]
-        return float(coin["amount"])
+        return parse_int(coin["amount"])
 
     def address(self, name, bech="acc"):
         output = self.raw(
@@ -401,18 +401,21 @@ class CosmosCLI:
         )
 
     def get_epoch_mint_provision(self):
-        res = self.raw("query", "inflation", "epoch-mint-provision", node=self.node_rpc).decode()
-        res = res[:-6]
-        if res[-1] == 'a':
-            res = res[:-1]
-        return int(float(res))
+        res = json.loads(
+            self.raw("query", "inflation", "epoch-mint-provision", output=json, node=self.node_rpc)
+        )
+        if res:
+            return parse_int(res["amount"])
+        return None
 
     def get_circulating_supply(self):
-        res = self.raw("query", "inflation", "circulating-supply", node=self.node_rpc).decode()
-        res = res[:-6]
-        if res[-1] == 'a':
-            res = res[:-1]
-        return int(float(res))
+        res = json.loads(
+            self.raw("query", "inflation", "circulating-supply", output=json, node=self.node_rpc)
+        )
+        if res:
+            return parse_int(res["amount"])
+
+        return None
 
     def get_inflation_epoch_identifier(self):
         inflation_period_info = self.get_inflation_period()
@@ -433,7 +436,7 @@ class CosmosCLI:
         if epoch_infos["epochs"]:
             for epoch in epoch_infos["epochs"]:
                 if epoch["identifier"] == epoch_identifier:
-                    return int(epoch["duration"])
+                    return parse_int(epoch["duration"])
         return None
 
     def get_current_epoch(self, epoch_identifier="day"):
@@ -441,7 +444,16 @@ class CosmosCLI:
             self.raw("query", "epochs", "current-epoch", epoch_identifier, output="json", node=self.node_rpc)
         )
         if res:
-            return int(res["current_epoch"])
+            return parse_int(res["current_epoch"])
+
+        return None
+
+    def get_total_minted_provision(self):
+        res = json.loads(
+            self.raw("query", "inflation", "total-minted-provision", output="json", node=self.node_rpc)
+        )
+        if res:
+            return parse_int(res["amount"])
 
         return None
 
