@@ -731,7 +731,7 @@ type QueryClient interface {
 	InflationRate(ctx context.Context, in *QueryInflationRateRequest, opts ...grpc.CallOption) (*QueryInflationRateResponse, error)
 	// Params retrieves the total set of minting parameters.
 	Params(ctx context.Context, in *QueryParamsRequest, opts ...grpc.CallOption) (*QueryParamsResponse, error)
-	// Params retrieves the total set of minting parameters.
+	// TotalMintedProvision retrieves the total number of minted provisions.
 	TotalMintedProvision(ctx context.Context, in *QueryTotalMintedProvisionRequest, opts ...grpc.CallOption) (*QueryTotalMintedProvisionResponse, error)
 }
 
@@ -821,7 +821,7 @@ type QueryServer interface {
 	InflationRate(context.Context, *QueryInflationRateRequest) (*QueryInflationRateResponse, error)
 	// Params retrieves the total set of minting parameters.
 	Params(context.Context, *QueryParamsRequest) (*QueryParamsResponse, error)
-	// Params retrieves the total set of minting parameters.
+	// TotalMintedProvision retrieves the total number of minted provisions.
 	TotalMintedProvision(context.Context, *QueryTotalMintedProvisionRequest) (*QueryTotalMintedProvisionResponse, error)
 }
 

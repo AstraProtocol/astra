@@ -45,7 +45,7 @@ service Query {
     option (google.api.http).get = "/astra/inflation/v1/params";
   }
 
-  // Params retrieves the total set of minting parameters.
+  // TotalMintedProvision retrieves the total number of minted provisions.
   rpc TotalMintedProvision(QueryTotalMintedProvisionRequest) returns (QueryTotalMintedProvisionResponse) {
     option (google.api.http).get = "/astra/inflation/v1/total_minted_provision";
   }
