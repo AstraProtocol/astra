@@ -17,12 +17,12 @@ option go_package = "github.com/AstraProtocol/astra/x/inflation/types";
 // f(x)             = r * (1 - r)^x  *  R
 message InflationParameters {
   // max_staking_rewards defines the maximum amount of the staking reward inflation
-  // distributed through block rewards (i.e, R). The max_staking_rewards accounts for 26% of the total supply.
+  // distributed through block rewards (i.e, R). By default, the max_staking_rewards accounts for 40% of the total supply.
   string max_staking_rewards = 1 [
     (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
     (gogoproto.nullable) = false
   ];
-  // r holds the value of the decay factor.
+  // r holds the value of the decay factor. By default, r = 26%.
   string r = 2 [
     (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
     (gogoproto.nullable) = false
@@ -33,7 +33,7 @@ message InflationParameters {
 // InflationDistribution defines how the block rewards are distributed to each module/component (i.e, Staking Rewards,
 // Astra Foundation, and the Community Pool).
 //
-// For each block/epoch reward:
+// By default, for each block/epoch reward:
 //    - 88% will be allocated as Staking Rewards;
 //    - 10% will be allocated to the Astra Foundation;
 //    - 2% will be allocated to the Community Pool.

@@ -36,9 +36,9 @@ const _ = proto.GoGoProtoPackageIsVersion3 // please upgrade the proto package
 // f(x)             = r * (1 - r)^x  *  R
 type InflationParameters struct {
 	// max_staking_rewards defines the maximum amount of the staking reward inflation
-	// distributed through block rewards (i.e, R). The max_staking_rewards accounts for 26% of the total supply.
+	// distributed through block rewards (i.e, R). By default, the max_staking_rewards accounts for 40% of the total supply.
 	MaxStakingRewards github_com_cosmos_cosmos_sdk_types.Dec `protobuf:"bytes,1,opt,name=max_staking_rewards,json=maxStakingRewards,proto3,customtype=github.com/cosmos/cosmos-sdk/types.Dec" json:"max_staking_rewards"`
-	// r holds the value of the decay factor.
+	// r holds the value of the decay factor. By default, r = 26%.
 	R github_com_cosmos_cosmos_sdk_types.Dec `protobuf:"bytes,2,opt,name=r,proto3,customtype=github.com/cosmos/cosmos-sdk/types.Dec" json:"r"`
 }
 
@@ -78,7 +78,7 @@ var xxx_messageInfo_InflationParameters proto.InternalMessageInfo
 // InflationDistribution defines how the block rewards are distributed to each module/component (i.e, Staking Rewards,
 // Astra Foundation, and the Community Pool).
 //
-// For each block/epoch reward:
+// By default, for each block/epoch reward:
 //    - 88% will be allocated as Staking Rewards;
 //    - 10% will be allocated to the Astra Foundation;
 //    - 2% will be allocated to the Community Pool.
