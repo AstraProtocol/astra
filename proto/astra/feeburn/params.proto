@@ -1,0 +1,18 @@
+syntax = "proto3";
+package astra.feeburn.v2;
+
+import "gogoproto/gogo.proto";
+
+option go_package = "github.com/AstraProtocol/astra/v2/x/feeburn/types";
+
+// Params defines the parameters for the module.
+message Params {
+  option (gogoproto.goproto_stringer) = false;
+  
+  bool enableFeeBurn = 1 [(gogoproto.moretags) = "yaml:\"enable_fee_burn\""];
+  string feeBurn = 2 [
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
+    (gogoproto.nullable) = false,
+    (gogoproto.moretags) = "yaml:\"fee_burn\""
+  ];
+}
