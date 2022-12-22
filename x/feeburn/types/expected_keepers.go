@@ -18,15 +18,15 @@ type AccountKeeper interface {
 type BankKeeper interface {
 	SendCoinsFromModuleToModule(ctx sdk.Context, senderModule, recipientModule string, amt sdk.Coins) error
 	BurnCoins(ctx sdk.Context, moduleName string, amt sdk.Coins) error
-	GetSupply(ctx sdk.Context, denom string) sdk.Coin
 }
 
 // EvmHooks event hooks for evm tx processing
 type EvmHooks interface {
-	// Must be called after tx is processed successfully, if return an error, the whole transaction is reverted.
+	// PostTxProcessing Must be called after tx is processed successfully, if return an error, the whole transaction is reverted.
 	PostTxProcessing(ctx sdk.Context, msg core.Message, receipt *ethtypes.Receipt) error
 }
 
 type FeeBurnKeeper interface {
 	GetParams(ctx sdk.Context) Params
+	FeeBurnPayout(ctx sdk.Context, bankKeeper BankKeeper, totalFees sdk.Coins, params Params) error
 }

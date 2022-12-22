@@ -15,11 +15,10 @@
       }
     },
     {
-      "url": "./tmp-swagger-gen/astra/inflation/v1/query.swagger.json",
+      "url": "./tmp-swagger-gen/astra/feeburn/v1/query.swagger.json",
       "operationIds": {
         "rename": {
-          "Params": "InflationParams",
-          "TotalSupply": "InflationTotalSupply"
+          "Params": "FeeBurnParams"
         }
       }
     },
