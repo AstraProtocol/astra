@@ -15,7 +15,8 @@ import (
 	ethante "github.com/evmos/ethermint/app/ante"
 	evmtypes "github.com/evmos/ethermint/x/evm/types"
 
-	feeburninterface "github.com/AstraProtocol/astra/v2/x/feeburn/ante"
+	feeburnante "github.com/AstraProtocol/astra/v2/x/feeburn/ante"
+	feeburntypes "github.com/AstraProtocol/astra/v2/x/feeburn/types"
 	vestingtypes "github.com/evmos/evmos/v6/x/vesting/types"
 )
 
@@ -24,7 +25,7 @@ import (
 type HandlerOptions struct {
 	AccountKeeper   evmtypes.AccountKeeper
 	BankKeeper      evmtypes.BankKeeper
-	BankKeeperFork  feeburninterface.BankKeeper
+	BankKeeperFork  feeburntypes.BankKeeper
 	IBCKeeper       *ibckeeper.Keeper
 	FeeMarketKeeper evmtypes.FeeMarketKeeper
 	StakingKeeper   vestingtypes.StakingKeeper
@@ -91,7 +92,7 @@ func newCosmosAnteHandler(options HandlerOptions) sdk.AnteHandler {
 		ante.NewValidateMemoDecorator(options.AccountKeeper),
 		ante.NewConsumeGasForTxSizeDecorator(options.AccountKeeper),
 		ante.NewDeductFeeDecorator(options.AccountKeeper, options.BankKeeper, options.FeegrantKeeper),
-		feeburninterface.NewFeeBurnPayoutDecorator(options.BankKeeperFork, options.FeeBurnKeeper),
+		feeburnante.NewFeeBurnPayoutDecorator(options.BankKeeperFork, options.FeeBurnKeeper),
 		NewVestingDelegationDecorator(options.AccountKeeper, options.StakingKeeper, options.Cdc),
 		NewValidatorCommissionDecorator(options.Cdc),
 		// SetPubKeyDecorator must be called before all signature verification decorators
@@ -117,7 +118,7 @@ func newCosmosAnteHandlerEip712(options HandlerOptions) sdk.AnteHandler {
 		ante.NewValidateMemoDecorator(options.AccountKeeper),
 		ante.NewConsumeGasForTxSizeDecorator(options.AccountKeeper),
 		ante.NewDeductFeeDecorator(options.AccountKeeper, options.BankKeeper, options.FeegrantKeeper),
-		feeburninterface.NewFeeBurnPayoutDecorator(options.BankKeeperFork, options.FeeBurnKeeper),
+		feeburnante.NewFeeBurnPayoutDecorator(options.BankKeeperFork, options.FeeBurnKeeper),
 		NewVestingDelegationDecorator(options.AccountKeeper, options.StakingKeeper, options.Cdc),
 		NewValidatorCommissionDecorator(options.Cdc),
 		// SetPubKeyDecorator must be called before all signature verification decorators

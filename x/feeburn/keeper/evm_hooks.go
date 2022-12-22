@@ -4,14 +4,10 @@ import (
 	"fmt"
 	"github.com/AstraProtocol/astra/v2/cmd/config"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
-
 	"github.com/ethereum/go-ethereum/core"
 	ethtypes "github.com/ethereum/go-ethereum/core/types"
 
 	evmtypes "github.com/AstraProtocol/astra/v2/x/feeburn/types"
-
-	"github.com/AstraProtocol/astra/v2/x/feeburn/types"
 )
 
 var _ evmtypes.EvmHooks = Hooks{}
@@ -47,20 +43,11 @@ func (k Keeper) PostTxProcessing(
 		return nil
 	}
 
-	totalFee := sdk.NewIntFromUint64(receipt.GasUsed).Mul(sdk.NewIntFromBigInt(msg.GasPrice()))
-	burnAmount := (params.FeeBurn).MulInt(totalFee).TruncateInt()
-	feeBurn := sdk.Coins{{Denom: config.BaseDenom, Amount: burnAmount}}
-
-	fmt.Println("evm total fee", totalFee)
-	fmt.Println("evm total fee burn", feeBurn)
-	err := k.bankKeeper.SendCoinsFromModuleToModule(ctx, authtypes.FeeCollectorName, types.ModuleName, feeBurn)
+	totalFeeAmount := sdk.NewIntFromUint64(receipt.GasUsed).Mul(sdk.NewIntFromBigInt(msg.GasPrice()))
+	totalFees := sdk.Coins{{Denom: config.BaseDenom, Amount: totalFeeAmount}}
+	fmt.Println("evm total fee", totalFees)
+	err := FeeBurnPayout(ctx, k.bankKeeper, totalFees, params)
 	if err != nil {
-		fmt.Println("evm send coin failed", err)
-		return err
-	}
-	err = k.bankKeeper.BurnCoins(ctx, types.ModuleName, feeBurn)
-	if err != nil {
-		fmt.Println("evm burn coin failed", err)
 		return err
 	}
 

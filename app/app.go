@@ -195,7 +195,7 @@ var (
 		ibctransfertypes.ModuleName:    {authtypes.Minter, authtypes.Burner},
 		evmtypes.ModuleName:            {authtypes.Minter, authtypes.Burner}, // used for secure addition and subtraction of balance using module account
 		erc20types.ModuleName:          {authtypes.Minter, authtypes.Burner},
-		feeBurnTypes.ModuleName:        {authtypes.Minter, authtypes.Burner},
+		feeBurnTypes.ModuleName:        {authtypes.Burner},
 	}
 
 	// module accounts that are allowed to receive tokens
@@ -257,7 +257,7 @@ type Astra struct {
 	// Astra keepers
 	Erc20Keeper   erc20keeper.Keeper
 	VestingKeeper vestingkeeper.Keeper
-	FeeburnKeeper feeBurnKeeper.Keeper
+	FeeBurnKeeper feeBurnKeeper.Keeper
 
 	// the module manager
 	mm *module.Manager
@@ -368,7 +368,7 @@ func NewAstraApp(
 		app.BankKeeper,
 		authtypes.FeeCollectorName,
 	)
-	app.FeeburnKeeper = feeBurnKeeper.NewKeeper(
+	app.FeeBurnKeeper = feeBurnKeeper.NewKeeper(
 		appCodec,
 		keys[feeBurnTypes.StoreKey],
 		app.GetSubspace(feeBurnTypes.ModuleName),
@@ -451,7 +451,7 @@ func NewAstraApp(
 	app.EvmKeeper = app.EvmKeeper.SetHooks(
 		evmkeeper.NewMultiEvmHooks(
 			app.Erc20Keeper.Hooks(),
-			app.FeeburnKeeper.Hooks(),
+			app.FeeBurnKeeper.Hooks(),
 		),
 	)
 
@@ -531,7 +531,7 @@ func NewAstraApp(
 		// Astra app modules
 		erc20.NewAppModule(app.Erc20Keeper, app.AccountKeeper),
 		vesting.NewAppModule(app.VestingKeeper, app.AccountKeeper, app.BankKeeper, app.StakingKeeper),
-		feeburn.NewAppModule(appCodec, app.FeeburnKeeper, app.AccountKeeper, app.BankKeeper),
+		feeburn.NewAppModule(appCodec, app.FeeBurnKeeper, app.AccountKeeper, app.BankKeeper),
 	)
 
 	// During begin block slashing happens after distr.BeginBlocker so that
@@ -546,7 +546,6 @@ func NewAstraApp(
 		feemarkettypes.ModuleName,
 		evmtypes.ModuleName,
 		minttypes.ModuleName,
-		feeBurnTypes.ModuleName,
 		distrtypes.ModuleName,
 		slashingtypes.ModuleName,
 		evidencetypes.ModuleName,
@@ -564,6 +563,7 @@ func NewAstraApp(
 		paramstypes.ModuleName,
 		vestingtypes.ModuleName,
 		erc20types.ModuleName,
+		feeBurnTypes.ModuleName,
 	)
 
 	// NOTE: fee market module must go last in order to retrieve the block gas used.
@@ -677,7 +677,7 @@ func NewAstraApp(
 		EvmKeeper:       app.EvmKeeper,
 		StakingKeeper:   app.StakingKeeper,
 		FeegrantKeeper:  app.FeeGrantKeeper,
-		FeeBurnKeeper:   app.FeeburnKeeper,
+		FeeBurnKeeper:   app.FeeBurnKeeper,
 		IBCKeeper:       app.IBCKeeper,
 		FeeMarketKeeper: app.FeeMarketKeeper,
 		SignModeHandler: encodingConfig.TxConfig.SignModeHandler(),
