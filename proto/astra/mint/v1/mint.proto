@@ -24,37 +24,57 @@ message Params {
 
   // mint_denom indicates the type of coin to mint.
   string mint_denom = 1;
+  // inflation_parameters consists of parameters which define how inflation is calculated.
+  InflationParameters inflation_parameters = 2
+  [ (gogoproto.nullable) = false ];
+  // inflation_distribution consists of parameters which block/epoch provision is distributed.
+  InflationDistribution inflation_distribution = 3
+  [ (gogoproto.nullable) = false ];
+  // foundation_address is the address of the Astra Foundation for a portion of receiving provision.
+  string foundation_address = 4;
+}
+
+// InflationParameters defines how new provisions are minted through inflation.
+// In order to best capture the fluctuation of the market, provisions are minted through a dynamic inflation mechanism.
+// That is, the protocol expects a pre-determined portion of tokens in stake, this portion is called `goal_bonded`. It is
+// the ratio between the staked tokens and the total supply of tokens (i.e, staked + non-staked tokens).
+//
+// The `inflation_rate` is first set at genesis, and is adjusted at the beginning of each block.
+// At the beginning of a block, if the %-bonded (i.e, the current ration: staked / (staked + nonstaked)) is less than `goal_bonded`,
+// the `inflation_rat` will be increased until it reaches to `inflation_max` to incentivize more stake;
+// if the %-bonded is greater than `goal_bonded`, the `inflation_rate` will be decreased until it reaches to `inflation_min`
+// to disincentivize staking. If the %-bonded is equal to `goal_bonded`, the `inflation_rate` will stay unchanged.
+//
+// More formally, the `inflation_rate` is adjusted as follows:
+//
+//    inflation_rate = inflation_rate + (1 - current_bonded/goal_bonded) * inflation_rate_change / blocks_per_year.
+message InflationParameters {
   // inflation_rate_change is the maximum annual change in inflation rate.
-  string inflation_rate_change = 2 [
+  string inflation_rate_change = 1 [
     (gogoproto.moretags)   = "yaml:\"inflation_rate_change\"",
     (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
     (gogoproto.nullable)   = false
   ];
   // inflation_max is the maximum inflation rate.
-  string inflation_max = 3 [
+  string inflation_max = 2 [
     (gogoproto.moretags)   = "yaml:\"inflation_max\"",
     (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
     (gogoproto.nullable)   = false
   ];
   // inflation_min is the minimum inflation rate.
-  string inflation_min = 4 [
+  string inflation_min = 3 [
     (gogoproto.moretags)   = "yaml:\"inflation_min\"",
     (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
     (gogoproto.nullable)   = false
   ];
   // goal_bonded is the expected ratio of token in stake versus the total supply.
-  string goal_bonded = 5 [
+  string goal_bonded = 4 [
     (gogoproto.moretags)   = "yaml:\"goal_bonded\"",
     (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
     (gogoproto.nullable)   = false
   ];
   // blocks_per_year is the expected number of blocks per year.
-  uint64 blocks_per_year = 6 [(gogoproto.moretags) = "yaml:\"blocks_per_year\""];
-  // inflation_distribution consists of parameters which block/epoch provision is distributed.
-  InflationDistribution inflation_distribution = 7
-  [ (gogoproto.nullable) = false ];
-  // foundation_address is the address of the Astra Foundation for a portion of receiving provision.
-  string foundation_address = 8;
+  uint64 blocks_per_year = 5 [(gogoproto.moretags) = "yaml:\"blocks_per_year\""];
 }
 
 // InflationDistribution defines how the block rewards are distributed to each module/component (i.e, Staking Rewards,

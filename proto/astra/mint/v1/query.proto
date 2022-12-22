@@ -4,6 +4,7 @@ package astra.mint.v1;
 import "gogoproto/gogo.proto";
 import "google/api/annotations.proto";
 import "astra/mint/v1/mint.proto";
+import "cosmos/base/v1beta1/coin.proto";
 
 option go_package = "github.com/AstraProtocol/astra/x/mint/types";
 
@@ -19,9 +20,19 @@ service Query {
     option (google.api.http).get = "/astra/mint/v1/inflation";
   }
 
-  // AnnualProvisions current minting annual provisions value.
+  // AnnualProvisions returns the current minting annual provisions.
   rpc AnnualProvisions(QueryAnnualProvisionsRequest) returns (QueryAnnualProvisionsResponse) {
     option (google.api.http).get = "/astra/mint/v1/annual_provisions";
+  }
+
+  // TotalMintedProvision returns the total minted provisions.
+  rpc TotalMintedProvision(QueryTotalMintedProvisionRequest) returns (QueryTotalMintedProvisionResponse) {
+    option (google.api.http).get = "/astra/mint/v1/total_minted_provision";
+  }
+
+  // BlockProvision returns the current block provisions.
+  rpc BlockProvision(QueryBlockProvisionRequest) returns (QueryBlockProvisionResponse) {
+    option (google.api.http).get = "/astra/mint/v1/block_provision";
   }
 }
 
@@ -54,4 +65,28 @@ message QueryAnnualProvisionsResponse {
   // annual_provisions is the current minting annual provisions value.
   bytes annual_provisions = 1
       [(gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec", (gogoproto.nullable) = false];
+}
+
+// QueryTotalMintedProvision is the request type for the Query/TotalMintedProvision RPC method.
+message QueryTotalMintedProvisionRequest {}
+
+// QueryTotalMintedProvisionResponse is the response type for the Query/TotalMintedProvision RPC method.
+message QueryTotalMintedProvisionResponse {
+  // total amount of provisions minted via block rewards.
+  cosmos.base.v1beta1.DecCoin total_minted_provision = 1 [
+    (gogoproto.nullable) = false,
+    (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.DecCoins"
+  ];
+}
+
+// QueryTotalMintedProvision is the request type for the Query/BlockProvision RPC method.
+message QueryBlockProvisionRequest {}
+
+// QueryTotalMintedProvisionResponse is the response type for the Query/BlockProvision RPC method.
+message QueryBlockProvisionResponse {
+  // total amount of provisions minted via block rewards.
+  cosmos.base.v1beta1.Coin provision = 1 [
+    (gogoproto.nullable) = false,
+    (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.Coin"
+  ];
 }
