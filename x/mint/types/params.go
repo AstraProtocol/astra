@@ -1,14 +1,11 @@
 package types
 
 import (
-	"errors"
 	"fmt"
 	"github.com/AstraProtocol/astra/v2/cmd/config"
-	"gopkg.in/yaml.v2"
-	"strings"
-
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
+	"gopkg.in/yaml.v2"
 )
 
 var DefaultInflationDenom = config.BaseDenom
@@ -100,11 +97,8 @@ func validateMintDenom(i interface{}) error {
 		return fmt.Errorf("invalid parameter type: %T", i)
 	}
 
-	if strings.TrimSpace(v) == "" {
-		return errors.New("mint denom cannot be blank")
-	}
-	if err := sdk.ValidateDenom(v); err != nil {
-		return err
+	if v != config.BaseDenom && v != config.DisplayDenom {
+		return fmt.Errorf("mint denom must be one of [%v, %v]", config.BaseDenom, config.DisplayDenom)
 	}
 
 	return nil
