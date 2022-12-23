@@ -341,7 +341,7 @@ func (suite *TypesTestSuite) TestValidateParams() {
 	for i := 0; i < numRandomTests; i++ {
 		tests = append(tests, validateParamTestCase{
 			name:          fmt.Sprintf("RandomValidTestCase-%v", rand.Int63()),
-			params:        randomizedValidParamsTestCase(),
+			params:        randomizedValidParams(),
 			errorExpected: false,
 		})
 	}
@@ -356,7 +356,7 @@ func (suite *TypesTestSuite) TestValidateParams() {
 	}
 }
 
-func randomizedValidParamsTestCase() Params {
+func randomizedValidParams() Params {
 	return Params{
 		MintDenom:             randomValidDenom(),
 		InflationParameters:   randomValidInflationParameters(),
