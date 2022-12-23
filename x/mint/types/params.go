@@ -17,11 +17,6 @@ var DefaultInflationDenom = config.BaseDenom
 var (
 	KeyMintDenom             = []byte("MintDenom")
 	KeyInflationParameters   = []byte("InflationParameters")
-	KeyInflationRateChange   = []byte("InflationRateChange")
-	KeyInflationMax          = []byte("InflationMax")
-	KeyInflationMin          = []byte("InflationMin")
-	KeyGoalBonded            = []byte("GoalBonded")
-	KeyBlocksPerYear         = []byte("BlocksPerYear")
 	KeyInflationDistribution = []byte("InflationDistribution")
 	KeyFoundationAddress     = []byte("FoundationAddress")
 )
