@@ -79,7 +79,7 @@ func (suite *KeeperTestSuite) SetupApp() {
 	suite.consAddress = sdk.ConsAddress(privCons.PubKey().Address())
 	suite.ctx = suite.app.BaseApp.NewContext(false, tmproto.Header{
 		Height:          1,
-		ChainID:         "astra_11111-1",
+		ChainID:         "astra_11115-1",
 		Time:            time.Now().UTC(),
 		ProposerAddress: suite.consAddress.Bytes(),
 
@@ -116,6 +116,10 @@ func (suite *KeeperTestSuite) SetupApp() {
 	stakingParams := suite.app.StakingKeeper.GetParams(suite.ctx)
 	stakingParams.BondDenom = suite.denom
 	suite.app.StakingKeeper.SetParams(suite.ctx, stakingParams)
+
+	mintParams := suite.app.MintKeeper.GetParams(suite.ctx)
+	mintParams.MintDenom = config.BaseDenom
+	suite.app.MintKeeper.SetParams(suite.ctx, mintParams)
 
 	evmParams := suite.app.EvmKeeper.GetParams(suite.ctx)
 	evmParams.EvmDenom = suite.denom
