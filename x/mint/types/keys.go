@@ -12,8 +12,8 @@ const (
 	QueryParameters           = "parameters"
 	QueryInflation            = "inflation"
 	QueryAnnualProvisions     = "annual_provisions"
-	QueryTotalMintedProvision = "TotalMintedProvision"
-	QueryBlockProvision       = "BlockProvision"
+	QueryTotalMintedProvision = "total_minted_provision"
+	QueryBlockProvision       = "block_provision"
 )
 
 const (
