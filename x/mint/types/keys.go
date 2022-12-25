@@ -9,9 +9,11 @@ const (
 	// QuerierRoute is the querier route for the minting store.
 	QuerierRoute = StoreKey
 
-	QueryParameters       = "parameters"
-	QueryInflation        = "inflation"
-	QueryAnnualProvisions = "annual_provisions"
+	QueryParameters           = "parameters"
+	QueryInflation            = "inflation"
+	QueryAnnualProvisions     = "annual_provisions"
+	QueryTotalMintedProvision = "TotalMintedProvision"
+	QueryBlockProvision       = "BlockProvision"
 )
 
 const (
