@@ -35,7 +35,7 @@ type KeeperTestSuite struct {
 var s *KeeperTestSuite
 
 const (
-	numRandTests = 1000
+	numTests = 1000
 )
 
 func TestKeeperTestSuite(t *testing.T) {

@@ -54,7 +54,7 @@ func (suite *KeeperTestSuite) TestMintAndAllocateInflation() {
 		},
 	}
 
-	for i := 0; i < numRandTests; i++ {
+	for i := 0; i < numTests; i++ {
 		testCases = append(testCases, newRandomizedMintAndAllocateInflationTestCase(suite.app.MintKeeper.GetParams(suite.ctx)))
 	}
 

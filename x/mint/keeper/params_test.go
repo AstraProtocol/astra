@@ -12,7 +12,7 @@ func (suite *KeeperTestSuite) TestParams() {
 
 	suite.Require().Equal(expParams, params)
 
-	for i := 0; i < numRandTests; i++ {
+	for i := 0; i < numTests; i++ {
 		params = randomizedValidParams()
 		suite.app.MintKeeper.SetParams(suite.ctx, params)
 		newParams := suite.app.MintKeeper.GetParams(suite.ctx)

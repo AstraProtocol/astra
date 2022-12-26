@@ -9,7 +9,7 @@ import (
 func (suite *KeeperTestSuite) TestGRPCQueryParams() {
 	suite.SetupTest()
 	ctx := sdk.WrapSDKContext(suite.ctx)
-	for i := 0; i < numRandTests; i++ {
+	for i := 0; i < numTests; i++ {
 		params := randomizedValidParams()
 		suite.app.MintKeeper.SetParams(suite.ctx, params)
 
@@ -22,7 +22,7 @@ func (suite *KeeperTestSuite) TestGRPCQueryParams() {
 func (suite *KeeperTestSuite) TestGRPCQueryInflation() {
 	suite.SetupTest()
 	ctx := sdk.WrapSDKContext(suite.ctx)
-	for i := 0; i < numRandTests; i++ {
+	for i := 0; i < numTests; i++ {
 		minter := randomMinter()
 		suite.app.MintKeeper.SetMinter(suite.ctx, minter)
 
@@ -33,7 +33,7 @@ func (suite *KeeperTestSuite) TestGRPCQueryInflation() {
 }
 
 func (suite *KeeperTestSuite) TestGRPCQueryAnnualProvisions() {
-	for i := 0; i < numRandTests; i++ {
+	for i := 0; i < numTests; i++ {
 		suite.SetupTest()
 		ctx := sdk.WrapSDKContext(suite.ctx)
 
@@ -93,7 +93,7 @@ func (suite *KeeperTestSuite) TestGRPCQueryTotalMintedProvision() {
 }
 
 func (suite *KeeperTestSuite) TestGRPCQueryBlockProvision() {
-	for i := 0; i < numRandTests; i++ {
+	for i := 0; i < numTests; i++ {
 		suite.SetupTest()
 		ctx := sdk.WrapSDKContext(suite.ctx)
 

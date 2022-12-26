@@ -47,7 +47,7 @@ func (suite *KeeperTestSuite) TestQueryParams() {
 	}
 
 	var params types.Params
-	for i := 0; i <= numRandTests; i++ {
+	for i := 0; i <= numTests; i++ {
 		newParams := randomizedValidParams()
 		suite.app.MintKeeper.SetParams(suite.ctx, newParams)
 
@@ -71,7 +71,7 @@ func (suite *KeeperTestSuite) TestQueryInflation() {
 	}
 
 	var inflation sdk.Dec
-	for i := 0; i <= numRandTests; i++ {
+	for i := 0; i <= numTests; i++ {
 		newMinter := randomMinter()
 		suite.app.MintKeeper.SetMinter(suite.ctx, newMinter)
 
@@ -95,7 +95,7 @@ func (suite *KeeperTestSuite) TestQueryAnnualProvisions() {
 	}
 
 	var annualProvisions sdk.Dec
-	for i := 0; i <= numRandTests; i++ {
+	for i := 0; i <= numTests; i++ {
 		newMinter := randomMinter()
 		suite.app.MintKeeper.SetMinter(suite.ctx, newMinter)
 
@@ -119,7 +119,7 @@ func (suite *KeeperTestSuite) TestQueryTotalMintedProvision() {
 	}
 
 	var totalMinted sdk.Dec
-	for i := 0; i <= numRandTests; i++ {
+	for i := 0; i <= numTests; i++ {
 		newTotalMinted := sdk.NewDec(1 + rand.Int63())
 		suite.app.MintKeeper.SetTotalMintProvision(suite.ctx, newTotalMinted)
 
@@ -143,7 +143,7 @@ func (suite *KeeperTestSuite) TestQueryBlockProvision() {
 	}
 
 	var blockProvision sdk.Coin
-	for i := 0; i <= numRandTests; i++ {
+	for i := 0; i <= numTests; i++ {
 		newMinter := randomMinter()
 		newParams := randomizedValidParams()
 		suite.app.MintKeeper.SetMinter(suite.ctx, newMinter)

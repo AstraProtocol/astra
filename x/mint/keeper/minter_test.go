@@ -19,7 +19,7 @@ func (suite *KeeperTestSuite) TestMinter() {
 
 	suite.Require().Equal(expMinter, minter)
 
-	for i := 0; i < numRandTests; i++ {
+	for i := 0; i < numTests; i++ {
 		minter = randomMinter()
 		suite.app.MintKeeper.SetMinter(suite.ctx, minter)
 		newMinter := suite.app.MintKeeper.GetMinter(suite.ctx)
