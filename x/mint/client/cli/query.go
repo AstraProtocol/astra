@@ -24,6 +24,8 @@ func GetQueryCmd() *cobra.Command {
 		GetCmdQueryParams(),
 		GetCmdQueryInflation(),
 		GetCmdQueryAnnualProvisions(),
+		GetCmdQueryTotalMintedProvision(),
+		GetCmdQueryBlockProvision(),
 	)
 
 	return mintingQueryCmd
