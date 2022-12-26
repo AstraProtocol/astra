@@ -26,7 +26,7 @@ func (fsd FeeBurnPayoutDecorator) AnteHandle(ctx sdk.Context, tx sdk.Tx, simulat
 		return ctx, sdkerrors.Wrap(sdkerrors.ErrTxDecode, "Tx must be a FeeTx")
 	}
 	params := fsd.feeBurnKeeper.GetParams(ctx)
-	err = fsd.feeBurnKeeper.FeeBurnPayout(ctx, fsd.bankKeeper, feeTx.GetFee(), params)
+	err = fsd.feeBurnKeeper.BurnFee(ctx, fsd.bankKeeper, feeTx.GetFee(), params)
 	if err != nil {
 		return ctx, sdkerrors.Wrapf(sdkerrors.ErrInsufficientFunds, err.Error())
 	}

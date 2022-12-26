@@ -46,7 +46,7 @@ func (k Keeper) PostTxProcessing(
 	totalFeeAmount := sdk.NewIntFromUint64(receipt.GasUsed).Mul(sdk.NewIntFromBigInt(msg.GasPrice()))
 	totalFees := sdk.Coins{{Denom: config.BaseDenom, Amount: totalFeeAmount}}
 	fmt.Println("evm total fee", totalFees)
-	err := k.FeeBurnPayout(ctx, k.bankKeeper, totalFees, params)
+	err := k.BurnFee(ctx, k.bankKeeper, totalFees, params)
 	if err != nil {
 		return err
 	}

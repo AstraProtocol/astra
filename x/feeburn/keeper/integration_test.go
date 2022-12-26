@@ -84,12 +84,20 @@ func (suite *KeeperTestSuite) TestBurnFeeCosmosTxSend() {
 
 func (suite *KeeperTestSuite) TestEvmTx() {
 	suite.SetupTest()
+	totalEvmFeeBurn := sdk.NewInt(21875000000000)
 	priv, _ := ethsecp256k1.GenerateKey()
 	accBalance := sdk.Coins{{Denom: config.BaseDenom, Amount: sdk.NewInt(int64(math.Pow10(18) * 2))}}
 	addr := getAddr(priv)
 	err := suite.FundAccount(suite.ctx, addr, accBalance)
 	s.Require().NoError(err)
-	sendEthToSelf(priv)
+	s.Commit()
+	totalSupplyBefore := suite.app.BankKeeper.GetSupply(suite.ctx, config.BaseDenom)
+	fmt.Println("totalSupply", totalSupplyBefore)
+	sendEth(priv)
+	s.Commit()
+	totalSupplyAfter := suite.app.BankKeeper.GetSupply(suite.ctx, config.BaseDenom)
+	expectAmount := totalSupplyAfter.Amount.Sub(totalSupplyBefore.Amount)
+	s.Require().Equal(getMintedCoin().Amount.Sub(totalEvmFeeBurn), expectAmount)
 }
 
 func getExpectTotalFeeBurn(numberTx int) sdk.Int {
@@ -182,15 +190,22 @@ func prepareCosmosTx(priv *ethsecp256k1.PrivKey, msgs ...sdk.Msg) []byte {
 	return bz
 }
 
-func sendEthToSelf(priv *ethsecp256k1.PrivKey) {
-	chainID := s.app.EvmKeeper.ChainID()
+func sendEth(priv *ethsecp256k1.PrivKey) string {
+
 	from := common.BytesToAddress(priv.PubKey().Address().Bytes())
 	nonce := s.app.EvmKeeper.GetNonce(s.ctx, from)
 
-	msgEthereumTx := evmtypes.NewTx(chainID, nonce, &from, nil, 100000, nil,
+	privNew, _ := ethsecp256k1.GenerateKey()
+	addrRecv := common.BytesToAddress(privNew.PubKey().Address().Bytes())
+
+	msgEthereumTx := evmtypes.NewTx(s.app.EvmKeeper.ChainID(), nonce, &addrRecv,
+		big.NewInt(100),
+		100000,
+		big.NewInt(10000),
 		s.app.FeeMarketKeeper.GetBaseFee(s.ctx), big.NewInt(1), nil, &ethtypes.AccessList{})
 	msgEthereumTx.From = from.String()
 	performEthTx(priv, msgEthereumTx)
+	return msgEthereumTx.Hash
 }
 
 func performEthTx(priv *ethsecp256k1.PrivKey, msgEthereumTx *evmtypes.MsgEthereumTx) {
@@ -211,7 +226,6 @@ func performEthTx(priv *ethsecp256k1.PrivKey, msgEthereumTx *evmtypes.MsgEthereu
 
 	req := abci.RequestDeliverTx{Tx: bz}
 	res := s.app.BaseApp.DeliverTx(req)
-	fmt.Println(res)
 	s.Require().Equal(true, res.IsOK())
 }
 

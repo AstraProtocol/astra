@@ -11,7 +11,7 @@ import (
 func (suite *KeeperTestSuite) TestBurnErrorWhenFeeCollectorIsZeroAmount() {
 	params := suite.app.FeeBurnKeeper.GetParams(suite.ctx)
 	totalFees := sdk.Coins{{Denom: config.BaseDenom, Amount: sdk.NewInt(1000)}}
-	err := suite.app.FeeBurnKeeper.FeeBurnPayout(suite.ctx, suite.app.BankKeeper, totalFees, params)
+	err := suite.app.FeeBurnKeeper.BurnFee(suite.ctx, suite.app.BankKeeper, totalFees, params)
 	suite.Require().Error(err, types.ErrFeeBurnSend)
 }
 
@@ -22,7 +22,7 @@ func (suite *KeeperTestSuite) TestBurnSuccess() {
 	// send coin to feecollector module
 	err := suite.app.BankKeeper.SendCoinsFromModuleToModule(suite.ctx, minttypes.ModuleName, authtypes.FeeCollectorName, totalFees)
 	suite.Require().NoError(err)
-	err = suite.app.FeeBurnKeeper.FeeBurnPayout(suite.ctx, suite.app.BankKeeper, totalFees, params)
+	err = suite.app.FeeBurnKeeper.BurnFee(suite.ctx, suite.app.BankKeeper, totalFees, params)
 	suite.Require().NoError(err)
 
 	supplyAfter := suite.app.BankKeeper.GetSupply(suite.ctx, config.BaseDenom)

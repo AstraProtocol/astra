@@ -8,8 +8,8 @@ import (
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 )
 
-// FeeBurnPayout takes the total fees and burn 50% (or param set)
-func (k Keeper) FeeBurnPayout(ctx sdk.Context, bankKeeper feeburntype.BankKeeper,
+// BurnFee takes the total fees and burn 50% (or param set)
+func (k Keeper) BurnFee(ctx sdk.Context, bankKeeper feeburntype.BankKeeper,
 	totalFees sdk.Coins,
 	params feeburntype.Params) error {
 	if !params.EnableFeeBurn {
@@ -26,6 +26,7 @@ func (k Keeper) FeeBurnPayout(ctx sdk.Context, bankKeeper feeburntype.BankKeeper
 			feeBurn = feeBurn.Add(sdk.NewCoin(c.Denom, burnAmount))
 		}
 	}
+
 	fmt.Println("total fee", totalFees)
 	fmt.Println("total fee burn", feeBurn)
 	err := bankKeeper.SendCoinsFromModuleToModule(ctx, authtypes.FeeCollectorName, feeburntype.ModuleName, feeBurn)

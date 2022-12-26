@@ -28,5 +28,5 @@ type EvmHooks interface {
 
 type FeeBurnKeeper interface {
 	GetParams(ctx sdk.Context) Params
-	FeeBurnPayout(ctx sdk.Context, bankKeeper BankKeeper, totalFees sdk.Coins, params Params) error
+	BurnFee(ctx sdk.Context, bankKeeper BankKeeper, totalFees sdk.Coins, params Params) error
 }
