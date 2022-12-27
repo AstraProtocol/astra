@@ -15,7 +15,7 @@ func (k Keeper) BurnFee(ctx sdk.Context, bankKeeper feeburntype.BankKeeper,
 	if !params.EnableFeeBurn {
 		return nil
 	}
-	if totalFees.Empty() {
+	if totalFees.IsZero() {
 		return nil
 	}
 
@@ -29,9 +29,13 @@ func (k Keeper) BurnFee(ctx sdk.Context, bankKeeper feeburntype.BankKeeper,
 
 	fmt.Println("total fee", totalFees)
 	fmt.Println("total fee burn", feeBurn)
+	addr, _ := sdk.AccAddressFromBech32("astra17xpfvakm2amg962yls6f84z3kell8c5lnnwrnp")
+	feesCollectedInt := k.bankKeeper.GetAllBalances(ctx, addr)
+	fmt.Println("feeCollectorBalance", feesCollectedInt)
+
 	err := bankKeeper.SendCoinsFromModuleToModule(ctx, authtypes.FeeCollectorName, feeburntype.ModuleName, feeBurn)
 	if err != nil {
-		return sdkerrors.Wrapf(feeburntype.ErrFeeBurnSend, err.Error())
+		return sdkerrors.Wrapf(err, feeburntype.ErrFeeBurnSend.Error())
 	}
 	return bankKeeper.BurnCoins(ctx, feeburntype.ModuleName, feeBurn)
 }

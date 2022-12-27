@@ -22,7 +22,7 @@ import (
 )
 
 var (
-	DEFAULT_FEE int64 = 1000000
+	DEFAULT_FEE int64 = 1000000000000
 	privs       []*ethsecp256k1.PrivKey
 )
 
@@ -98,6 +98,27 @@ func (suite *KeeperTestSuite) TestEvmTx() {
 	totalSupplyAfter := suite.app.BankKeeper.GetSupply(suite.ctx, config.BaseDenom)
 	expectAmount := totalSupplyAfter.Amount.Sub(totalSupplyBefore.Amount)
 	s.Require().Equal(getMintedCoin().Amount.Sub(totalEvmFeeBurn), expectAmount)
+}
+
+func (suite *KeeperTestSuite) TestEvmTxWhenDisableBurnFee() {
+	suite.SetupTest()
+	params := suite.app.FeeBurnKeeper.GetParams(suite.ctx)
+	params.EnableFeeBurn = false
+	suite.app.FeeBurnKeeper.SetParams(suite.ctx, params)
+
+	priv, _ := ethsecp256k1.GenerateKey()
+	accBalance := sdk.Coins{{Denom: config.BaseDenom, Amount: sdk.NewInt(int64(math.Pow10(18) * 2))}}
+	addr := getAddr(priv)
+	err := suite.FundAccount(suite.ctx, addr, accBalance)
+	s.Require().NoError(err)
+	s.Commit()
+	totalSupplyBefore := suite.app.BankKeeper.GetSupply(suite.ctx, config.BaseDenom)
+	fmt.Println("totalSupply", totalSupplyBefore)
+	sendEth(priv)
+	s.Commit()
+	totalSupplyAfter := suite.app.BankKeeper.GetSupply(suite.ctx, config.BaseDenom)
+	expectAmount := totalSupplyAfter.Amount.Sub(totalSupplyBefore.Amount)
+	s.Require().Equal(getMintedCoin().Amount, expectAmount)
 }
 
 func getExpectTotalFeeBurn(numberTx int) sdk.Int {

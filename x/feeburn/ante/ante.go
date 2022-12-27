@@ -6,21 +6,21 @@ import (
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 )
 
-// FeeBurnPayoutDecorator Run his after we already deduct the fee from the account with
+// FeeBurnDecorator Run his after we already deduct the fee from the account with
 // the ante.NewDeductFeeDecorator() decorator. We pull funds from the FeeCollector ModuleAccount
-type FeeBurnPayoutDecorator struct {
+type FeeBurnDecorator struct {
 	bankKeeper    feeburntype.BankKeeper
 	feeBurnKeeper feeburntype.FeeBurnKeeper
 }
 
-func NewFeeBurnPayoutDecorator(bk feeburntype.BankKeeper, fb feeburntype.FeeBurnKeeper) FeeBurnPayoutDecorator {
-	return FeeBurnPayoutDecorator{
+func NewFeeBurnDecorator(bk feeburntype.BankKeeper, fb feeburntype.FeeBurnKeeper) FeeBurnDecorator {
+	return FeeBurnDecorator{
 		bankKeeper:    bk,
 		feeBurnKeeper: fb,
 	}
 }
 
-func (fsd FeeBurnPayoutDecorator) AnteHandle(ctx sdk.Context, tx sdk.Tx, simulate bool, next sdk.AnteHandler) (newCtx sdk.Context, err error) {
+func (fsd FeeBurnDecorator) AnteHandle(ctx sdk.Context, tx sdk.Tx, simulate bool, next sdk.AnteHandler) (newCtx sdk.Context, err error) {
 	feeTx, ok := tx.(sdk.FeeTx)
 	if !ok {
 		return ctx, sdkerrors.Wrap(sdkerrors.ErrTxDecode, "Tx must be a FeeTx")

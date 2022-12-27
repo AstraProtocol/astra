@@ -1,7 +1,6 @@
 package feeburn
 
 import (
-	"fmt"
 	"github.com/AstraProtocol/astra/v2/x/feeburn/keeper"
 	"github.com/AstraProtocol/astra/v2/x/feeburn/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -11,7 +10,6 @@ import (
 // state.
 func InitGenesis(ctx sdk.Context, k keeper.Keeper, genState types.GenesisState) {
 	// this line is used by starport scaffolding # genesis/module/init
-	fmt.Println("feeburn InitGenesis", genState.Params)
 	k.SetParams(ctx, genState.Params)
 }
 

@@ -15,6 +15,23 @@ func (suite *KeeperTestSuite) TestBurnErrorWhenFeeCollectorIsZeroAmount() {
 	suite.Require().Error(err, types.ErrFeeBurnSend)
 }
 
+func (suite *KeeperTestSuite) TestBurnWhenDisableBurnFee() {
+	paramsUpdate := suite.app.FeeBurnKeeper.GetParams(suite.ctx)
+	paramsUpdate.EnableFeeBurn = false
+	suite.app.FeeBurnKeeper.SetParams(suite.ctx, paramsUpdate)
+	params := suite.app.FeeBurnKeeper.GetParams(suite.ctx)
+	totalFees := sdk.Coins{{Denom: config.BaseDenom, Amount: sdk.NewInt(1000)}}
+	err := suite.app.FeeBurnKeeper.BurnFee(suite.ctx, suite.app.BankKeeper, totalFees, params)
+	suite.Require().NoError(err, types.ErrFeeBurnSend)
+}
+
+func (suite *KeeperTestSuite) TestBurnWhenTotalFeeIsZero() {
+	params := suite.app.FeeBurnKeeper.GetParams(suite.ctx)
+	totalFees := sdk.Coins{{Denom: config.BaseDenom, Amount: sdk.NewInt(0)}}
+	err := suite.app.FeeBurnKeeper.BurnFee(suite.ctx, suite.app.BankKeeper, totalFees, params)
+	suite.Require().NoError(err, types.ErrFeeBurnSend)
+}
+
 func (suite *KeeperTestSuite) TestBurnSuccess() {
 	params := suite.app.FeeBurnKeeper.GetParams(suite.ctx)
 	totalFees := sdk.Coins{{Denom: config.BaseDenom, Amount: sdk.NewInt(1000)}}
