@@ -3,7 +3,9 @@ package app
 import (
 	"context"
 	"encoding/json"
-	"github.com/AstraProtocol/astra/v2/x/inflation"
+	"github.com/AstraProtocol/astra/v2/x/mint"
+	mintkeeper "github.com/AstraProtocol/astra/v2/x/mint/keeper"
+	minttypes "github.com/AstraProtocol/astra/v2/x/mint/types"
 	"github.com/evmos/evmos/v6/x/epochs"
 	"io"
 	"net/http"
@@ -118,9 +120,6 @@ import (
 	vestingkeeper "github.com/evmos/evmos/v6/x/vesting/keeper"
 	vestingtypes "github.com/evmos/evmos/v6/x/vesting/types"
 
-	inflationkeeper "github.com/AstraProtocol/astra/v2/x/inflation/keeper"
-	inflationtypes "github.com/AstraProtocol/astra/v2/x/inflation/types"
-
 	v1_1 "github.com/AstraProtocol/astra/v2/app/upgrades/v1_1"
 	v2 "github.com/AstraProtocol/astra/v2/app/upgrades/v2"
 )
@@ -180,7 +179,7 @@ var (
 		vesting.AppModuleBasic{},
 		evm.AppModuleBasic{},
 		feemarket.AppModuleBasic{},
-		inflation.AppModuleBasic{},
+		mint.AppModuleBasic{},
 		erc20.AppModuleBasic{},
 		epochs.AppModuleBasic{},
 	)
@@ -195,7 +194,7 @@ var (
 		govtypes.ModuleName:            {authtypes.Burner},
 		ibctransfertypes.ModuleName:    {authtypes.Minter, authtypes.Burner},
 		evmtypes.ModuleName:            {authtypes.Minter, authtypes.Burner}, // used for secure addition and subtraction of balance using module account
-		inflationtypes.ModuleName:      {authtypes.Minter},
+		minttypes.ModuleName:           {authtypes.Minter, authtypes.Burner},
 		erc20types.ModuleName:          {authtypes.Minter, authtypes.Burner},
 	}
 
@@ -256,10 +255,10 @@ type Astra struct {
 	FeeMarketKeeper feemarketkeeper.Keeper
 
 	// Astra keepers
-	InflationKeeper inflationkeeper.Keeper
-	Erc20Keeper     erc20keeper.Keeper
-	EpochsKeeper    epochskeeper.Keeper
-	VestingKeeper   vestingkeeper.Keeper
+	MintKeeper    mintkeeper.Keeper
+	Erc20Keeper   erc20keeper.Keeper
+	EpochsKeeper  epochskeeper.Keeper
+	VestingKeeper vestingkeeper.Keeper
 
 	// the module manager
 	mm *module.Manager
@@ -315,7 +314,7 @@ func NewAstraApp(
 		// ethermint keys
 		evmtypes.StoreKey, feemarkettypes.StoreKey,
 		// astra keys
-		inflationtypes.StoreKey,
+		minttypes.StoreKey,
 		erc20types.StoreKey,
 		epochstypes.StoreKey,
 		vestingtypes.StoreKey,
@@ -361,13 +360,13 @@ func NewAstraApp(
 	stakingKeeper := stakingkeeper.NewKeeper(
 		appCodec, keys[stakingtypes.StoreKey], app.AccountKeeper, app.BankKeeper, app.GetSubspace(stakingtypes.ModuleName),
 	)
-	//app.MintKeeper = mintkeeper.NewKeeper(
-	//	appCodec, keys[minttypes.StoreKey], app.GetSubspace(minttypes.ModuleName), &stakingKeeper,
-	//	app.AccountKeeper, app.BankKeeper, authtypes.FeeCollectorName,
-	//)
 	app.DistrKeeper = distrkeeper.NewKeeper(
 		appCodec, keys[distrtypes.StoreKey], app.GetSubspace(distrtypes.ModuleName), app.AccountKeeper, app.BankKeeper,
 		&stakingKeeper, authtypes.FeeCollectorName, app.ModuleAccountAddrs(),
+	)
+	app.MintKeeper = mintkeeper.NewKeeper(
+		appCodec, keys[minttypes.StoreKey], app.GetSubspace(minttypes.ModuleName), &stakingKeeper,
+		app.AccountKeeper, app.BankKeeper, app.DistrKeeper, authtypes.FeeCollectorName,
 	)
 	app.SlashingKeeper = slashingkeeper.NewKeeper(
 		appCodec, keys[slashingtypes.StoreKey], &stakingKeeper, app.GetSubspace(slashingtypes.ModuleName),
@@ -413,12 +412,6 @@ func NewAstraApp(
 		app.AccountKeeper, app.BankKeeper, &stakingKeeper, govRouter,
 	)
 
-	app.InflationKeeper = inflationkeeper.NewKeeper(
-		keys[inflationtypes.StoreKey], appCodec, app.GetSubspace(inflationtypes.ModuleName),
-		app.AccountKeeper, app.BankKeeper, &stakingKeeper,
-		authtypes.FeeCollectorName,
-	)
-
 	// register the staking hooks
 	// NOTE: stakingKeeper above is passed by reference, so that it will contain these hooks
 	// NOTE: Distr, Slashing and Claim must be created before calling the Hooks method to avoid returning a Keeper without its table generated
@@ -441,9 +434,7 @@ func NewAstraApp(
 
 	epochsKeeper := epochskeeper.NewKeeper(appCodec, keys[epochstypes.StoreKey])
 	app.EpochsKeeper = *epochsKeeper.SetHooks(
-		epochskeeper.NewMultiEpochHooks(
-			app.InflationKeeper.Hooks(),
-		),
+		epochskeeper.NewMultiEpochHooks(),
 	)
 
 	app.GovKeeper = *govKeeper.SetHooks(
@@ -530,7 +521,8 @@ func NewAstraApp(
 		evm.NewAppModule(app.EvmKeeper, app.AccountKeeper),
 		feemarket.NewAppModule(app.FeeMarketKeeper),
 		// Astra app modules
-		inflation.NewAppModule(app.InflationKeeper, app.AccountKeeper, app.StakingKeeper),
+		mint.NewAppModule(appCodec, app.MintKeeper, app.AccountKeeper),
+		//inflation.NewAppModule(app.InflationKeeper, app.AccountKeeper, app.StakingKeeper),
 		erc20.NewAppModule(app.Erc20Keeper, app.AccountKeeper),
 		epochs.NewAppModule(appCodec, app.EpochsKeeper),
 		vesting.NewAppModule(app.VestingKeeper, app.AccountKeeper, app.BankKeeper, app.StakingKeeper),
@@ -565,7 +557,7 @@ func NewAstraApp(
 		feegrant.ModuleName,
 		paramstypes.ModuleName,
 		vestingtypes.ModuleName,
-		inflationtypes.ModuleName,
+		minttypes.ModuleName,
 		erc20types.ModuleName,
 	)
 
@@ -593,7 +585,7 @@ func NewAstraApp(
 		upgradetypes.ModuleName,
 		// Astra modules
 		vestingtypes.ModuleName,
-		inflationtypes.ModuleName,
+		minttypes.ModuleName,
 		erc20types.ModuleName,
 	)
 
@@ -628,7 +620,7 @@ func NewAstraApp(
 		vestingtypes.ModuleName,
 		erc20types.ModuleName,
 		epochstypes.ModuleName,
-		inflationtypes.ModuleName,
+		minttypes.ModuleName,
 		// NOTE: crisis module must go at the end to check for invariants on each module
 		crisistypes.ModuleName,
 	)
@@ -938,7 +930,7 @@ func initParamsKeeper(
 	paramsKeeper.Subspace(evmtypes.ModuleName)
 	paramsKeeper.Subspace(feemarkettypes.ModuleName)
 	// astra subspaces
-	paramsKeeper.Subspace(inflationtypes.ModuleName)
+	paramsKeeper.Subspace(minttypes.ModuleName)
 	paramsKeeper.Subspace(erc20types.ModuleName)
 	return paramsKeeper
 }

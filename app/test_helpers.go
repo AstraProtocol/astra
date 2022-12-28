@@ -2,6 +2,8 @@ package app
 
 import (
 	"encoding/json"
+	minttypes "github.com/AstraProtocol/astra/v2/x/mint/types"
+	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 	"time"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -63,6 +65,12 @@ func Setup(
 	if !isCheckTx {
 		// init chain must be called to stop deliverState from being nil
 		genesisState := NewDefaultGenesisState()
+
+		stakingGenesisState := stakingtypes.DefaultGenesisState()
+		stakingGenesisState.Params.BondDenom = minttypes.DefaultInflationDenom
+		encCfg := encoding.MakeConfig(ModuleBasics)
+		stakingGenesis := encCfg.Marshaler.MustMarshalJSON(stakingGenesisState)
+		genesisState[stakingtypes.ModuleName] = stakingGenesis
 
 		// Verify feeMarket genesis
 		if feemarketGenesis != nil {
