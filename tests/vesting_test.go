@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/AstraProtocol/astra/v2/app"
 	"github.com/AstraProtocol/astra/v2/app/ante"
+	"github.com/AstraProtocol/astra/v2/cmd/config"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	"github.com/ethereum/go-ethereum/common"
 	ethtypes "github.com/ethereum/go-ethereum/core/types"
@@ -35,7 +36,7 @@ func TestVestingTestingSuite(t *testing.T) {
 
 func (suite *KeeperTestSuite) TestCrawbackVestingAccountsTokens() {
 	// Monthly vesting period
-	stakeDenom := stakingtypes.DefaultParams().BondDenom
+	stakeDenom := config.BaseDenom
 	amt := sdk.NewInt(1)
 	vestingLength := int64(60 * 60 * 24 * 30) // in seconds
 	vestingAmt := sdk.NewCoins(sdk.NewCoin(stakeDenom, amt))
@@ -281,7 +282,7 @@ func (suite *KeeperTestSuite) TestCrawbackVestingAccountsTokens() {
 // 23/02 Lock ends
 func (suite *KeeperTestSuite) TestCrawbackVestingAccounts() {
 	// Monthly vesting period
-	stakeDenom := stakingtypes.DefaultParams().BondDenom
+	stakeDenom := config.BaseDenom
 	amt := sdk.NewInt(1)
 	vestingLength := int64(60 * 60 * 24 * 30) // in seconds
 	vestingAmt := sdk.NewCoins(sdk.NewCoin(stakeDenom, amt))

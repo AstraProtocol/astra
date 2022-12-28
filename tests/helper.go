@@ -45,7 +45,6 @@ import (
 	ethermint "github.com/evmos/ethermint/types"
 	"github.com/evmos/ethermint/x/evm/statedb"
 	evm "github.com/evmos/ethermint/x/evm/types"
-	evmtypes "github.com/evmos/ethermint/x/evm/types"
 	feemarkettypes "github.com/evmos/ethermint/x/feemarket/types"
 
 	"github.com/AstraProtocol/astra/v2/app"
@@ -133,41 +132,6 @@ func (suite *KeeperTestSuite) DoSetupTest(t require.TestingT) {
 	feemarketGenesis.Params.EnableHeight = 1
 	feemarketGenesis.Params.NoBaseFee = false
 
-	//// init app
-	//suite.app = app.Setup(checkTx, feemarketGenesis)
-	//
-	//if suite.mintFeeCollector {
-	//	// mint some coin to fee collector
-	//	coins := sdk.NewCoins(sdk.NewCoin(config.BaseDenom, sdk.NewInt(int64(params.TxGas)-1)))
-	//	genesisState := app.ModuleBasics.DefaultGenesis(suite.app.AppCodec())
-	//	balances := []banktypes.Balance{
-	//		{
-	//			Address: suite.app.AccountKeeper.GetModuleAddress(authtypes.FeeCollectorName).String(),
-	//			Coins:   coins,
-	//		},
-	//	}
-	//	// update total supply
-	//	bankGenesis := banktypes.NewGenesisState(banktypes.DefaultGenesisState().Params, balances,
-	//		sdk.NewCoins(sdk.NewCoin(config.BaseDenom, sdk.NewInt((int64(params.TxGas)-1)))), []banktypes.Metadata{})
-	//	bz := suite.app.AppCodec().MustMarshalJSON(bankGenesis)
-	//	require.NotNil(t, bz)
-	//	genesisState[banktypes.ModuleName] = suite.app.AppCodec().MustMarshalJSON(bankGenesis)
-	//
-	//	// we marshal the genesisState of all module to a byte array
-	//	stateBytes, err := tmjson.MarshalIndent(genesisState, "", " ")
-	//	require.NoError(t, err)
-	//
-	//	// Initialize the chain
-	//	suite.app.InitChain(
-	//		abci.RequestInitChain{
-	//			ChainId:         app.TestnetChainID + "-1",
-	//			Validators:      []abci.ValidatorUpdate{},
-	//			ConsensusParams: simapp.DefaultConsensusParams,
-	//			AppStateBytes:   stateBytes,
-	//		},
-	//	)
-	//}
-
 	suite.app = app.Setup(false, feemarkettypes.DefaultGenesisState())
 
 	suite.ctx = suite.app.BaseApp.NewContext(checkTx, tmproto.Header{
@@ -222,6 +186,10 @@ func (suite *KeeperTestSuite) DoSetupTest(t require.TestingT) {
 	mintParams.MintDenom = config.BaseDenom
 	suite.app.MintKeeper.SetParams(suite.ctx, mintParams)
 
+	evmParams := suite.app.EvmKeeper.GetParams(suite.ctx)
+	evmParams.EvmDenom = config.BaseDenom
+	suite.app.EvmKeeper.SetParams(suite.ctx, evmParams)
+
 	// Set Validator
 	valAddr := sdk.ValAddress(suite.address.Bytes())
 	validator, err := stakingtypes.NewValidator(valAddr, priv.PubKey(), stakingtypes.Description{})
@@ -239,7 +207,7 @@ func (suite *KeeperTestSuite) DoSetupTest(t require.TestingT) {
 	err = suite.app.BankKeeper.MintCoins(suite.ctx, minttypes.ModuleName, sdk.Coins{{Denom: config.BaseDenom, Amount: sdk.NewInt(int64(math.Pow10(18) * 1))}})
 	require.NoError(t, err)
 	suite.Commit()
-	feePoolBalance := sdk.Coins{{Denom: config.BaseDenom, Amount: sdk.NewInt(int64(math.Pow10(18) * 2))}}
+	feePoolBalance := sdk.Coins{{Denom: config.BaseDenom, Amount: sdk.NewInt(int64(math.Pow10(18) * 1))}}
 	err = suite.app.BankKeeper.MintCoins(suite.ctx, minttypes.ModuleName, feePoolBalance)
 	suite.Require().NoError(err)
 	err = suite.app.BankKeeper.SendCoinsFromModuleToModule(suite.ctx, minttypes.ModuleName, authtypes.FeeCollectorName, feePoolBalance)
@@ -688,9 +656,9 @@ type MockEVMKeeper struct {
 	mock.Mock
 }
 
-func (m *MockEVMKeeper) GetParams(ctx sdk.Context) evmtypes.Params {
+func (m *MockEVMKeeper) GetParams(ctx sdk.Context) evm.Params {
 	args := m.Called(mock.Anything)
-	return args.Get(0).(evmtypes.Params)
+	return args.Get(0).(evm.Params)
 }
 
 func (m *MockEVMKeeper) GetAccountWithoutBalance(ctx sdk.Context, addr common.Address) *statedb.Account {
@@ -701,21 +669,21 @@ func (m *MockEVMKeeper) GetAccountWithoutBalance(ctx sdk.Context, addr common.Ad
 	return args.Get(0).(*statedb.Account)
 }
 
-func (m *MockEVMKeeper) EstimateGas(c context.Context, req *evmtypes.EthCallRequest) (*evmtypes.EstimateGasResponse, error) {
+func (m *MockEVMKeeper) EstimateGas(c context.Context, req *evm.EthCallRequest) (*evm.EstimateGasResponse, error) {
 	args := m.Called(mock.Anything, mock.Anything)
 	if args.Get(0) == nil {
 		return nil, args.Error(1)
 	}
-	return args.Get(0).(*evmtypes.EstimateGasResponse), args.Error(1)
+	return args.Get(0).(*evm.EstimateGasResponse), args.Error(1)
 }
 
-func (m *MockEVMKeeper) ApplyMessage(ctx sdk.Context, msg core.Message, tracer vm.EVMLogger, commit bool) (*evmtypes.MsgEthereumTxResponse, error) {
+func (m *MockEVMKeeper) ApplyMessage(ctx sdk.Context, msg core.Message, tracer vm.EVMLogger, commit bool) (*evm.MsgEthereumTxResponse, error) {
 	args := m.Called(mock.Anything, mock.Anything, mock.Anything, mock.Anything)
 
 	if args.Get(0) == nil {
 		return nil, args.Error(1)
 	}
-	return args.Get(0).(*evmtypes.MsgEthereumTxResponse), args.Error(1)
+	return args.Get(0).(*evm.MsgEthereumTxResponse), args.Error(1)
 }
 
 var _ types.BankKeeper = &MockBankKeeper{}
