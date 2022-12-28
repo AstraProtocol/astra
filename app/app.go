@@ -3,10 +3,12 @@ package app
 import (
 	"context"
 	"encoding/json"
+	"github.com/AstraProtocol/astra/v2/x/feeburn"
+	feeBurnKeeper "github.com/AstraProtocol/astra/v2/x/feeburn/keeper"
+	feeBurnTypes "github.com/AstraProtocol/astra/v2/x/feeburn/types"
 	"github.com/AstraProtocol/astra/v2/x/mint"
 	mintkeeper "github.com/AstraProtocol/astra/v2/x/mint/keeper"
 	minttypes "github.com/AstraProtocol/astra/v2/x/mint/types"
-	"github.com/evmos/evmos/v6/x/epochs"
 	"io"
 	"net/http"
 	"os"
@@ -110,8 +112,6 @@ import (
 	feemarkettypes "github.com/evmos/ethermint/x/feemarket/types"
 
 	"github.com/AstraProtocol/astra/v2/app/ante"
-	epochskeeper "github.com/evmos/evmos/v6/x/epochs/keeper"
-	epochstypes "github.com/evmos/evmos/v6/x/epochs/types"
 	"github.com/evmos/evmos/v6/x/erc20"
 	erc20client "github.com/evmos/evmos/v6/x/erc20/client"
 	erc20keeper "github.com/evmos/evmos/v6/x/erc20/keeper"
@@ -181,7 +181,7 @@ var (
 		feemarket.AppModuleBasic{},
 		mint.AppModuleBasic{},
 		erc20.AppModuleBasic{},
-		epochs.AppModuleBasic{},
+		feeburn.AppModuleBasic{},
 	)
 
 	// module account permissions
@@ -251,14 +251,14 @@ type Astra struct {
 	ScopedTransferKeeper capabilitykeeper.ScopedKeeper
 
 	// Ethermint keepers
+	Erc20Keeper     erc20keeper.Keeper
 	EvmKeeper       *evmkeeper.Keeper
 	FeeMarketKeeper feemarketkeeper.Keeper
 
 	// Astra keepers
 	MintKeeper    mintkeeper.Keeper
-	Erc20Keeper   erc20keeper.Keeper
-	EpochsKeeper  epochskeeper.Keeper
 	VestingKeeper vestingkeeper.Keeper
+	FeeBurnKeeper feeBurnKeeper.Keeper
 
 	// the module manager
 	mm *module.Manager
@@ -316,8 +316,8 @@ func NewAstraApp(
 		// astra keys
 		minttypes.StoreKey,
 		erc20types.StoreKey,
-		epochstypes.StoreKey,
 		vestingtypes.StoreKey,
+		feeBurnTypes.StoreKey,
 	)
 
 	// Add the EVM transient store key
@@ -367,6 +367,13 @@ func NewAstraApp(
 	app.MintKeeper = mintkeeper.NewKeeper(
 		appCodec, keys[minttypes.StoreKey], app.GetSubspace(minttypes.ModuleName), &stakingKeeper,
 		app.AccountKeeper, app.BankKeeper, app.DistrKeeper, authtypes.FeeCollectorName,
+	)
+	app.FeeBurnKeeper = feeBurnKeeper.NewKeeper(
+		appCodec,
+		keys[feeBurnTypes.StoreKey],
+		app.GetSubspace(feeBurnTypes.ModuleName),
+		app.BankKeeper,
+		authtypes.FeeCollectorName,
 	)
 	app.SlashingKeeper = slashingkeeper.NewKeeper(
 		appCodec, keys[slashingtypes.StoreKey], &stakingKeeper, app.GetSubspace(slashingtypes.ModuleName),
@@ -430,11 +437,6 @@ func NewAstraApp(
 	app.Erc20Keeper = erc20keeper.NewKeeper(
 		keys[erc20types.StoreKey], appCodec, app.GetSubspace(erc20types.ModuleName),
 		app.AccountKeeper, app.BankKeeper, app.EvmKeeper,
-	)
-
-	epochsKeeper := epochskeeper.NewKeeper(appCodec, keys[epochstypes.StoreKey])
-	app.EpochsKeeper = *epochsKeeper.SetHooks(
-		epochskeeper.NewMultiEpochHooks(),
 	)
 
 	app.GovKeeper = *govKeeper.SetHooks(
@@ -524,8 +526,8 @@ func NewAstraApp(
 		mint.NewAppModule(appCodec, app.MintKeeper, app.AccountKeeper),
 		//inflation.NewAppModule(app.InflationKeeper, app.AccountKeeper, app.StakingKeeper),
 		erc20.NewAppModule(app.Erc20Keeper, app.AccountKeeper),
-		epochs.NewAppModule(appCodec, app.EpochsKeeper),
 		vesting.NewAppModule(app.VestingKeeper, app.AccountKeeper, app.BankKeeper, app.StakingKeeper),
+		feeburn.NewAppModule(appCodec, app.FeeBurnKeeper, app.AccountKeeper, app.BankKeeper),
 	)
 
 	// During begin block slashing happens after distr.BeginBlocker so that
@@ -537,7 +539,6 @@ func NewAstraApp(
 	app.mm.SetOrderBeginBlockers(
 		upgradetypes.ModuleName,
 		capabilitytypes.ModuleName,
-		epochstypes.ModuleName,
 		feemarkettypes.ModuleName,
 		evmtypes.ModuleName,
 		//minttypes.ModuleName,
@@ -559,6 +560,7 @@ func NewAstraApp(
 		vestingtypes.ModuleName,
 		minttypes.ModuleName,
 		erc20types.ModuleName,
+		feeBurnTypes.ModuleName,
 	)
 
 	// NOTE: fee market module must go last in order to retrieve the block gas used.
@@ -568,7 +570,6 @@ func NewAstraApp(
 		stakingtypes.ModuleName,
 		evmtypes.ModuleName,
 		feemarkettypes.ModuleName,
-		epochstypes.ModuleName,
 		ibchost.ModuleName,
 		ibctransfertypes.ModuleName,
 		capabilitytypes.ModuleName,
@@ -587,6 +588,7 @@ func NewAstraApp(
 		vestingtypes.ModuleName,
 		minttypes.ModuleName,
 		erc20types.ModuleName,
+		feeBurnTypes.ModuleName,
 	)
 
 	// NOTE: The genutils module must occur after staking so that pools are
@@ -619,8 +621,8 @@ func NewAstraApp(
 		// Astra modules
 		vestingtypes.ModuleName,
 		erc20types.ModuleName,
-		epochstypes.ModuleName,
 		minttypes.ModuleName,
+		feeBurnTypes.ModuleName,
 		// NOTE: crisis module must go at the end to check for invariants on each module
 		crisistypes.ModuleName,
 	)
@@ -653,7 +655,6 @@ func NewAstraApp(
 		ibc.NewAppModule(app.IBCKeeper),
 		transferModule,
 		evm.NewAppModule(app.EvmKeeper, app.AccountKeeper),
-		epochs.NewAppModule(appCodec, app.EpochsKeeper),
 		feemarket.NewAppModule(app.FeeMarketKeeper),
 	)
 
@@ -671,6 +672,7 @@ func NewAstraApp(
 	options := ante.HandlerOptions{
 		AccountKeeper:   app.AccountKeeper,
 		BankKeeper:      app.BankKeeper,
+		BankKeeperFork:  app.BankKeeper,
 		EvmKeeper:       app.EvmKeeper,
 		StakingKeeper:   app.StakingKeeper,
 		FeegrantKeeper:  app.FeeGrantKeeper,
@@ -932,6 +934,7 @@ func initParamsKeeper(
 	// astra subspaces
 	paramsKeeper.Subspace(minttypes.ModuleName)
 	paramsKeeper.Subspace(erc20types.ModuleName)
+	paramsKeeper.Subspace(feeBurnTypes.ModuleName)
 	return paramsKeeper
 }
 
