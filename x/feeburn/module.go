@@ -122,9 +122,14 @@ func (am AppModule) Name() string {
 	return am.AppModuleBasic.Name()
 }
 
+// NewHandler returns nil inflation module doesn't expose tx gRPC endpoints
+func (am AppModule) NewHandler() sdk.Handler {
+	return nil
+}
+
 // Route returns the capability module's message routing key.
 func (am AppModule) Route() sdk.Route {
-	return sdk.NewRoute(types.RouterKey, NewHandler(am.keeper))
+	return sdk.NewRoute(types.RouterKey, am.NewHandler())
 }
 
 // QuerierRoute returns the capability module's query routing key.
