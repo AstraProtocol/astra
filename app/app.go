@@ -196,6 +196,7 @@ var (
 		evmtypes.ModuleName:            {authtypes.Minter, authtypes.Burner}, // used for secure addition and subtraction of balance using module account
 		minttypes.ModuleName:           {authtypes.Minter, authtypes.Burner},
 		erc20types.ModuleName:          {authtypes.Minter, authtypes.Burner},
+		feeBurnTypes.ModuleName:        {authtypes.Burner},
 	}
 
 	// module accounts that are allowed to receive tokens
@@ -368,6 +369,7 @@ func NewAstraApp(
 		appCodec, keys[minttypes.StoreKey], app.GetSubspace(minttypes.ModuleName), &stakingKeeper,
 		app.AccountKeeper, app.BankKeeper, app.DistrKeeper, authtypes.FeeCollectorName,
 	)
+
 	app.FeeBurnKeeper = feeBurnKeeper.NewKeeper(
 		appCodec,
 		keys[feeBurnTypes.StoreKey],
@@ -446,6 +448,7 @@ func NewAstraApp(
 	app.EvmKeeper = app.EvmKeeper.SetHooks(
 		evmkeeper.NewMultiEvmHooks(
 			app.Erc20Keeper.Hooks(),
+			app.FeeBurnKeeper.Hooks(),
 		),
 	)
 
@@ -676,6 +679,7 @@ func NewAstraApp(
 		EvmKeeper:       app.EvmKeeper,
 		StakingKeeper:   app.StakingKeeper,
 		FeegrantKeeper:  app.FeeGrantKeeper,
+		FeeBurnKeeper:   app.FeeBurnKeeper,
 		IBCKeeper:       app.IBCKeeper,
 		FeeMarketKeeper: app.FeeMarketKeeper,
 		SignModeHandler: encodingConfig.TxConfig.SignModeHandler(),
