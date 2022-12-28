@@ -3,7 +3,6 @@ package astra.feeburn.v1;
 
 import "gogoproto/gogo.proto";
 import "google/api/annotations.proto";
-import "cosmos/base/query/v1beta1/pagination.proto";
 import "astra/feeburn/v1/params.proto";
 // this line is used by starport scaffolding # 1
 
