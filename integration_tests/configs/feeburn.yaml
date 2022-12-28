@@ -3,7 +3,7 @@ astra_777-1:
   cmd: astrad
   start-flags: "--trace"
   app-config:
-    minimum-gas-prices: 0aastra
+    minimum-gas-prices: 100aastra
     index-events:
       - ethereum_tx.ethereumTxHash
     json-rpc:
@@ -20,6 +20,7 @@ astra_777-1:
   accounts:
     - name: team
       coins: 1000astra
+      mnemonic: ${TEAM_MNEMONIC}
     - name: signer1
       coins: 1000astra
     - name: signer2
@@ -56,10 +57,6 @@ astra_777-1:
       distribution:
         params:
           community_tax: "0.0"
-      epochs:
-        epochs:
-          - identifier: "custom"
-            duration: "1s"
 #      feemarket:
 #        params:
 #          "no_base_fee": true

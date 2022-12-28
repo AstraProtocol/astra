@@ -15,7 +15,7 @@ pytestmark = pytest.mark.feeburn
 @pytest.fixture(scope="module")
 def astra(tmp_path_factory):
     path = tmp_path_factory.mktemp("astra")
-    cfg = Path(__file__).parent / "configs/feeburn.yaml"
+    cfg = Path(__file__).parent / "configs/feeburn_disable.yaml"
     yield from setup_astra(path, DEFAULT_BASE_PORT, cfg)
 
 
@@ -32,7 +32,7 @@ def test_transfer(astra):
     fee_coins = 1000000000
     old_block_height =  astra.cosmos_cli(0).block_height()
     print("old_block_height", old_block_height)
-    old_block_provisions = round(int(astra.cosmos_cli(0).annual_provisions()) / 6311520)
+    old_block_provisions = round(astra.cosmos_cli(0).annual_provisions() / 6311520)
     print("old_block_provisions", old_block_provisions)
     old_total_supply = int(float(astra.cosmos_cli(0).total_supply()["supply"][0]["amount"]))
     print("old_total_supply", old_total_supply)
@@ -77,16 +77,16 @@ def test_transfer(astra):
             "msg_index": 0,
         }
     ]
-    new_block_provisions = round(int(astra.cosmos_cli(0).annual_provisions()) / 6311520)
+    new_block_provisions = round(astra.cosmos_cli(0).annual_provisions() / 6311520)
     print("new_block_provisions", new_block_provisions)
     # wait_for_new_blocks(astra.cosmos_cli(0), 1)
     # block_provisions1 = int(int(astra.cosmos_cli(0).annual_provisions()) / 6311520)
     # print("block_provisions1", block_provisions1)
     new_total_supply = int(float(astra.cosmos_cli(0).total_supply()["supply"][0]["amount"]))
     if tx_block_height - old_block_height == 2:
-        fee_burn = new_block_provisions + old_block_provisions - (new_total_supply - old_total_supply)
+        diff_balance = new_block_provisions + old_block_provisions - (new_total_supply - old_total_supply)
     else:
-        fee_burn = new_block_provisions - (new_total_supply - old_total_supply)
-    print(new_block_provisions, new_total_supply - old_total_supply, fee_burn)
+        diff_balance = new_block_provisions - (new_total_supply - old_total_supply)
+    print(new_block_provisions, new_total_supply - old_total_supply, diff_balance)
     print("block_height", astra.cosmos_cli(0).block_height())
-    assert fee_burn > int(fee_coins / 2)
+    assert diff_balance < 0

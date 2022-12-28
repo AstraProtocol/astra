@@ -82,6 +82,9 @@
       "url": "./tmp-swagger-gen/cosmos/authz/v1beta1/query.swagger.json"
     },
     {
+      "url": "./tmp-swagger-gen/cosmos/mint/v1beta1/query.swagger.json"
+    },
+    {
       "url": "./tmp-swagger-gen/cosmos/bank/v1beta1/query.swagger.json",
       "operationIds": {
         "rename": {
