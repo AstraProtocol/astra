@@ -1,0 +1,29 @@
+syntax = "proto3";
+package astra.feeburn.v1;
+
+import "gogoproto/gogo.proto";
+import "google/api/annotations.proto";
+import "astra/feeburn/v1/params.proto";
+// this line is used by starport scaffolding # 1
+
+option go_package = "github.com/AstraProtocol/astra/v2/x/feeburn/types";
+
+// Query defines the gRPC querier service.
+service Query {
+  // Parameters queries the parameters of the module.
+  rpc Params(QueryParamsRequest) returns (QueryParamsResponse) {
+    option (google.api.http).get = "/astra/feeburn/v1/params";
+  }
+  // this line is used by starport scaffolding # 2
+}
+
+// QueryParamsRequest is request type for the Query/Params RPC method.
+message QueryParamsRequest {}
+
+// QueryParamsResponse is response type for the Query/Params RPC method.
+message QueryParamsResponse {
+  // params holds all the parameters of this module.
+  Params params = 1 [ (gogoproto.nullable) = false ];
+}
+
+// this line is used by starport scaffolding # 3

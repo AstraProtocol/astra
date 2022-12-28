@@ -375,6 +375,11 @@ class CosmosCLI:
             self.raw("query", "staking", "params", output="json", node=self.node_rpc)
         )
 
+    def annual_provisions(self):
+        return json.loads(
+            self.raw("query", "mint", "annual-provisions", output="json", node=self.node_rpc)
+        )
+
     def staking_pool(self, bonded=True):
         return int(
             json.loads(
