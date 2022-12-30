@@ -57,3 +57,28 @@ func (k Keeper) BlockProvision(
 
 	return &types.QueryBlockProvisionResponse{Provision: blockProvision}, nil
 }
+
+// CirculatingSupply returns the total supply in circulation excluding the team
+// allocation in the first year.
+func (k Keeper) CirculatingSupply(
+	c context.Context,
+	_ *types.QueryCirculatingSupplyRequest,
+) (*types.QueryCirculatingSupplyResponse, error) {
+	ctx := sdk.UnwrapSDKContext(c)
+	circulatingSupply := k.StakingTokenSupply(ctx)
+
+	coin := sdk.NewDecCoinFromDec(config.BaseDenom, circulatingSupply.ToDec())
+
+	return &types.QueryCirculatingSupplyResponse{CirculatingSupply: coin}, nil
+}
+
+// GetBondedRatio returns current bonded ratio.
+func (k Keeper) GetBondedRatio(
+	c context.Context,
+	_ *types.QueryBondedRatioRequest,
+) (*types.QueryBondedRatioResponse, error) {
+	ctx := sdk.UnwrapSDKContext(c)
+	bondedRatio := k.BondedRatio(ctx)
+
+	return &types.QueryBondedRatioResponse{BondedRatio: bondedRatio}, nil
+}

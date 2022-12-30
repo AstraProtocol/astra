@@ -26,6 +26,8 @@ func GetQueryCmd() *cobra.Command {
 		GetCmdQueryAnnualProvisions(),
 		GetCmdQueryTotalMintedProvision(),
 		GetCmdQueryBlockProvision(),
+		GetCmdQueryCirculatingSupply(),
+		GetCmdQueryBondedRatio(),
 	)
 
 	return mintingQueryCmd
@@ -166,6 +168,62 @@ func GetCmdQueryBlockProvision() *cobra.Command {
 			}
 
 			return clientCtx.PrintProto(&res.Provision)
+		},
+	}
+
+	flags.AddQueryFlagsToCmd(cmd)
+
+	return cmd
+}
+
+// GetCmdQueryCirculatingSupply implements a command to return the current circulating supply.
+func GetCmdQueryCirculatingSupply() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "circulating-supply",
+		Short: "Query the current circulating supply",
+		Args:  cobra.NoArgs,
+		RunE: func(cmd *cobra.Command, args []string) error {
+			clientCtx, err := client.GetClientQueryContext(cmd)
+			if err != nil {
+				return err
+			}
+			queryClient := types.NewQueryClient(clientCtx)
+
+			params := &types.QueryCirculatingSupplyRequest{}
+			res, err := queryClient.CirculatingSupply(cmd.Context(), params)
+			if err != nil {
+				return err
+			}
+
+			return clientCtx.PrintProto(&res.CirculatingSupply)
+		},
+	}
+
+	flags.AddQueryFlagsToCmd(cmd)
+
+	return cmd
+}
+
+// GetCmdQueryBondedRatio implements a command to return the current bonded ratio.
+func GetCmdQueryBondedRatio() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "bonded-ratio",
+		Short: "Query the current bonded ratio",
+		Args:  cobra.NoArgs,
+		RunE: func(cmd *cobra.Command, args []string) error {
+			clientCtx, err := client.GetClientQueryContext(cmd)
+			if err != nil {
+				return err
+			}
+			queryClient := types.NewQueryClient(clientCtx)
+
+			params := &types.QueryBondedRatioRequest{}
+			res, err := queryClient.GetBondedRatio(cmd.Context(), params)
+			if err != nil {
+				return err
+			}
+
+			return clientCtx.PrintString(fmt.Sprintf("%s\n", res.BondedRatio))
 		},
 	}
 

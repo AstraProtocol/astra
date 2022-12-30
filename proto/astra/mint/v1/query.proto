@@ -34,6 +34,19 @@ service Query {
   rpc BlockProvision(QueryBlockProvisionRequest) returns (QueryBlockProvisionResponse) {
     option (google.api.http).get = "/astra/mint/v1/block_provision";
   }
+
+  // CirculatingSupply retrieves the total number of tokens that are in
+  // circulation (i.e. excluding unVested tokens).
+  rpc CirculatingSupply(QueryCirculatingSupplyRequest)
+      returns (QueryCirculatingSupplyResponse) {
+    option (google.api.http).get = "/astra/mint/v1/circulating_supply";
+  }
+
+  // GetBondedRatio returns the current ratio between staked tokens vs total supply.
+  rpc GetBondedRatio(QueryBondedRatioRequest)
+      returns (QueryBondedRatioResponse) {
+    option (google.api.http).get = "/astra/mint/v1/bonded_ratio";
+  }
 }
 
 // QueryParamsRequest is the request type for the Query/Params RPC method.
@@ -89,4 +102,28 @@ message QueryBlockProvisionResponse {
     (gogoproto.nullable) = false,
     (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.Coin"
   ];
+}
+
+// QueryCirculatingSupplyRequest is the request type for the
+// Query/CirculatingSupply RPC method.
+message QueryCirculatingSupplyRequest {}
+
+// QueryCirculatingSupplyResponse is the response type for the
+// Query/CirculatingSupply RPC method.
+message QueryCirculatingSupplyResponse {
+  // total amount of coins in circulation
+  cosmos.base.v1beta1.DecCoin circulating_supply = 1 [
+    (gogoproto.nullable) = false,
+    (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.DecCoins"
+  ];
+}
+
+// QueryBondedRatioRequest is the request type for the
+// Query/BondedRatio RPC method.
+message QueryBondedRatioRequest {}
+
+// QueryBondedRatioResponse is the response type for the
+// Query/BondedRatio RPC method.
+message QueryBondedRatioResponse {
+  bytes bonded_ratio = 1 [(gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec", (gogoproto.nullable) = false];
 }

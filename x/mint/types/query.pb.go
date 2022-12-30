@@ -435,6 +435,168 @@ func (m *QueryBlockProvisionResponse) GetProvision() types.Coin {
 	return types.Coin{}
 }
 
+// QueryCirculatingSupplyRequest is the request type for the
+// Query/CirculatingSupply RPC method.
+type QueryCirculatingSupplyRequest struct {
+}
+
+func (m *QueryCirculatingSupplyRequest) Reset()         { *m = QueryCirculatingSupplyRequest{} }
+func (m *QueryCirculatingSupplyRequest) String() string { return proto.CompactTextString(m) }
+func (*QueryCirculatingSupplyRequest) ProtoMessage()    {}
+func (*QueryCirculatingSupplyRequest) Descriptor() ([]byte, []int) {
+	return fileDescriptor_703738b04aa16966, []int{10}
+}
+func (m *QueryCirculatingSupplyRequest) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *QueryCirculatingSupplyRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_QueryCirculatingSupplyRequest.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *QueryCirculatingSupplyRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QueryCirculatingSupplyRequest.Merge(m, src)
+}
+func (m *QueryCirculatingSupplyRequest) XXX_Size() int {
+	return m.Size()
+}
+func (m *QueryCirculatingSupplyRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_QueryCirculatingSupplyRequest.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_QueryCirculatingSupplyRequest proto.InternalMessageInfo
+
+// QueryCirculatingSupplyResponse is the response type for the
+// Query/CirculatingSupply RPC method.
+type QueryCirculatingSupplyResponse struct {
+	// total amount of coins in circulation
+	CirculatingSupply types.DecCoin `protobuf:"bytes,1,opt,name=circulating_supply,json=circulatingSupply,proto3,castrepeated=github.com/cosmos/cosmos-sdk/types.DecCoins" json:"circulating_supply"`
+}
+
+func (m *QueryCirculatingSupplyResponse) Reset()         { *m = QueryCirculatingSupplyResponse{} }
+func (m *QueryCirculatingSupplyResponse) String() string { return proto.CompactTextString(m) }
+func (*QueryCirculatingSupplyResponse) ProtoMessage()    {}
+func (*QueryCirculatingSupplyResponse) Descriptor() ([]byte, []int) {
+	return fileDescriptor_703738b04aa16966, []int{11}
+}
+func (m *QueryCirculatingSupplyResponse) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *QueryCirculatingSupplyResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_QueryCirculatingSupplyResponse.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *QueryCirculatingSupplyResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QueryCirculatingSupplyResponse.Merge(m, src)
+}
+func (m *QueryCirculatingSupplyResponse) XXX_Size() int {
+	return m.Size()
+}
+func (m *QueryCirculatingSupplyResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_QueryCirculatingSupplyResponse.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_QueryCirculatingSupplyResponse proto.InternalMessageInfo
+
+func (m *QueryCirculatingSupplyResponse) GetCirculatingSupply() types.DecCoin {
+	if m != nil {
+		return m.CirculatingSupply
+	}
+	return types.DecCoin{}
+}
+
+// QueryBondedRatioRequest is the request type for the
+// Query/BondedRatio RPC method.
+type QueryBondedRatioRequest struct {
+}
+
+func (m *QueryBondedRatioRequest) Reset()         { *m = QueryBondedRatioRequest{} }
+func (m *QueryBondedRatioRequest) String() string { return proto.CompactTextString(m) }
+func (*QueryBondedRatioRequest) ProtoMessage()    {}
+func (*QueryBondedRatioRequest) Descriptor() ([]byte, []int) {
+	return fileDescriptor_703738b04aa16966, []int{12}
+}
+func (m *QueryBondedRatioRequest) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *QueryBondedRatioRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_QueryBondedRatioRequest.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *QueryBondedRatioRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QueryBondedRatioRequest.Merge(m, src)
+}
+func (m *QueryBondedRatioRequest) XXX_Size() int {
+	return m.Size()
+}
+func (m *QueryBondedRatioRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_QueryBondedRatioRequest.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_QueryBondedRatioRequest proto.InternalMessageInfo
+
+// QueryBondedRatioResponse is the response type for the
+// Query/BondedRatio RPC method.
+type QueryBondedRatioResponse struct {
+	BondedRatio github_com_cosmos_cosmos_sdk_types.Dec `protobuf:"bytes,1,opt,name=bonded_ratio,json=bondedRatio,proto3,customtype=github.com/cosmos/cosmos-sdk/types.Dec" json:"bonded_ratio"`
+}
+
+func (m *QueryBondedRatioResponse) Reset()         { *m = QueryBondedRatioResponse{} }
+func (m *QueryBondedRatioResponse) String() string { return proto.CompactTextString(m) }
+func (*QueryBondedRatioResponse) ProtoMessage()    {}
+func (*QueryBondedRatioResponse) Descriptor() ([]byte, []int) {
+	return fileDescriptor_703738b04aa16966, []int{13}
+}
+func (m *QueryBondedRatioResponse) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *QueryBondedRatioResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_QueryBondedRatioResponse.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *QueryBondedRatioResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QueryBondedRatioResponse.Merge(m, src)
+}
+func (m *QueryBondedRatioResponse) XXX_Size() int {
+	return m.Size()
+}
+func (m *QueryBondedRatioResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_QueryBondedRatioResponse.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_QueryBondedRatioResponse proto.InternalMessageInfo
+
 func init() {
 	proto.RegisterType((*QueryParamsRequest)(nil), "astra.mint.v1.QueryParamsRequest")
 	proto.RegisterType((*QueryParamsResponse)(nil), "astra.mint.v1.QueryParamsResponse")
@@ -446,52 +608,65 @@ func init() {
 	proto.RegisterType((*QueryTotalMintedProvisionResponse)(nil), "astra.mint.v1.QueryTotalMintedProvisionResponse")
 	proto.RegisterType((*QueryBlockProvisionRequest)(nil), "astra.mint.v1.QueryBlockProvisionRequest")
 	proto.RegisterType((*QueryBlockProvisionResponse)(nil), "astra.mint.v1.QueryBlockProvisionResponse")
+	proto.RegisterType((*QueryCirculatingSupplyRequest)(nil), "astra.mint.v1.QueryCirculatingSupplyRequest")
+	proto.RegisterType((*QueryCirculatingSupplyResponse)(nil), "astra.mint.v1.QueryCirculatingSupplyResponse")
+	proto.RegisterType((*QueryBondedRatioRequest)(nil), "astra.mint.v1.QueryBondedRatioRequest")
+	proto.RegisterType((*QueryBondedRatioResponse)(nil), "astra.mint.v1.QueryBondedRatioResponse")
 }
 
 func init() { proto.RegisterFile("astra/mint/v1/query.proto", fileDescriptor_703738b04aa16966) }
 
 var fileDescriptor_703738b04aa16966 = []byte{
-	// 641 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x9c, 0x95, 0x4f, 0x6f, 0x12, 0x4f,
-	0x1c, 0xc6, 0xd9, 0x5f, 0x7e, 0x25, 0xe1, 0xeb, 0x9f, 0xd4, 0x11, 0x5a, 0xba, 0xd2, 0x85, 0x6e,
-	0xec, 0x1f, 0xad, 0xdd, 0x91, 0xf2, 0x0a, 0x8a, 0x7a, 0xd0, 0x68, 0x82, 0xc4, 0x93, 0x1e, 0x9a,
-	0x61, 0xbb, 0xa5, 0x9b, 0x2e, 0x33, 0x5b, 0x66, 0x20, 0xd6, 0x78, 0xf2, 0xd2, 0xa3, 0x26, 0x1e,
-	0x7c, 0x0b, 0xc6, 0xc4, 0xf7, 0xd1, 0x78, 0x6a, 0xe2, 0xc5, 0x78, 0xa8, 0x06, 0x7c, 0x21, 0x66,
-	0x66, 0x07, 0x90, 0x65, 0x8b, 0xc4, 0x13, 0x64, 0x9f, 0xef, 0x3c, 0xcf, 0x67, 0xe0, 0xfb, 0x00,
-	0x2c, 0x11, 0x2e, 0xda, 0x04, 0xb7, 0x7c, 0x2a, 0x70, 0xb7, 0x8c, 0x8f, 0x3a, 0x5e, 0xfb, 0xd8,
-	0x09, 0xdb, 0x4c, 0x30, 0x74, 0x45, 0x49, 0x8e, 0x94, 0x9c, 0x6e, 0xd9, 0xcc, 0x36, 0x59, 0x93,
-	0x29, 0x05, 0xcb, 0x77, 0xd1, 0x90, 0x59, 0x68, 0x32, 0xd6, 0x0c, 0x3c, 0x4c, 0x42, 0x1f, 0x13,
-	0x4a, 0x99, 0x20, 0xc2, 0x67, 0x94, 0x6b, 0x35, 0x3f, 0xee, 0xae, 0xac, 0x22, 0xc5, 0x72, 0x19,
-	0x6f, 0x31, 0x8e, 0x1b, 0x84, 0x7b, 0xb8, 0x5b, 0x6e, 0x78, 0x82, 0x94, 0xb1, 0xcb, 0x7c, 0x1a,
-	0xe9, 0x76, 0x16, 0xd0, 0x53, 0xc9, 0x52, 0x23, 0x6d, 0xd2, 0xe2, 0x75, 0xef, 0xa8, 0xe3, 0x71,
-	0x61, 0x3f, 0x82, 0xeb, 0x63, 0x4f, 0x79, 0xc8, 0x28, 0xf7, 0x50, 0x05, 0xd2, 0xa1, 0x7a, 0x92,
-	0x37, 0x4a, 0xc6, 0xc6, 0xa5, 0xed, 0x9c, 0x33, 0x86, 0xee, 0x44, 0xe3, 0xd5, 0xff, 0x4f, 0xcf,
-	0x8b, 0xa9, 0xba, 0x1e, 0xb5, 0x17, 0x21, 0xa7, 0xbc, 0x1e, 0xd2, 0xfd, 0x40, 0x41, 0x0f, 0x42,
-	0xf6, 0x61, 0x21, 0x2e, 0xe8, 0x9c, 0xc7, 0x90, 0xf1, 0x07, 0x0f, 0x55, 0xd4, 0xe5, 0xaa, 0x23,
-	0x3d, 0xbf, 0x9f, 0x17, 0xd7, 0x9a, 0xbe, 0x38, 0xe8, 0x34, 0x1c, 0x97, 0xb5, 0xb0, 0xbe, 0x5a,
-	0xf4, 0xb2, 0xc5, 0xf7, 0x0e, 0xb1, 0x38, 0x0e, 0x3d, 0xee, 0xdc, 0xf7, 0xdc, 0xfa, 0xc8, 0xc0,
-	0xb6, 0xa0, 0xa0, 0x72, 0x76, 0x28, 0xed, 0x90, 0xa0, 0xd6, 0x66, 0x5d, 0x9f, 0xcb, 0xcf, 0x6e,
-	0xc0, 0xf1, 0x1a, 0x96, 0x2f, 0xd0, 0x35, 0xce, 0x0b, 0xb8, 0x46, 0x94, 0xb6, 0x1b, 0x0e, 0xc5,
-	0x7f, 0xc4, 0x9a, 0x27, 0xb1, 0x10, 0xdb, 0x86, 0x92, 0x4a, 0x7f, 0xc6, 0x04, 0x09, 0x9e, 0xf8,
-	0x54, 0x78, 0x7b, 0x43, 0x75, 0x40, 0xf8, 0xd9, 0x80, 0x95, 0x29, 0x43, 0x1a, 0xf3, 0xc4, 0x80,
-	0x05, 0x21, 0x07, 0x76, 0x5b, 0x6a, 0x62, 0x44, 0xab, 0xbf, 0xae, 0x82, 0x13, 0x31, 0x39, 0x72,
-	0x19, 0x1c, 0xbd, 0x0c, 0x12, 0xeb, 0x1e, 0xf3, 0x69, 0xb5, 0x22, 0xaf, 0xf2, 0xe9, 0x47, 0x71,
-	0x73, 0xb6, 0xab, 0xc8, 0x33, 0xbc, 0x9e, 0x15, 0x09, 0x44, 0x76, 0x01, 0x4c, 0x85, 0x5b, 0x0d,
-	0x98, 0x7b, 0x38, 0x71, 0x9b, 0x13, 0x03, 0x6e, 0x24, 0xca, 0xfa, 0x1e, 0x07, 0x90, 0x89, 0x93,
-	0x2f, 0x25, 0x92, 0x2b, 0x6c, 0xac, 0xb1, 0xd7, 0x67, 0xc0, 0x96, 0x07, 0xea, 0x23, 0xf3, 0xed,
-	0x2f, 0x73, 0x30, 0xa7, 0x48, 0x10, 0x85, 0x74, 0xb4, 0xbc, 0x68, 0x25, 0xb6, 0xd3, 0x93, 0xed,
-	0x30, 0xed, 0x69, 0x23, 0xd1, 0x25, 0xec, 0xe5, 0x37, 0x5f, 0x7f, 0xbd, 0xff, 0x6f, 0x11, 0xe5,
-	0xf0, 0x78, 0x35, 0xa3, 0x52, 0xa0, 0x57, 0x90, 0x19, 0xae, 0x3d, 0xba, 0x99, 0xe4, 0x17, 0xaf,
-	0x8b, 0xb9, 0xfa, 0x97, 0x29, 0x1d, 0x5c, 0x52, 0xc1, 0x26, 0xca, 0xc7, 0x82, 0x87, 0x7d, 0x40,
-	0x1f, 0x0c, 0x98, 0x8f, 0xef, 0x3a, 0xda, 0x4c, 0x72, 0xbf, 0xa0, 0x31, 0xe6, 0x9d, 0xd9, 0x86,
-	0x35, 0xd1, 0x86, 0x22, 0xb2, 0x51, 0x29, 0x46, 0x34, 0xd1, 0x29, 0xf4, 0xd1, 0x80, 0x6c, 0xd2,
-	0x8a, 0x23, 0x9c, 0x14, 0x38, 0xa5, 0x31, 0xe6, 0xdd, 0xd9, 0x0f, 0x68, 0xca, 0x2d, 0x45, 0xb9,
-	0x8e, 0x56, 0x63, 0x94, 0xc9, 0x8d, 0x42, 0x6f, 0x0d, 0xb8, 0x3a, 0xbe, 0xbf, 0xe8, 0x56, 0x52,
-	0x66, 0x62, 0x05, 0xcc, 0xdb, 0xb3, 0x8c, 0x6a, 0xb0, 0x35, 0x05, 0x56, 0x42, 0x56, 0x0c, 0xac,
-	0x21, 0xc7, 0x47, 0x44, 0xd5, 0x07, 0xa7, 0x3d, 0xcb, 0x38, 0xeb, 0x59, 0xc6, 0xcf, 0x9e, 0x65,
-	0xbc, 0xeb, 0x5b, 0xa9, 0xb3, 0xbe, 0x95, 0xfa, 0xd6, 0xb7, 0x52, 0xcf, 0xff, 0x6c, 0xf4, 0x8e,
-	0xf4, 0xa8, 0xc9, 0x9f, 0x7e, 0x97, 0x05, 0xda, 0xf1, 0x65, 0xe4, 0xa9, 0x3a, 0xd2, 0x48, 0xab,
-	0xff, 0x85, 0xca, 0xef, 0x00, 0x00, 0x00, 0xff, 0xff, 0x3e, 0x76, 0x8d, 0x7f, 0xb1, 0x06, 0x00,
+	// 785 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xb4, 0x96, 0x4f, 0x4f, 0x13, 0x4f,
+	0x18, 0xc7, 0x3b, 0xbf, 0xfc, 0xc4, 0xf0, 0x80, 0x04, 0xc6, 0x02, 0x65, 0x29, 0xdb, 0xb2, 0xc8,
+	0x3f, 0x91, 0x5d, 0x0b, 0xaf, 0x80, 0xa2, 0x31, 0x1a, 0x4d, 0xa0, 0x7a, 0xd2, 0x43, 0xb3, 0xdd,
+	0x2e, 0x65, 0x43, 0x3b, 0xb3, 0x74, 0xa6, 0x8d, 0x18, 0x0f, 0xc6, 0x83, 0x1c, 0x35, 0xf1, 0xe0,
+	0xc1, 0xa3, 0x17, 0x63, 0xe2, 0xfb, 0xe0, 0x48, 0xe2, 0xc5, 0x78, 0x40, 0x03, 0xbe, 0x01, 0xdf,
+	0x81, 0x99, 0xd9, 0xe9, 0xbf, 0xed, 0x16, 0x1a, 0x12, 0x4f, 0x6d, 0xe6, 0xfb, 0xdd, 0xe7, 0xf9,
+	0x3c, 0x33, 0xb3, 0xdf, 0x2c, 0x4c, 0xd9, 0x8c, 0x57, 0x6d, 0xab, 0xe2, 0x11, 0x6e, 0xd5, 0x33,
+	0xd6, 0x7e, 0xcd, 0xad, 0x1e, 0x98, 0x7e, 0x95, 0x72, 0x8a, 0xaf, 0x49, 0xc9, 0x14, 0x92, 0x59,
+	0xcf, 0x68, 0xf1, 0x12, 0x2d, 0x51, 0xa9, 0x58, 0xe2, 0x5f, 0x60, 0xd2, 0x92, 0x25, 0x4a, 0x4b,
+	0x65, 0xd7, 0xb2, 0x7d, 0xcf, 0xb2, 0x09, 0xa1, 0xdc, 0xe6, 0x1e, 0x25, 0x4c, 0xa9, 0x89, 0xce,
+	0xea, 0xb2, 0x54, 0xa0, 0xe8, 0x0e, 0x65, 0x15, 0xca, 0xac, 0x82, 0xcd, 0x5c, 0xab, 0x9e, 0x29,
+	0xb8, 0xdc, 0xce, 0x58, 0x0e, 0xf5, 0x48, 0xa0, 0x1b, 0x71, 0xc0, 0xdb, 0x82, 0x65, 0xcb, 0xae,
+	0xda, 0x15, 0x96, 0x73, 0xf7, 0x6b, 0x2e, 0xe3, 0xc6, 0x03, 0xb8, 0xde, 0xb1, 0xca, 0x7c, 0x4a,
+	0x98, 0x8b, 0xd7, 0x61, 0xc0, 0x97, 0x2b, 0x09, 0x94, 0x46, 0x4b, 0x43, 0x6b, 0xe3, 0x66, 0x07,
+	0xba, 0x19, 0xd8, 0xb3, 0xff, 0x1f, 0x9d, 0xa4, 0x62, 0x39, 0x65, 0x35, 0x26, 0x61, 0x5c, 0xd6,
+	0xba, 0x4f, 0x76, 0xca, 0x12, 0xba, 0xd1, 0x64, 0x07, 0x26, 0xc2, 0x82, 0xea, 0xf3, 0x10, 0x06,
+	0xbd, 0xc6, 0xa2, 0x6c, 0x35, 0x9c, 0x35, 0x45, 0xcd, 0x1f, 0x27, 0xa9, 0x85, 0x92, 0xc7, 0x77,
+	0x6b, 0x05, 0xd3, 0xa1, 0x15, 0x4b, 0x8d, 0x16, 0xfc, 0xac, 0xb2, 0xe2, 0x9e, 0xc5, 0x0f, 0x7c,
+	0x97, 0x99, 0x77, 0x5c, 0x27, 0xd7, 0x2a, 0x60, 0xe8, 0x90, 0x94, 0x7d, 0x36, 0x08, 0xa9, 0xd9,
+	0xe5, 0xad, 0x2a, 0xad, 0x7b, 0x4c, 0xec, 0x5d, 0x83, 0xe3, 0x25, 0xcc, 0xf4, 0xd0, 0x15, 0xce,
+	0x33, 0x18, 0xb3, 0xa5, 0x96, 0xf7, 0x9b, 0xe2, 0x25, 0xb1, 0x46, 0xed, 0x50, 0x13, 0xc3, 0x80,
+	0xb4, 0xec, 0xfe, 0x84, 0x72, 0xbb, 0xfc, 0xc8, 0x23, 0xdc, 0x2d, 0x36, 0xd5, 0x06, 0xe1, 0x57,
+	0x04, 0xb3, 0xe7, 0x98, 0x14, 0xe6, 0x21, 0x82, 0x09, 0x2e, 0x0c, 0xf9, 0x8a, 0x74, 0xb4, 0x68,
+	0xd5, 0x71, 0x25, 0xcd, 0x80, 0xc9, 0x14, 0x97, 0xc1, 0x54, 0x97, 0x41, 0x60, 0x6d, 0x52, 0x8f,
+	0x64, 0xd7, 0xc5, 0x28, 0x5f, 0x7e, 0xa6, 0x56, 0xfa, 0x1b, 0x45, 0x3c, 0xc3, 0x72, 0x71, 0x1e,
+	0x41, 0x64, 0x24, 0x41, 0x93, 0xb8, 0xd9, 0x32, 0x75, 0xf6, 0xba, 0xa6, 0x39, 0x44, 0x30, 0x1d,
+	0x29, 0xab, 0x39, 0x76, 0x61, 0x30, 0x4c, 0x3e, 0x15, 0x49, 0x2e, 0xb1, 0x2d, 0x85, 0xbd, 0xd8,
+	0x07, 0xb6, 0x78, 0x20, 0xd7, 0x2a, 0x6e, 0xa4, 0xd4, 0xc9, 0x6f, 0x7a, 0x55, 0xa7, 0x26, 0x6e,
+	0x0b, 0x29, 0x3d, 0xae, 0xf9, 0x7e, 0xf9, 0xa0, 0x81, 0xfa, 0x09, 0x81, 0xde, 0xcb, 0xa1, 0x68,
+	0x5f, 0x21, 0xc0, 0x4e, 0x4b, 0xcd, 0x33, 0x29, 0xff, 0xbb, 0x1d, 0x1f, 0x73, 0xc2, 0x28, 0xc6,
+	0x14, 0x4c, 0x06, 0xfb, 0x49, 0x49, 0xd1, 0x2d, 0xe6, 0xc4, 0xad, 0x6f, 0x0c, 0x50, 0x81, 0x44,
+	0xb7, 0xa4, 0xc8, 0xb7, 0x61, 0xb8, 0x20, 0x97, 0xf3, 0x55, 0xb1, 0x7e, 0xc9, 0x1b, 0x3d, 0x54,
+	0x68, 0x95, 0x5e, 0xfb, 0x73, 0x15, 0xae, 0xc8, 0x7e, 0x98, 0xc0, 0x40, 0x90, 0x06, 0x78, 0x36,
+	0x14, 0x12, 0xdd, 0x71, 0xa3, 0x19, 0xe7, 0x59, 0x02, 0x5a, 0x63, 0xe6, 0xf5, 0xb7, 0xdf, 0xef,
+	0xff, 0x9b, 0xc4, 0xe3, 0x56, 0x67, 0xd6, 0x05, 0x29, 0x83, 0x5f, 0xc0, 0x60, 0x33, 0x47, 0xf0,
+	0x8d, 0xa8, 0x7a, 0xe1, 0xfc, 0xd1, 0xe6, 0x2f, 0x70, 0xa9, 0xc6, 0x69, 0xd9, 0x58, 0xc3, 0x89,
+	0x50, 0xe3, 0x66, 0xc0, 0xe0, 0x0f, 0x08, 0x46, 0xc3, 0xe1, 0x81, 0x57, 0xa2, 0xaa, 0xf7, 0x88,
+	0x20, 0xed, 0x56, 0x7f, 0x66, 0x45, 0xb4, 0x24, 0x89, 0x0c, 0x9c, 0x0e, 0x11, 0x75, 0x85, 0x14,
+	0xfe, 0x8c, 0x20, 0x1e, 0x95, 0x19, 0xd8, 0x8a, 0x6a, 0x78, 0x4e, 0x04, 0x69, 0xb7, 0xfb, 0x7f,
+	0x40, 0x51, 0xae, 0x4a, 0xca, 0x45, 0x3c, 0x1f, 0xa2, 0x8c, 0x8e, 0x28, 0xfc, 0x16, 0xc1, 0x48,
+	0x67, 0x20, 0xe0, 0xe5, 0xa8, 0x9e, 0x91, 0x99, 0xa2, 0xdd, 0xec, 0xc7, 0xaa, 0xc0, 0x16, 0x24,
+	0x58, 0x1a, 0xeb, 0x21, 0xb0, 0x82, 0xb0, 0xb7, 0x11, 0x7d, 0x44, 0x30, 0xd6, 0xf5, 0xde, 0xe3,
+	0xc8, 0xa3, 0xea, 0x15, 0x20, 0xda, 0x6a, 0x9f, 0x6e, 0x85, 0xb6, 0x2c, 0xd1, 0xe6, 0xf0, 0x6c,
+	0x08, 0xad, 0x3b, 0x60, 0xf0, 0x1b, 0x04, 0x23, 0xf7, 0x5c, 0xde, 0xf6, 0x62, 0xe3, 0x85, 0xc8,
+	0x4d, 0xe8, 0x0a, 0x05, 0x6d, 0xf1, 0x42, 0x9f, 0xc2, 0x99, 0x93, 0x38, 0x33, 0x78, 0x3a, 0xbc,
+	0x53, 0x6d, 0xb1, 0x91, 0xbd, 0x7b, 0x74, 0xaa, 0xa3, 0xe3, 0x53, 0x1d, 0xfd, 0x3a, 0xd5, 0xd1,
+	0xbb, 0x33, 0x3d, 0x76, 0x7c, 0xa6, 0xc7, 0xbe, 0x9f, 0xe9, 0xb1, 0xa7, 0xed, 0xb9, 0xb6, 0x21,
+	0x0a, 0x6c, 0x89, 0x4f, 0x0e, 0x87, 0x96, 0x55, 0xb9, 0xe7, 0x41, 0x41, 0x99, 0x25, 0x85, 0x01,
+	0xf9, 0x3d, 0xb2, 0xfe, 0x37, 0x00, 0x00, 0xff, 0xff, 0x7b, 0x2d, 0x29, 0x69, 0x29, 0x09, 0x00,
 	0x00,
 }
 
@@ -517,6 +692,11 @@ type QueryClient interface {
 	TotalMintedProvision(ctx context.Context, in *QueryTotalMintedProvisionRequest, opts ...grpc.CallOption) (*QueryTotalMintedProvisionResponse, error)
 	// BlockProvision returns the current block provisions.
 	BlockProvision(ctx context.Context, in *QueryBlockProvisionRequest, opts ...grpc.CallOption) (*QueryBlockProvisionResponse, error)
+	// CirculatingSupply retrieves the total number of tokens that are in
+	// circulation (i.e. excluding unVested tokens).
+	CirculatingSupply(ctx context.Context, in *QueryCirculatingSupplyRequest, opts ...grpc.CallOption) (*QueryCirculatingSupplyResponse, error)
+	// GetBondedRatio returns the current ratio between staked tokens vs total supply.
+	GetBondedRatio(ctx context.Context, in *QueryBondedRatioRequest, opts ...grpc.CallOption) (*QueryBondedRatioResponse, error)
 }
 
 type queryClient struct {
@@ -572,6 +752,24 @@ func (c *queryClient) BlockProvision(ctx context.Context, in *QueryBlockProvisio
 	return out, nil
 }
 
+func (c *queryClient) CirculatingSupply(ctx context.Context, in *QueryCirculatingSupplyRequest, opts ...grpc.CallOption) (*QueryCirculatingSupplyResponse, error) {
+	out := new(QueryCirculatingSupplyResponse)
+	err := c.cc.Invoke(ctx, "/astra.mint.v1.Query/CirculatingSupply", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *queryClient) GetBondedRatio(ctx context.Context, in *QueryBondedRatioRequest, opts ...grpc.CallOption) (*QueryBondedRatioResponse, error) {
+	out := new(QueryBondedRatioResponse)
+	err := c.cc.Invoke(ctx, "/astra.mint.v1.Query/GetBondedRatio", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // QueryServer is the server API for Query service.
 type QueryServer interface {
 	// Params returns the total set of minting parameters.
@@ -584,6 +782,11 @@ type QueryServer interface {
 	TotalMintedProvision(context.Context, *QueryTotalMintedProvisionRequest) (*QueryTotalMintedProvisionResponse, error)
 	// BlockProvision returns the current block provisions.
 	BlockProvision(context.Context, *QueryBlockProvisionRequest) (*QueryBlockProvisionResponse, error)
+	// CirculatingSupply retrieves the total number of tokens that are in
+	// circulation (i.e. excluding unVested tokens).
+	CirculatingSupply(context.Context, *QueryCirculatingSupplyRequest) (*QueryCirculatingSupplyResponse, error)
+	// GetBondedRatio returns the current ratio between staked tokens vs total supply.
+	GetBondedRatio(context.Context, *QueryBondedRatioRequest) (*QueryBondedRatioResponse, error)
 }
 
 // UnimplementedQueryServer can be embedded to have forward compatible implementations.
@@ -604,6 +807,12 @@ func (*UnimplementedQueryServer) TotalMintedProvision(ctx context.Context, req *
 }
 func (*UnimplementedQueryServer) BlockProvision(ctx context.Context, req *QueryBlockProvisionRequest) (*QueryBlockProvisionResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method BlockProvision not implemented")
+}
+func (*UnimplementedQueryServer) CirculatingSupply(ctx context.Context, req *QueryCirculatingSupplyRequest) (*QueryCirculatingSupplyResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CirculatingSupply not implemented")
+}
+func (*UnimplementedQueryServer) GetBondedRatio(ctx context.Context, req *QueryBondedRatioRequest) (*QueryBondedRatioResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetBondedRatio not implemented")
 }
 
 func RegisterQueryServer(s grpc1.Server, srv QueryServer) {
@@ -700,6 +909,42 @@ func _Query_BlockProvision_Handler(srv interface{}, ctx context.Context, dec fun
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Query_CirculatingSupply_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(QueryCirculatingSupplyRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(QueryServer).CirculatingSupply(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/astra.mint.v1.Query/CirculatingSupply",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(QueryServer).CirculatingSupply(ctx, req.(*QueryCirculatingSupplyRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Query_GetBondedRatio_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(QueryBondedRatioRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(QueryServer).GetBondedRatio(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/astra.mint.v1.Query/GetBondedRatio",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(QueryServer).GetBondedRatio(ctx, req.(*QueryBondedRatioRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 var _Query_serviceDesc = grpc.ServiceDesc{
 	ServiceName: "astra.mint.v1.Query",
 	HandlerType: (*QueryServer)(nil),
@@ -723,6 +968,14 @@ var _Query_serviceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "BlockProvision",
 			Handler:    _Query_BlockProvision_Handler,
+		},
+		{
+			MethodName: "CirculatingSupply",
+			Handler:    _Query_CirculatingSupply_Handler,
+		},
+		{
+			MethodName: "GetBondedRatio",
+			Handler:    _Query_GetBondedRatio_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
@@ -1009,6 +1262,118 @@ func (m *QueryBlockProvisionResponse) MarshalToSizedBuffer(dAtA []byte) (int, er
 	return len(dAtA) - i, nil
 }
 
+func (m *QueryCirculatingSupplyRequest) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *QueryCirculatingSupplyRequest) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *QueryCirculatingSupplyRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	return len(dAtA) - i, nil
+}
+
+func (m *QueryCirculatingSupplyResponse) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *QueryCirculatingSupplyResponse) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *QueryCirculatingSupplyResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	{
+		size, err := m.CirculatingSupply.MarshalToSizedBuffer(dAtA[:i])
+		if err != nil {
+			return 0, err
+		}
+		i -= size
+		i = encodeVarintQuery(dAtA, i, uint64(size))
+	}
+	i--
+	dAtA[i] = 0xa
+	return len(dAtA) - i, nil
+}
+
+func (m *QueryBondedRatioRequest) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *QueryBondedRatioRequest) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *QueryBondedRatioRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	return len(dAtA) - i, nil
+}
+
+func (m *QueryBondedRatioResponse) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *QueryBondedRatioResponse) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *QueryBondedRatioResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	{
+		size := m.BondedRatio.Size()
+		i -= size
+		if _, err := m.BondedRatio.MarshalTo(dAtA[i:]); err != nil {
+			return 0, err
+		}
+		i = encodeVarintQuery(dAtA, i, uint64(size))
+	}
+	i--
+	dAtA[i] = 0xa
+	return len(dAtA) - i, nil
+}
+
 func encodeVarintQuery(dAtA []byte, offset int, v uint64) int {
 	offset -= sovQuery(v)
 	base := offset
@@ -1116,6 +1481,46 @@ func (m *QueryBlockProvisionResponse) Size() (n int) {
 	var l int
 	_ = l
 	l = m.Provision.Size()
+	n += 1 + l + sovQuery(uint64(l))
+	return n
+}
+
+func (m *QueryCirculatingSupplyRequest) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	return n
+}
+
+func (m *QueryCirculatingSupplyResponse) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	l = m.CirculatingSupply.Size()
+	n += 1 + l + sovQuery(uint64(l))
+	return n
+}
+
+func (m *QueryBondedRatioRequest) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	return n
+}
+
+func (m *QueryBondedRatioResponse) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	l = m.BondedRatio.Size()
 	n += 1 + l + sovQuery(uint64(l))
 	return n
 }
@@ -1767,6 +2172,272 @@ func (m *QueryBlockProvisionResponse) Unmarshal(dAtA []byte) error {
 				return io.ErrUnexpectedEOF
 			}
 			if err := m.Provision.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipQuery(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *QueryCirculatingSupplyRequest) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowQuery
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: QueryCirculatingSupplyRequest: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: QueryCirculatingSupplyRequest: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		default:
+			iNdEx = preIndex
+			skippy, err := skipQuery(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *QueryCirculatingSupplyResponse) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowQuery
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: QueryCirculatingSupplyResponse: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: QueryCirculatingSupplyResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field CirculatingSupply", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthQuery
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if err := m.CirculatingSupply.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipQuery(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *QueryBondedRatioRequest) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowQuery
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: QueryBondedRatioRequest: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: QueryBondedRatioRequest: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		default:
+			iNdEx = preIndex
+			skippy, err := skipQuery(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *QueryBondedRatioResponse) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowQuery
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: QueryBondedRatioResponse: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: QueryBondedRatioResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field BondedRatio", wireType)
+			}
+			var byteLen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				byteLen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if byteLen < 0 {
+				return ErrInvalidLengthQuery
+			}
+			postIndex := iNdEx + byteLen
+			if postIndex < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if err := m.BondedRatio.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
 				return err
 			}
 			iNdEx = postIndex

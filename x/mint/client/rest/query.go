@@ -36,6 +36,16 @@ func registerQueryRoutes(clientCtx client.Context, r *mux.Router) {
 		"/minting/block-provision",
 		queryBlockProvisionHandlerFn(clientCtx),
 	).Methods("GET")
+
+	r.HandleFunc(
+		"/minting/circulating-supply",
+		queryCirculatingSupplyHandlerFn(clientCtx),
+	).Methods("GET")
+
+	r.HandleFunc(
+		"/minting/bonded-ratio",
+		queryBondedRatioHandlerFn(clientCtx),
+	).Methods("GET")
 }
 
 func queryParamsHandlerFn(clientCtx client.Context) http.HandlerFunc {
@@ -117,6 +127,44 @@ func queryTotalMintedProvisionHandlerFn(clientCtx client.Context) http.HandlerFu
 func queryBlockProvisionHandlerFn(clientCtx client.Context) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		route := fmt.Sprintf("custom/%s/%s", types.QuerierRoute, types.QueryBlockProvision)
+
+		clientCtx, ok := rest.ParseQueryHeightOrReturnBadRequest(w, clientCtx, r)
+		if !ok {
+			return
+		}
+
+		res, height, err := clientCtx.QueryWithData(route, nil)
+		if rest.CheckInternalServerError(w, err) {
+			return
+		}
+
+		clientCtx = clientCtx.WithHeight(height)
+		rest.PostProcessResponse(w, clientCtx, res)
+	}
+}
+
+func queryCirculatingSupplyHandlerFn(clientCtx client.Context) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		route := fmt.Sprintf("custom/%s/%s", types.QuerierRoute, types.QueryCirculatingSupply)
+
+		clientCtx, ok := rest.ParseQueryHeightOrReturnBadRequest(w, clientCtx, r)
+		if !ok {
+			return
+		}
+
+		res, height, err := clientCtx.QueryWithData(route, nil)
+		if rest.CheckInternalServerError(w, err) {
+			return
+		}
+
+		clientCtx = clientCtx.WithHeight(height)
+		rest.PostProcessResponse(w, clientCtx, res)
+	}
+}
+
+func queryBondedRatioHandlerFn(clientCtx client.Context) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		route := fmt.Sprintf("custom/%s/%s", types.QuerierRoute, types.QueryBondedRatio)
 
 		clientCtx, ok := rest.ParseQueryHeightOrReturnBadRequest(w, clientCtx, r)
 		if !ok {

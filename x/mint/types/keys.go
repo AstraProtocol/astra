@@ -14,6 +14,8 @@ const (
 	QueryAnnualProvisions     = "annual_provisions"
 	QueryTotalMintedProvision = "total_minted_provision"
 	QueryBlockProvision       = "block_provision"
+	QueryCirculatingSupply    = "circulating_supply"
+	QueryBondedRatio          = "bonded_ratio"
 )
 
 const (
