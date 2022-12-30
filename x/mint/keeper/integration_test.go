@@ -125,7 +125,7 @@ var _ = Describe("Mint", Ordered, func() {
 
 		Context("bondedRatio < goalBonded", func() {
 			BeforeEach(func() {
-				s.bondWithRate(params.MintDenom, randInflationRate(sdk.ZeroDec(), params.InflationParameters.GoalBonded))
+				s.bondWithRate(params.MintDenom, randRate(sdk.ZeroDec(), params.InflationParameters.GoalBonded))
 				s.CommitAndBeginBlocks(rand.Int63n(50))
 				oldMinter = s.app.MintKeeper.GetMinter(s.ctx)
 
@@ -180,7 +180,7 @@ var _ = Describe("Mint", Ordered, func() {
 					oldBondedRatio = s.app.MintKeeper.BondedRatio(s.ctx)
 					for {
 						// increase the bondedRatio
-						newBondedRatio := randInflationRate(
+						newBondedRatio := randRate(
 							oldBondedRatio, sdk.OneDec(),
 						)
 						if newBondedRatio.Equal(params.InflationParameters.GoalBonded) {
@@ -211,7 +211,7 @@ var _ = Describe("Mint", Ordered, func() {
 
 		Context("bondedRatio > goalBonded", func() {
 			BeforeEach(func() {
-				s.bondWithRate(params.MintDenom, randInflationRate(params.InflationParameters.GoalBonded, sdk.OneDec()))
+				s.bondWithRate(params.MintDenom, randRate(params.InflationParameters.GoalBonded, sdk.OneDec()))
 				s.CommitAndBeginBlocks(rand.Int63n(50))
 				oldMinter = s.app.MintKeeper.GetMinter(s.ctx)
 
@@ -270,7 +270,7 @@ var _ = Describe("Mint", Ordered, func() {
 						}
 
 						// increase the bondedRatio
-						newBondedRatio := randInflationRate(
+						newBondedRatio := randRate(
 							params.InflationParameters.GoalBonded, oldBondedRatio,
 						)
 						if newBondedRatio.Equal(params.InflationParameters.GoalBonded) {
@@ -369,7 +369,7 @@ func (suite *KeeperTestSuite) mintAndBondWithRate(denom string, mintAmount sdk.I
 	Expect(suite.app.MintKeeper.BondedRatio(suite.ctx)).To(Equal(rate))
 }
 
-func randInflationRate(minRate sdk.Dec, maxRate sdk.Dec) sdk.Dec {
+func randRate(minRate sdk.Dec, maxRate sdk.Dec) sdk.Dec {
 	base := int64(1000000000000000000)
 	min := minRate.MulInt64(base).Ceil().TruncateInt64()
 	max := maxRate.MulInt64(base).TruncateInt64()

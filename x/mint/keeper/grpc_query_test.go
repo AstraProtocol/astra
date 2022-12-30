@@ -108,3 +108,39 @@ func (suite *KeeperTestSuite) TestGRPCQueryBlockProvision() {
 		suite.Require().Equal(res.Provision, minter.BlockProvision(suite.app.MintKeeper.GetParams(suite.ctx)))
 	}
 }
+
+func (suite *KeeperTestSuite) TestGRPCQueryCirculatingSupply() {
+	suite.SetupTest()
+	ctx := sdk.WrapSDKContext(suite.ctx)
+	oldSupply := suite.app.MintKeeper.StakingTokenSupply(suite.ctx)
+	baseAmount, _ := sdk.NewIntFromString("1200000000000000000000000000")
+	for i := 0; i < numTests; i++ {
+		expectedMint := randRate(sdk.ZeroDec(), sdk.OneDec()).MulInt(baseAmount).TruncateInt()
+		err := suite.app.MintKeeper.MintCoins(
+			suite.ctx,
+			sdk.NewCoin(types.DefaultInflationDenom, expectedMint),
+		)
+		suite.Require().NoError(err)
+
+		res, err := suite.queryClient.CirculatingSupply(ctx, &types.QueryCirculatingSupplyRequest{})
+		suite.Require().NoError(err)
+		suite.Require().Equal(res.CirculatingSupply.Amount.TruncateInt(), oldSupply.Add(expectedMint))
+
+		oldSupply = res.CirculatingSupply.Amount.TruncateInt()
+	}
+}
+
+func (suite *KeeperTestSuite) TestGRPCBondedRatio() {
+	initialSupply, _ := sdk.NewIntFromString("1200000000000000000000000000")
+	for i := 0; i < numTests; i++ {
+		suite.SetupTest()
+
+		bondedRate := randRate(sdk.ZeroDec(), sdk.OneDec())
+		suite.mintAndBondWithRate(types.DefaultInflationDenom, initialSupply, bondedRate)
+
+		ctx := sdk.WrapSDKContext(suite.ctx)
+		res, err := suite.queryClient.GetBondedRatio(ctx, &types.QueryBondedRatioRequest{})
+		suite.Require().NoError(err)
+		suite.Require().Equal(res.BondedRatio, bondedRate)
+	}
+}
