@@ -34,10 +34,6 @@ cat $HOME/.astrad/config/genesis.json | jq '.app_state["evm"]["params"]["evm_den
 cat $HOME/.astrad/config/genesis.json | jq '.app_state["distribution"]["params"]["community_tax"]="0.0"' > $HOME/.astrad/config/tmp_genesis.json && mv $HOME/.astrad/config/tmp_genesis.json $HOME/.astrad/config/genesis.json
 cat $HOME/.astrad/config/genesis.json | jq '.app_state["mint"]["params"]["mint_denom"]="aastra"' > $HOME/.astrad/config/tmp_genesis.json && mv $HOME/.astrad/config/tmp_genesis.json $HOME/.astrad/config/genesis.json
 
-
- cat $HOME/.astrad/config/genesis.json | jq '.app_state["epochs"]["epochs"][0]["identifier"]="hour"' > $HOME/.astrad/config/tmp_genesis.json && mv $HOME/.astrad/config/tmp_genesis.json $HOME/.astrad/config/genesis.json
- cat $HOME/.astrad/config/genesis.json | jq '.app_state["epochs"]["epochs"][0]["duration"]="3600s"' > $HOME/.astrad/config/tmp_genesis.json && mv $HOME/.astrad/config/tmp_genesis.json $HOME/.astrad/config/genesis.json
-
 # increase block time (?)
 cat $HOME/.astrad/config/genesis.json | jq '.consensus_params["block"]["time_iota_ms"]="1000"' > $HOME/.astrad/config/tmp_genesis.json && mv $HOME/.astrad/config/tmp_genesis.json $HOME/.astrad/config/genesis.json
 
@@ -70,13 +66,13 @@ if [[ $1 == "pending" ]]; then
       sed -i 's/timeout_prevote_delta = "500ms"/timeout_prevote_delta = "5s"/g' $HOME/.astrad/config/config.toml
       sed -i 's/timeout_precommit = "1s"/timeout_precommit = "10s"/g' $HOME/.astrad/config/config.toml
       sed -i 's/timeout_precommit_delta = "500ms"/timeout_precommit_delta = "5s"/g' $HOME/.astrad/config/config.toml
-      sed -i 's/timeout_commit = "5s"/timeout_commit = "150s"/g' $HOME/.astrad/config/config.toml
+      sed -i 's/timeout_commit = "3s"/timeout_commit = "150s"/g' $HOME/.astrad/config/config.toml
       sed -i 's/timeout_broadcast_tx_commit = "10s"/timeout_broadcast_tx_commit = "150s"/g' $HOME/.astrad/config/config.toml
   fi
 fi
 
 # Allocate genesis accounts (cosmos formatted addresses)
-astrad add-genesis-account $KEY 1000000000000000000000aastra --keyring-backend $KEYRING
+astrad add-genesis-account $KEY 1200000000000000000000000000aastra --keyring-backend $KEYRING
 
 # Sign genesis transaction
 astrad gentx $KEY 1000000000000000000aastra --keyring-backend $KEYRING --chain-id $CHAINID
