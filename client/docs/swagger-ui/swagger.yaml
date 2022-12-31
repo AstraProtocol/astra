@@ -15801,9 +15801,9 @@ paths:
           type: boolean
       tags:
         - Query
-  /cosmos/mint/v1beta1/annual_provisions:
+  /astra/mint/v1/annual_provisions:
     get:
-      summary: AnnualProvisions current minting annual provisions value.
+      summary: AnnualProvisions returns the current minting annual provisions.
       operationId: AnnualProvisions
       responses:
         '200':
@@ -15844,7 +15844,150 @@ paths:
                       format: byte
       tags:
         - Query
-  /cosmos/mint/v1beta1/inflation:
+  /astra/mint/v1/block_provision:
+    get:
+      summary: BlockProvision returns the current block provisions.
+      operationId: BlockProvision
+      responses:
+        '200':
+          description: A successful response.
+          schema:
+            type: object
+            properties:
+              provision:
+                description: total amount of provisions minted via block rewards.
+                type: object
+                properties:
+                  denom:
+                    type: string
+                  amount:
+                    type: string
+            description: >-
+              QueryTotalMintedProvisionResponse is the response type for the
+              Query/BlockProvision RPC method.
+        default:
+          description: An unexpected error response.
+          schema:
+            type: object
+            properties:
+              error:
+                type: string
+              code:
+                type: integer
+                format: int32
+              message:
+                type: string
+              details:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    type_url:
+                      type: string
+                    value:
+                      type: string
+                      format: byte
+      tags:
+        - Query
+  /astra/mint/v1/bonded_ratio:
+    get:
+      summary: >-
+        GetBondedRatio returns the current ratio between staked tokens vs total
+        supply.
+      operationId: GetBondedRatio
+      responses:
+        '200':
+          description: A successful response.
+          schema:
+            type: object
+            properties:
+              bonded_ratio:
+                type: string
+                format: byte
+            description: |-
+              QueryBondedRatioResponse is the response type for the
+              Query/BondedRatio RPC method.
+        default:
+          description: An unexpected error response.
+          schema:
+            type: object
+            properties:
+              error:
+                type: string
+              code:
+                type: integer
+                format: int32
+              message:
+                type: string
+              details:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    type_url:
+                      type: string
+                    value:
+                      type: string
+                      format: byte
+      tags:
+        - Query
+  /astra/mint/v1/circulating_supply:
+    get:
+      summary: |-
+        CirculatingSupply retrieves the total number of tokens that are in
+        circulation (i.e. excluding unVested tokens).
+      operationId: CirculatingSupply
+      responses:
+        '200':
+          description: A successful response.
+          schema:
+            type: object
+            properties:
+              circulating_supply:
+                title: total amount of coins in circulation
+                type: object
+                properties:
+                  denom:
+                    type: string
+                  amount:
+                    type: string
+                description: >-
+                  DecCoin defines a token with a denomination and a decimal
+                  amount.
+
+
+                  NOTE: The amount field is an Dec which implements the custom
+                  method
+
+                  signatures required by gogoproto.
+            description: |-
+              QueryCirculatingSupplyResponse is the response type for the
+              Query/CirculatingSupply RPC method.
+        default:
+          description: An unexpected error response.
+          schema:
+            type: object
+            properties:
+              error:
+                type: string
+              code:
+                type: integer
+                format: int32
+              message:
+                type: string
+              details:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    type_url:
+                      type: string
+                    value:
+                      type: string
+                      format: byte
+      tags:
+        - Query
+  /astra/mint/v1/inflation:
     get:
       summary: Inflation returns the current minting inflation value.
       operationId: Inflation
@@ -15887,7 +16030,7 @@ paths:
                       format: byte
       tags:
         - Query
-  /cosmos/mint/v1beta1/params:
+  /astra/mint/v1/params:
     get:
       summary: Params returns the total set of minting parameters.
       operationId: Params
@@ -15903,26 +16046,109 @@ paths:
                 properties:
                   mint_denom:
                     type: string
-                    title: type of coin to mint
-                  inflation_rate_change:
+                    description: mint_denom indicates the type of coin to mint.
+                  inflation_parameters:
+                    description: >-
+                      inflation_parameters consists of parameters which define
+                      how inflation is calculated.
+                    type: object
+                    properties:
+                      inflation_rate_change:
+                        type: string
+                        description: >-
+                          inflation_rate_change is the maximum annual change in
+                          inflation rate.
+                      inflation_max:
+                        type: string
+                        description: inflation_max is the maximum inflation rate.
+                      inflation_min:
+                        type: string
+                        description: inflation_min is the minimum inflation rate.
+                      goal_bonded:
+                        type: string
+                        description: >-
+                          goal_bonded is the expected ratio of token in stake
+                          versus the total supply.
+                      blocks_per_year:
+                        type: string
+                        format: uint64
+                        description: >-
+                          blocks_per_year is the expected number of blocks per
+                          year.
+                  inflation_distribution:
+                    description: >-
+                      inflation_distribution consists of parameters which
+                      block/epoch provision is distributed.
+                    type: object
+                    properties:
+                      staking_rewards:
+                        type: string
+                        description: >-
+                          staking_rewards defines the proportion of the minted
+                          minted_denom allocated to validators and delegators.
+                      foundation:
+                        type: string
+                        description: >-
+                          foundation defines the proportion of the minted
+                          minted_denom allocated to the Astra Foundation.
+                      community_pool:
+                        type: string
+                        description: >-
+                          community_pool defines the proportion of the minted
+                          minted_denom allocated to the community pool.
+                  foundation_address:
                     type: string
-                    title: maximum annual change in inflation rate
-                  inflation_max:
-                    type: string
-                    title: maximum inflation rate
-                  inflation_min:
-                    type: string
-                    title: minimum inflation rate
-                  goal_bonded:
-                    type: string
-                    title: goal of percent bonded atoms
-                  blocks_per_year:
-                    type: string
-                    format: uint64
-                    title: expected blocks per year
+                    description: >-
+                      foundation_address is the address of the Astra Foundation
+                      for a portion of receiving provision.
             description: >-
               QueryParamsResponse is the response type for the Query/Params RPC
               method.
+        default:
+          description: An unexpected error response.
+          schema:
+            type: object
+            properties:
+              error:
+                type: string
+              code:
+                type: integer
+                format: int32
+              message:
+                type: string
+              details:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    type_url:
+                      type: string
+                    value:
+                      type: string
+                      format: byte
+      tags:
+        - Query
+  /astra/mint/v1/total_minted_provision:
+    get:
+      summary: TotalMintedProvision returns the total minted provisions.
+      operationId: TotalMintedProvision
+      responses:
+        '200':
+          description: A successful response.
+          schema:
+            type: object
+            properties:
+              total_minted_provision:
+                description: total amount of provisions minted via block rewards.
+                type: object
+                properties:
+                  denom:
+                    type: string
+                  amount:
+                    type: string
+            description: >-
+              QueryTotalMintedProvisionResponse is the response type for the
+              Query/TotalMintedProvision RPC method.
         default:
           description: An unexpected error response.
           schema:
@@ -34769,30 +34995,149 @@ definitions:
     description: >-
       QueryGrantsResponse is the response type for the Query/Authorizations RPC
       method.
-  cosmos.mint.v1beta1.Params:
+  astra.mint.v1.InflationDistribution:
+    type: object
+    properties:
+      staking_rewards:
+        type: string
+        description: >-
+          staking_rewards defines the proportion of the minted minted_denom
+          allocated to validators and delegators.
+      foundation:
+        type: string
+        description: >-
+          foundation defines the proportion of the minted minted_denom allocated
+          to the Astra Foundation.
+      community_pool:
+        type: string
+        description: >-
+          community_pool defines the proportion of the minted minted_denom
+          allocated to the community pool.
+    description: >-
+      InflationDistribution defines how the block rewards are distributed to
+      each module/component (i.e, Staking Rewards,
+
+      Astra Foundation, and the Community Pool).
+
+
+      By default, for each block/epoch reward:
+         - 88% will be allocated as Staking Rewards;
+         - 10% will be allocated to the Astra Foundation;
+         - 2% will be allocated to the Community Pool.
+  astra.mint.v1.InflationParameters:
+    type: object
+    properties:
+      inflation_rate_change:
+        type: string
+        description: inflation_rate_change is the maximum annual change in inflation rate.
+      inflation_max:
+        type: string
+        description: inflation_max is the maximum inflation rate.
+      inflation_min:
+        type: string
+        description: inflation_min is the minimum inflation rate.
+      goal_bonded:
+        type: string
+        description: >-
+          goal_bonded is the expected ratio of token in stake versus the total
+          supply.
+      blocks_per_year:
+        type: string
+        format: uint64
+        description: blocks_per_year is the expected number of blocks per year.
+    description: >-
+      InflationParameters defines how new provisions are minted through
+      inflation.
+
+      In order to best capture the fluctuation of the market, provisions are
+      minted through a dynamic inflation mechanism.
+
+      That is, the protocol expects a pre-determined portion of tokens in stake,
+      this portion is called `goal_bonded`. It is
+
+      the ratio between the staked tokens and the total supply of tokens (i.e,
+      staked + non-staked tokens).
+
+
+      The `inflation_rate` is first set at genesis, and is adjusted at the
+      beginning of each block.
+
+      At the beginning of a block, if the %-bonded (i.e, the current ration:
+      staked / (staked + nonstaked)) is less than `goal_bonded`,
+
+      the `inflation_rat` will be increased until it reaches to `inflation_max`
+      to incentivize more stake;
+
+      if the %-bonded is greater than `goal_bonded`, the `inflation_rate` will
+      be decreased until it reaches to `inflation_min`
+
+      to disincentivize staking. If the %-bonded is equal to `goal_bonded`, the
+      `inflation_rate` will stay unchanged.
+
+
+      More formally, the `inflation_rate` is adjusted as follows:
+
+         inflation_rate = inflation_rate + (1 - current_bonded/goal_bonded) * inflation_rate_change / blocks_per_year.
+  astra.mint.v1.Params:
     type: object
     properties:
       mint_denom:
         type: string
-        title: type of coin to mint
-      inflation_rate_change:
+        description: mint_denom indicates the type of coin to mint.
+      inflation_parameters:
+        description: >-
+          inflation_parameters consists of parameters which define how inflation
+          is calculated.
+        type: object
+        properties:
+          inflation_rate_change:
+            type: string
+            description: >-
+              inflation_rate_change is the maximum annual change in inflation
+              rate.
+          inflation_max:
+            type: string
+            description: inflation_max is the maximum inflation rate.
+          inflation_min:
+            type: string
+            description: inflation_min is the minimum inflation rate.
+          goal_bonded:
+            type: string
+            description: >-
+              goal_bonded is the expected ratio of token in stake versus the
+              total supply.
+          blocks_per_year:
+            type: string
+            format: uint64
+            description: blocks_per_year is the expected number of blocks per year.
+      inflation_distribution:
+        description: >-
+          inflation_distribution consists of parameters which block/epoch
+          provision is distributed.
+        type: object
+        properties:
+          staking_rewards:
+            type: string
+            description: >-
+              staking_rewards defines the proportion of the minted minted_denom
+              allocated to validators and delegators.
+          foundation:
+            type: string
+            description: >-
+              foundation defines the proportion of the minted minted_denom
+              allocated to the Astra Foundation.
+          community_pool:
+            type: string
+            description: >-
+              community_pool defines the proportion of the minted minted_denom
+              allocated to the community pool.
+      foundation_address:
         type: string
-        title: maximum annual change in inflation rate
-      inflation_max:
-        type: string
-        title: maximum inflation rate
-      inflation_min:
-        type: string
-        title: minimum inflation rate
-      goal_bonded:
-        type: string
-        title: goal of percent bonded atoms
-      blocks_per_year:
-        type: string
-        format: uint64
-        title: expected blocks per year
+        description: >-
+          foundation_address is the address of the Astra Foundation for a
+          portion of receiving provision.
     description: Params holds parameters for the mint module.
-  cosmos.mint.v1beta1.QueryAnnualProvisionsResponse:
+  astra.mint.v1.QueryAnnualProvisionsResponse:
     type: object
     properties:
       annual_provisions:
@@ -34802,7 +35147,49 @@ definitions:
     description: |-
       QueryAnnualProvisionsResponse is the response type for the
       Query/AnnualProvisions RPC method.
-  cosmos.mint.v1beta1.QueryInflationResponse:
+  astra.mint.v1.QueryBlockProvisionResponse:
+    type: object
+    properties:
+      provision:
+        description: total amount of provisions minted via block rewards.
+        type: object
+        properties:
+          denom:
+            type: string
+          amount:
+            type: string
+    description: >-
+      QueryTotalMintedProvisionResponse is the response type for the
+      Query/BlockProvision RPC method.
+  astra.mint.v1.QueryBondedRatioResponse:
+    type: object
+    properties:
+      bonded_ratio:
+        type: string
+        format: byte
+    description: |-
+      QueryBondedRatioResponse is the response type for the
+      Query/BondedRatio RPC method.
+  astra.mint.v1.QueryCirculatingSupplyResponse:
+    type: object
+    properties:
+      circulating_supply:
+        title: total amount of coins in circulation
+        type: object
+        properties:
+          denom:
+            type: string
+          amount:
+            type: string
+        description: |-
+          DecCoin defines a token with a denomination and a decimal amount.
+
+          NOTE: The amount field is an Dec which implements the custom method
+          signatures required by gogoproto.
+    description: |-
+      QueryCirculatingSupplyResponse is the response type for the
+      Query/CirculatingSupply RPC method.
+  astra.mint.v1.QueryInflationResponse:
     type: object
     properties:
       inflation:
@@ -34812,7 +35199,7 @@ definitions:
     description: |-
       QueryInflationResponse is the response type for the Query/Inflation RPC
       method.
-  cosmos.mint.v1beta1.QueryParamsResponse:
+  astra.mint.v1.QueryParamsResponse:
     type: object
     properties:
       params:
@@ -34821,24 +35208,86 @@ definitions:
         properties:
           mint_denom:
             type: string
-            title: type of coin to mint
-          inflation_rate_change:
+            description: mint_denom indicates the type of coin to mint.
+          inflation_parameters:
+            description: >-
+              inflation_parameters consists of parameters which define how
+              inflation is calculated.
+            type: object
+            properties:
+              inflation_rate_change:
+                type: string
+                description: >-
+                  inflation_rate_change is the maximum annual change in
+                  inflation rate.
+              inflation_max:
+                type: string
+                description: inflation_max is the maximum inflation rate.
+              inflation_min:
+                type: string
+                description: inflation_min is the minimum inflation rate.
+              goal_bonded:
+                type: string
+                description: >-
+                  goal_bonded is the expected ratio of token in stake versus the
+                  total supply.
+              blocks_per_year:
+                type: string
+                format: uint64
+                description: blocks_per_year is the expected number of blocks per year.
+          inflation_distribution:
+            description: >-
+              inflation_distribution consists of parameters which block/epoch
+              provision is distributed.
+            type: object
+            properties:
+              staking_rewards:
+                type: string
+                description: >-
+                  staking_rewards defines the proportion of the minted
+                  minted_denom allocated to validators and delegators.
+              foundation:
+                type: string
+                description: >-
+                  foundation defines the proportion of the minted minted_denom
+                  allocated to the Astra Foundation.
+              community_pool:
+                type: string
+                description: >-
+                  community_pool defines the proportion of the minted
+                  minted_denom allocated to the community pool.
+          foundation_address:
             type: string
-            title: maximum annual change in inflation rate
-          inflation_max:
-            type: string
-            title: maximum inflation rate
-          inflation_min:
-            type: string
-            title: minimum inflation rate
-          goal_bonded:
-            type: string
-            title: goal of percent bonded atoms
-          blocks_per_year:
-            type: string
-            format: uint64
-            title: expected blocks per year
+            description: >-
+              foundation_address is the address of the Astra Foundation for a
+              portion of receiving provision.
     description: QueryParamsResponse is the response type for the Query/Params RPC method.
+  astra.mint.v1.QueryTotalMintedProvisionResponse:
+    type: object
+    properties:
+      total_minted_provision:
+        description: total amount of provisions minted via block rewards.
+        type: object
+        properties:
+          denom:
+            type: string
+          amount:
+            type: string
+    description: >-
+      QueryTotalMintedProvisionResponse is the response type for the
+      Query/TotalMintedProvision RPC method.
+  cosmos.base.v1beta1.DecCoin:
+    type: object
+    properties:
+      denom:
+        type: string
+      amount:
+        type: string
+    description: |-
+      DecCoin defines a token with a denomination and a decimal amount.
+
+      NOTE: The amount field is an Dec which implements the custom method
+      signatures required by gogoproto.
   cosmos.bank.v1beta1.DenomUnit:
     type: object
     properties:
@@ -35322,18 +35771,6 @@ definitions:
     description: |-
       SendEnabled maps coin denom to a send_enabled status (whether a denom is
       sendable).
-  cosmos.base.v1beta1.DecCoin:
-    type: object
-    properties:
-      denom:
-        type: string
-      amount:
-        type: string
-    description: |-
-      DecCoin defines a token with a denomination and a decimal amount.
-
-      NOTE: The amount field is an Dec which implements the custom method
-      signatures required by gogoproto.
   cosmos.distribution.v1beta1.DelegationDelegatorReward:
     type: object
     properties:
