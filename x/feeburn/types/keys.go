@@ -15,8 +15,19 @@ const (
 
 	// MemStoreKey defines the in-memory store key
 	MemStoreKey = "mem_feeburn"
+
+	QueryParameters   = "parameters"
+	QueryTotalFeeBurn = "total_fee_burn"
 )
 
 func KeyPrefix(p string) []byte {
 	return []byte(p)
 }
+
+const (
+	prefixTotalFeeBurn = iota
+)
+
+var (
+	KeyPrefixTotalFeeBurn = []byte{prefixTotalFeeBurn}
+)

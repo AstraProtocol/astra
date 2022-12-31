@@ -334,6 +334,59 @@ paths:
                       format: byte
       tags:
         - Query
+  /astra/feeburn/v1/total_fee_burn:
+    get:
+      summary: TotalFeeBurn returns the total fee burn.
+      operationId: TotalFeeBurn
+      responses:
+        '200':
+          description: A successful response.
+          schema:
+            type: object
+            properties:
+              total_fee_burn:
+                type: object
+                properties:
+                  denom:
+                    type: string
+                  amount:
+                    type: string
+                description: >-
+                  DecCoin defines a token with a denomination and a decimal
+                  amount.
+
+
+                  NOTE: The amount field is an Dec which implements the custom
+                  method
+
+                  signatures required by gogoproto.
+            description: >-
+              QueryTotalFeeBurnResponse is the response type for the
+              Query/TotalFeeBurn RPC method.
+        default:
+          description: An unexpected error response.
+          schema:
+            type: object
+            properties:
+              error:
+                type: string
+              code:
+                type: integer
+                format: int32
+              message:
+                type: string
+              details:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    type_url:
+                      type: string
+                    value:
+                      type: string
+                      format: byte
+      tags:
+        - Query
   /evmos/vesting/v1/balances/{address}:
     get:
       summary: Retrieves the unvested, vested and locked tokens for a vesting account
@@ -28486,6 +28539,36 @@ definitions:
           fee_burn:
             type: string
     description: QueryParamsResponse is response type for the Query/Params RPC method.
+  astra.feeburn.v1.QueryTotalFeeBurnResponse:
+    type: object
+    properties:
+      total_fee_burn:
+        type: object
+        properties:
+          denom:
+            type: string
+          amount:
+            type: string
+        description: |-
+          DecCoin defines a token with a denomination and a decimal amount.
+
+          NOTE: The amount field is an Dec which implements the custom method
+          signatures required by gogoproto.
+    description: >-
+      QueryTotalFeeBurnResponse is the response type for the Query/TotalFeeBurn
+      RPC method.
+  cosmos.base.v1beta1.DecCoin:
+    type: object
+    properties:
+      denom:
+        type: string
+      amount:
+        type: string
+    description: |-
+      DecCoin defines a token with a denomination and a decimal amount.
+
+      NOTE: The amount field is an Dec which implements the custom method
+      signatures required by gogoproto.
   cosmos.base.v1beta1.Coin:
     type: object
     properties:
@@ -35276,18 +35359,6 @@ definitions:
     description: >-
       QueryTotalMintedProvisionResponse is the response type for the
       Query/TotalMintedProvision RPC method.
-  cosmos.base.v1beta1.DecCoin:
-    type: object
-    properties:
-      denom:
-        type: string
-      amount:
-        type: string
-    description: |-
-      DecCoin defines a token with a denomination and a decimal amount.
-
-      NOTE: The amount field is an Dec which implements the custom method
-      signatures required by gogoproto.
   cosmos.bank.v1beta1.DenomUnit:
     type: object
     properties:

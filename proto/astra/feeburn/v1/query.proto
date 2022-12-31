@@ -4,7 +4,7 @@ package astra.feeburn.v1;
 import "gogoproto/gogo.proto";
 import "google/api/annotations.proto";
 import "astra/feeburn/v1/params.proto";
-// this line is used by starport scaffolding # 1
+import "cosmos/base/v1beta1/coin.proto";
 
 option go_package = "github.com/AstraProtocol/astra/v2/x/feeburn/types";
 
@@ -14,7 +14,10 @@ service Query {
   rpc Params(QueryParamsRequest) returns (QueryParamsResponse) {
     option (google.api.http).get = "/astra/feeburn/v1/params";
   }
-  // this line is used by starport scaffolding # 2
+  // TotalFeeBurn returns the total fee burn.
+  rpc TotalFeeBurn(QueryTotalFeeBurnRequest) returns (QueryTotalFeeBurnResponse) {
+    option (google.api.http).get = "/astra/feeburn/v1/total_fee_burn";
+  }
 }
 
 // QueryParamsRequest is request type for the Query/Params RPC method.
@@ -26,4 +29,13 @@ message QueryParamsResponse {
   Params params = 1 [ (gogoproto.nullable) = false ];
 }
 
-// this line is used by starport scaffolding # 3
+// QueryTotalFeeBurn is the request type for the Query/TotalFeeBurn RPC method.
+message QueryTotalFeeBurnRequest {}
+
+// QueryTotalFeeBurnResponse is the response type for the Query/TotalFeeBurn RPC method.
+message QueryTotalFeeBurnResponse {
+  cosmos.base.v1beta1.DecCoin total_fee_burn = 1 [
+    (gogoproto.nullable) = false,
+    (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.DecCoins"
+  ];
+}

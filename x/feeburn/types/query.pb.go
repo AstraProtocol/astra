@@ -6,6 +6,7 @@ package types
 import (
 	context "context"
 	fmt "fmt"
+	types "github.com/cosmos/cosmos-sdk/types"
 	_ "github.com/gogo/protobuf/gogoproto"
 	grpc1 "github.com/gogo/protobuf/grpc"
 	proto "github.com/gogo/protobuf/proto"
@@ -112,33 +113,126 @@ func (m *QueryParamsResponse) GetParams() Params {
 	return Params{}
 }
 
+// QueryTotalFeeBurn is the request type for the Query/TotalFeeBurn RPC method.
+type QueryTotalFeeBurnRequest struct {
+}
+
+func (m *QueryTotalFeeBurnRequest) Reset()         { *m = QueryTotalFeeBurnRequest{} }
+func (m *QueryTotalFeeBurnRequest) String() string { return proto.CompactTextString(m) }
+func (*QueryTotalFeeBurnRequest) ProtoMessage()    {}
+func (*QueryTotalFeeBurnRequest) Descriptor() ([]byte, []int) {
+	return fileDescriptor_95b80c22ab2df1e2, []int{2}
+}
+func (m *QueryTotalFeeBurnRequest) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *QueryTotalFeeBurnRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_QueryTotalFeeBurnRequest.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *QueryTotalFeeBurnRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QueryTotalFeeBurnRequest.Merge(m, src)
+}
+func (m *QueryTotalFeeBurnRequest) XXX_Size() int {
+	return m.Size()
+}
+func (m *QueryTotalFeeBurnRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_QueryTotalFeeBurnRequest.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_QueryTotalFeeBurnRequest proto.InternalMessageInfo
+
+// QueryTotalFeeBurnResponse is the response type for the Query/TotalFeeBurn RPC method.
+type QueryTotalFeeBurnResponse struct {
+	TotalFeeBurn types.DecCoin `protobuf:"bytes,1,opt,name=total_fee_burn,json=totalFeeBurn,proto3,castrepeated=github.com/cosmos/cosmos-sdk/types.DecCoins" json:"total_fee_burn"`
+}
+
+func (m *QueryTotalFeeBurnResponse) Reset()         { *m = QueryTotalFeeBurnResponse{} }
+func (m *QueryTotalFeeBurnResponse) String() string { return proto.CompactTextString(m) }
+func (*QueryTotalFeeBurnResponse) ProtoMessage()    {}
+func (*QueryTotalFeeBurnResponse) Descriptor() ([]byte, []int) {
+	return fileDescriptor_95b80c22ab2df1e2, []int{3}
+}
+func (m *QueryTotalFeeBurnResponse) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *QueryTotalFeeBurnResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_QueryTotalFeeBurnResponse.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *QueryTotalFeeBurnResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QueryTotalFeeBurnResponse.Merge(m, src)
+}
+func (m *QueryTotalFeeBurnResponse) XXX_Size() int {
+	return m.Size()
+}
+func (m *QueryTotalFeeBurnResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_QueryTotalFeeBurnResponse.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_QueryTotalFeeBurnResponse proto.InternalMessageInfo
+
+func (m *QueryTotalFeeBurnResponse) GetTotalFeeBurn() types.DecCoin {
+	if m != nil {
+		return m.TotalFeeBurn
+	}
+	return types.DecCoin{}
+}
+
 func init() {
 	proto.RegisterType((*QueryParamsRequest)(nil), "astra.feeburn.v1.QueryParamsRequest")
 	proto.RegisterType((*QueryParamsResponse)(nil), "astra.feeburn.v1.QueryParamsResponse")
+	proto.RegisterType((*QueryTotalFeeBurnRequest)(nil), "astra.feeburn.v1.QueryTotalFeeBurnRequest")
+	proto.RegisterType((*QueryTotalFeeBurnResponse)(nil), "astra.feeburn.v1.QueryTotalFeeBurnResponse")
 }
 
 func init() { proto.RegisterFile("astra/feeburn/v1/query.proto", fileDescriptor_95b80c22ab2df1e2) }
 
 var fileDescriptor_95b80c22ab2df1e2 = []byte{
-	// 280 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xe2, 0x92, 0x49, 0x2c, 0x2e, 0x29,
-	0x4a, 0xd4, 0x4f, 0x4b, 0x4d, 0x4d, 0x2a, 0x2d, 0xca, 0xd3, 0x2f, 0x33, 0xd4, 0x2f, 0x2c, 0x4d,
-	0x2d, 0xaa, 0xd4, 0x2b, 0x28, 0xca, 0x2f, 0xc9, 0x17, 0x12, 0x00, 0xcb, 0xea, 0x41, 0x65, 0xf5,
-	0xca, 0x0c, 0xa5, 0x44, 0xd2, 0xf3, 0xd3, 0xf3, 0xc1, 0x92, 0xfa, 0x20, 0x16, 0x44, 0x9d, 0x94,
-	0x4c, 0x7a, 0x7e, 0x7e, 0x7a, 0x4e, 0xaa, 0x7e, 0x62, 0x41, 0xa6, 0x7e, 0x62, 0x5e, 0x5e, 0x7e,
-	0x49, 0x62, 0x49, 0x66, 0x7e, 0x5e, 0x31, 0x54, 0x56, 0x16, 0xc3, 0x8e, 0x82, 0xc4, 0xa2, 0xc4,
-	0x5c, 0xa8, 0xb4, 0x92, 0x08, 0x97, 0x50, 0x20, 0xc8, 0xce, 0x00, 0xb0, 0x60, 0x50, 0x6a, 0x61,
-	0x69, 0x6a, 0x71, 0x89, 0x92, 0x2f, 0x97, 0x30, 0x8a, 0x68, 0x71, 0x41, 0x7e, 0x5e, 0x71, 0xaa,
-	0x90, 0x19, 0x17, 0x1b, 0x44, 0xb3, 0x04, 0xa3, 0x02, 0xa3, 0x06, 0xb7, 0x91, 0x84, 0x1e, 0xba,
-	0x13, 0xf5, 0x20, 0x3a, 0x9c, 0x58, 0x4e, 0xdc, 0x93, 0x67, 0x08, 0x82, 0xaa, 0x36, 0x6a, 0x60,
-	0xe4, 0x62, 0x05, 0x9b, 0x27, 0x54, 0xce, 0xc5, 0x06, 0x51, 0x21, 0xa4, 0x82, 0xa9, 0x17, 0xd3,
-	0x21, 0x52, 0xaa, 0x04, 0x54, 0x41, 0x1c, 0xa6, 0xa4, 0xd0, 0x74, 0xf9, 0xc9, 0x64, 0x26, 0x29,
-	0x21, 0x09, 0x7d, 0x1c, 0xbe, 0x75, 0xf2, 0x3e, 0xf1, 0x48, 0x8e, 0xf1, 0xc2, 0x23, 0x39, 0xc6,
-	0x07, 0x8f, 0xe4, 0x18, 0x27, 0x3c, 0x96, 0x63, 0xb8, 0xf0, 0x58, 0x8e, 0xe1, 0xc6, 0x63, 0x39,
-	0x86, 0x28, 0xc3, 0xf4, 0xcc, 0x92, 0x8c, 0xd2, 0x24, 0xbd, 0xe4, 0xfc, 0x5c, 0x7d, 0x47, 0x90,
-	0xee, 0x00, 0x50, 0xc0, 0x24, 0xe7, 0xe7, 0x40, 0xcd, 0x2a, 0x33, 0xd2, 0xaf, 0x80, 0x1b, 0x58,
-	0x52, 0x59, 0x90, 0x5a, 0x9c, 0xc4, 0x06, 0x0e, 0x3b, 0x63, 0x40, 0x00, 0x00, 0x00, 0xff, 0xff,
-	0x5f, 0x25, 0x43, 0x36, 0xc0, 0x01, 0x00, 0x00,
+	// 422 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x8c, 0x52, 0xcf, 0x8a, 0xd3, 0x40,
+	0x18, 0x4f, 0x16, 0xed, 0x61, 0x5c, 0x44, 0xc6, 0x3d, 0xc4, 0x50, 0xb3, 0x25, 0x28, 0x2c, 0x2e,
+	0xce, 0x90, 0x2e, 0x78, 0x37, 0x8a, 0x17, 0x11, 0xd6, 0xe2, 0xc9, 0xcb, 0x32, 0x89, 0xb3, 0x31,
+	0xd8, 0xce, 0x97, 0xcd, 0x4c, 0xb2, 0xee, 0xd5, 0x27, 0x50, 0xec, 0x53, 0xf8, 0x24, 0x3d, 0x16,
+	0xbc, 0x78, 0x52, 0x69, 0x7d, 0x10, 0x99, 0x3f, 0x95, 0xd6, 0xb4, 0xe8, 0x29, 0x61, 0x7e, 0xdf,
+	0xf7, 0xfb, 0x37, 0x83, 0xfa, 0x4c, 0xaa, 0x9a, 0xd1, 0x73, 0xce, 0xb3, 0xa6, 0x16, 0xb4, 0x4d,
+	0xe8, 0x45, 0xc3, 0xeb, 0x2b, 0x52, 0xd5, 0xa0, 0x00, 0xdf, 0x32, 0x28, 0x71, 0x28, 0x69, 0x93,
+	0xf0, 0xa0, 0x80, 0x02, 0x0c, 0x48, 0xf5, 0x9f, 0x9d, 0x0b, 0xfb, 0x05, 0x40, 0x31, 0xe6, 0x94,
+	0x55, 0x25, 0x65, 0x42, 0x80, 0x62, 0xaa, 0x04, 0x21, 0x1d, 0x7a, 0xb7, 0xa3, 0x51, 0xb1, 0x9a,
+	0x4d, 0x56, 0x70, 0x94, 0x83, 0x9c, 0x80, 0xa4, 0x19, 0x93, 0x9c, 0xb6, 0x49, 0xc6, 0x15, 0x4b,
+	0x68, 0x0e, 0xa5, 0xb0, 0x78, 0x7c, 0x80, 0xf0, 0x4b, 0xed, 0xe9, 0xd4, 0x2c, 0x8d, 0xf8, 0x45,
+	0xc3, 0xa5, 0x8a, 0x5f, 0xa0, 0xdb, 0x1b, 0xa7, 0xb2, 0x02, 0x21, 0x39, 0x7e, 0x84, 0x7a, 0x96,
+	0x3c, 0xf0, 0x07, 0xfe, 0xd1, 0x8d, 0x61, 0x40, 0xfe, 0x8e, 0x40, 0xec, 0x46, 0x7a, 0x6d, 0xf6,
+	0xfd, 0xd0, 0x1b, 0xb9, 0xe9, 0x38, 0x44, 0x81, 0xa1, 0x7b, 0x05, 0x8a, 0x8d, 0x9f, 0x71, 0x9e,
+	0x36, 0xb5, 0x58, 0x49, 0x4d, 0x7d, 0x74, 0x67, 0x0b, 0xe8, 0x14, 0x2f, 0xd1, 0x4d, 0xa5, 0xcf,
+	0xcf, 0xce, 0x39, 0x3f, 0xd3, 0x1a, 0x4e, 0xb9, 0x4f, 0x6c, 0x2e, 0xa2, 0x73, 0x11, 0x97, 0x8b,
+	0x3c, 0xe5, 0xf9, 0x13, 0x28, 0x45, 0x7a, 0xa2, 0xd5, 0xbf, 0xfc, 0x38, 0x3c, 0x2e, 0x4a, 0xf5,
+	0xb6, 0xc9, 0x48, 0x0e, 0x13, 0xea, 0x7a, 0xb0, 0x9f, 0x87, 0xf2, 0xcd, 0x3b, 0xaa, 0xae, 0x2a,
+	0x2e, 0x57, 0x3b, 0x72, 0xb4, 0xaf, 0xd6, 0x0c, 0x0c, 0xa7, 0x7b, 0xe8, 0xba, 0xb1, 0x85, 0x2f,
+	0x51, 0xcf, 0x86, 0xc2, 0xf7, 0xba, 0x71, 0xbb, 0xdd, 0x85, 0xf7, 0xff, 0x31, 0x65, 0x93, 0xc5,
+	0x83, 0x0f, 0x5f, 0x7f, 0x7d, 0xde, 0x0b, 0x71, 0x40, 0x77, 0x5c, 0x20, 0xfe, 0xe4, 0xa3, 0xfd,
+	0xf5, 0x52, 0xf0, 0x83, 0x1d, 0xcc, 0x5b, 0x6a, 0x0d, 0x8f, 0xff, 0x6b, 0xd6, 0x79, 0x39, 0x32,
+	0x5e, 0x62, 0x3c, 0xe8, 0x7a, 0xd9, 0x6c, 0x3f, 0x7d, 0x3e, 0x5b, 0x44, 0xfe, 0x7c, 0x11, 0xf9,
+	0x3f, 0x17, 0x91, 0xff, 0x71, 0x19, 0x79, 0xf3, 0x65, 0xe4, 0x7d, 0x5b, 0x46, 0xde, 0xeb, 0x64,
+	0xad, 0xeb, 0xc7, 0x9a, 0xe5, 0x54, 0xbf, 0xaf, 0x1c, 0xc6, 0x8e, 0xb3, 0x1d, 0xd2, 0xf7, 0x7f,
+	0x88, 0x4d, 0xf5, 0x59, 0xcf, 0x3c, 0xc1, 0x93, 0xdf, 0x01, 0x00, 0x00, 0xff, 0xff, 0x56, 0xbb,
+	0x94, 0xf5, 0x27, 0x03, 0x00, 0x00,
 }
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -155,6 +249,8 @@ const _ = grpc.SupportPackageIsVersion4
 type QueryClient interface {
 	// Parameters queries the parameters of the module.
 	Params(ctx context.Context, in *QueryParamsRequest, opts ...grpc.CallOption) (*QueryParamsResponse, error)
+	// TotalFeeBurn returns the total fee burn.
+	TotalFeeBurn(ctx context.Context, in *QueryTotalFeeBurnRequest, opts ...grpc.CallOption) (*QueryTotalFeeBurnResponse, error)
 }
 
 type queryClient struct {
@@ -174,10 +270,21 @@ func (c *queryClient) Params(ctx context.Context, in *QueryParamsRequest, opts .
 	return out, nil
 }
 
+func (c *queryClient) TotalFeeBurn(ctx context.Context, in *QueryTotalFeeBurnRequest, opts ...grpc.CallOption) (*QueryTotalFeeBurnResponse, error) {
+	out := new(QueryTotalFeeBurnResponse)
+	err := c.cc.Invoke(ctx, "/astra.feeburn.v1.Query/TotalFeeBurn", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // QueryServer is the server API for Query service.
 type QueryServer interface {
 	// Parameters queries the parameters of the module.
 	Params(context.Context, *QueryParamsRequest) (*QueryParamsResponse, error)
+	// TotalFeeBurn returns the total fee burn.
+	TotalFeeBurn(context.Context, *QueryTotalFeeBurnRequest) (*QueryTotalFeeBurnResponse, error)
 }
 
 // UnimplementedQueryServer can be embedded to have forward compatible implementations.
@@ -186,6 +293,9 @@ type UnimplementedQueryServer struct {
 
 func (*UnimplementedQueryServer) Params(ctx context.Context, req *QueryParamsRequest) (*QueryParamsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Params not implemented")
+}
+func (*UnimplementedQueryServer) TotalFeeBurn(ctx context.Context, req *QueryTotalFeeBurnRequest) (*QueryTotalFeeBurnResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method TotalFeeBurn not implemented")
 }
 
 func RegisterQueryServer(s grpc1.Server, srv QueryServer) {
@@ -210,6 +320,24 @@ func _Query_Params_Handler(srv interface{}, ctx context.Context, dec func(interf
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Query_TotalFeeBurn_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(QueryTotalFeeBurnRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(QueryServer).TotalFeeBurn(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/astra.feeburn.v1.Query/TotalFeeBurn",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(QueryServer).TotalFeeBurn(ctx, req.(*QueryTotalFeeBurnRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 var _Query_serviceDesc = grpc.ServiceDesc{
 	ServiceName: "astra.feeburn.v1.Query",
 	HandlerType: (*QueryServer)(nil),
@@ -217,6 +345,10 @@ var _Query_serviceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "Params",
 			Handler:    _Query_Params_Handler,
+		},
+		{
+			MethodName: "TotalFeeBurn",
+			Handler:    _Query_TotalFeeBurn_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
@@ -279,6 +411,62 @@ func (m *QueryParamsResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	return len(dAtA) - i, nil
 }
 
+func (m *QueryTotalFeeBurnRequest) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *QueryTotalFeeBurnRequest) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *QueryTotalFeeBurnRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	return len(dAtA) - i, nil
+}
+
+func (m *QueryTotalFeeBurnResponse) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *QueryTotalFeeBurnResponse) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *QueryTotalFeeBurnResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	{
+		size, err := m.TotalFeeBurn.MarshalToSizedBuffer(dAtA[:i])
+		if err != nil {
+			return 0, err
+		}
+		i -= size
+		i = encodeVarintQuery(dAtA, i, uint64(size))
+	}
+	i--
+	dAtA[i] = 0xa
+	return len(dAtA) - i, nil
+}
+
 func encodeVarintQuery(dAtA []byte, offset int, v uint64) int {
 	offset -= sovQuery(v)
 	base := offset
@@ -306,6 +494,26 @@ func (m *QueryParamsResponse) Size() (n int) {
 	var l int
 	_ = l
 	l = m.Params.Size()
+	n += 1 + l + sovQuery(uint64(l))
+	return n
+}
+
+func (m *QueryTotalFeeBurnRequest) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	return n
+}
+
+func (m *QueryTotalFeeBurnResponse) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	l = m.TotalFeeBurn.Size()
 	n += 1 + l + sovQuery(uint64(l))
 	return n
 }
@@ -425,6 +633,139 @@ func (m *QueryParamsResponse) Unmarshal(dAtA []byte) error {
 				return io.ErrUnexpectedEOF
 			}
 			if err := m.Params.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipQuery(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *QueryTotalFeeBurnRequest) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowQuery
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: QueryTotalFeeBurnRequest: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: QueryTotalFeeBurnRequest: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		default:
+			iNdEx = preIndex
+			skippy, err := skipQuery(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *QueryTotalFeeBurnResponse) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowQuery
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: QueryTotalFeeBurnResponse: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: QueryTotalFeeBurnResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field TotalFeeBurn", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthQuery
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if err := m.TotalFeeBurn.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
 				return err
 			}
 			iNdEx = postIndex

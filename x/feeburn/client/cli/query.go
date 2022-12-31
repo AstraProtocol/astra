@@ -2,6 +2,8 @@ package cli
 
 import (
 	"fmt"
+	"github.com/cosmos/cosmos-sdk/client/flags"
+
 	// "strings"
 
 	"github.com/spf13/cobra"
@@ -25,7 +27,35 @@ func GetQueryCmd(queryRoute string) *cobra.Command {
 	}
 
 	cmd.AddCommand(CmdQueryParams())
-	// this line is used by starport scaffolding # 1
+	cmd.AddCommand(GetCmdQueryTotalFeeBurn())
+
+	return cmd
+}
+
+// GetCmdQueryTotalFeeBurn implements a command to return the total fee burn.
+func GetCmdQueryTotalFeeBurn() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "total-fee-burn",
+		Short: "Query the total ASAs burn through the `feeburn` module",
+		Args:  cobra.NoArgs,
+		RunE: func(cmd *cobra.Command, args []string) error {
+			clientCtx, err := client.GetClientQueryContext(cmd)
+			if err != nil {
+				return err
+			}
+			queryClient := types.NewQueryClient(clientCtx)
+
+			params := &types.QueryTotalFeeBurnRequest{}
+			res, err := queryClient.TotalFeeBurn(cmd.Context(), params)
+			if err != nil {
+				return err
+			}
+
+			return clientCtx.PrintProto(&res.TotalFeeBurn)
+		},
+	}
+
+	flags.AddQueryFlagsToCmd(cmd)
 
 	return cmd
 }

@@ -1,7 +1,6 @@
 package keeper
 
 import (
-	"fmt"
 	feeburntype "github.com/AstraProtocol/astra/v2/x/feeburn/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
@@ -20,22 +19,25 @@ func (k Keeper) BurnFee(ctx sdk.Context, bankKeeper feeburntype.BankKeeper,
 	}
 
 	var feeBurn sdk.Coins
+	totalBurnAmount := sdk.NewDec(0)
 	for _, c := range totalFees {
 		burnAmount := params.FeeBurn.MulInt(c.Amount).RoundInt()
 		if !burnAmount.IsZero() {
 			feeBurn = feeBurn.Add(sdk.NewCoin(c.Denom, burnAmount))
+			totalBurnAmount = totalBurnAmount.Add(params.FeeBurn.MulInt(c.Amount))
 		}
 	}
-
-	fmt.Println("total fee", totalFees)
-	fmt.Println("total fee burn", feeBurn)
-	addr, _ := sdk.AccAddressFromBech32("astra17xpfvakm2amg962yls6f84z3kell8c5lnnwrnp")
-	feesCollectedInt := k.bankKeeper.GetAllBalances(ctx, addr)
-	fmt.Println("feeCollectorBalance", feesCollectedInt)
 
 	err := bankKeeper.SendCoinsFromModuleToModule(ctx, authtypes.FeeCollectorName, feeburntype.ModuleName, feeBurn)
 	if err != nil {
 		return sdkerrors.Wrapf(err, feeburntype.ErrFeeBurnSend.Error())
 	}
-	return bankKeeper.BurnCoins(ctx, feeburntype.ModuleName, feeBurn)
+	err = bankKeeper.BurnCoins(ctx, feeburntype.ModuleName, feeBurn)
+	if err != nil {
+		return sdkerrors.Wrapf(err, feeburntype.ErrFeeBurn.Error())
+	}
+	totalFeeBurn := k.GetTotalFeeBurn(ctx)
+	totalFeeBurn = totalFeeBurn.Add(totalBurnAmount)
+	k.SetTotalFeeBurn(ctx, totalFeeBurn)
+	return nil
 }

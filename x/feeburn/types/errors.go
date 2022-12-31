@@ -6,5 +6,6 @@ import (
 
 // ErrFeeBurnSend x/feeburn module sentinel errors
 var (
-	ErrFeeBurnSend = sdkerrors.Register(ModuleName, 1, "feeburn send error")
+	ErrFeeBurnSend = sdkerrors.Register(ModuleName, 1, "feeburn send coin error")
+	ErrFeeBurn     = sdkerrors.Register(ModuleName, 2, "feeburn coin error")
 )

@@ -13,7 +13,7 @@ func (suite *KeeperTestSuite) TestQueryParamsError() {
 	suite.Require().Nil(res)
 }
 
-func (suite *KeeperTestSuite) TestQueryParams() {
+func (suite *KeeperTestSuite) TestQueryParamsSuccess() {
 	ctx := sdk.WrapSDKContext(suite.ctx)
 	expParams := types.DefaultParams()
 	expParams.EnableFeeBurn = true
