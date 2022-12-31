@@ -7,7 +7,8 @@ from eth_utils import abi, big_endian_to_int
 from hexbytes import HexBytes
 from integration_tests.network import setup_astra
 
-from integration_tests.utils import astra_to_aastra, deploy_contract, CONTRACTS, KEYS, ADDRS, send_transaction, wait_for_block, wait_for_new_blocks, GAS_USE, DEFAULT_BASE_PORT
+from integration_tests.utils import astra_to_aastra, deploy_contract, CONTRACTS, KEYS, ADDRS, send_transaction, \
+    wait_for_block, wait_for_new_blocks, GAS_USE, DEFAULT_BASE_PORT
 
 pytestmark = pytest.mark.feeburn
 
@@ -30,11 +31,10 @@ def test_transfer(astra):
     amount_astra = 1
     amount_aastra = astra_to_aastra(amount_astra)
     fee_coins = 1000000000
-    old_block_height =  astra.cosmos_cli(0).block_height()
+    old_block_height = astra.cosmos_cli(0).block_height()
     print("old_block_height", old_block_height)
-    old_block_provisions = round(int(astra.cosmos_cli(0).annual_provisions()) / 6311520)
-    print("old_block_provisions", old_block_provisions)
-    old_total_supply = int(float(astra.cosmos_cli(0).total_supply()["supply"][0]["amount"]))
+    old_total_minted_provision = int(astra.cosmos_cli(0).total_minted_provision())
+    old_total_supply = int(astra.cosmos_cli(0).total_supply()["supply"][0]["amount"])
     print("old_total_supply", old_total_supply)
     tx = astra.cosmos_cli(0).transfer(team_addr, addr, str(amount_astra) + "astra", fees="%saastra" % fee_coins)
     tx_block_height = int(tx["height"])
@@ -77,16 +77,27 @@ def test_transfer(astra):
             "msg_index": 0,
         }
     ]
-    new_block_provisions = round(int(astra.cosmos_cli(0).annual_provisions()) / 6311520)
-    print("new_block_provisions", new_block_provisions)
-    # wait_for_new_blocks(astra.cosmos_cli(0), 1)
-    # block_provisions1 = int(int(astra.cosmos_cli(0).annual_provisions()) / 6311520)
-    # print("block_provisions1", block_provisions1)
-    new_total_supply = int(float(astra.cosmos_cli(0).total_supply()["supply"][0]["amount"]))
-    if tx_block_height - old_block_height == 2:
-        fee_burn = new_block_provisions + old_block_provisions - (new_total_supply - old_total_supply)
-    else:
-        fee_burn = new_block_provisions - (new_total_supply - old_total_supply)
-    print(new_block_provisions, new_total_supply - old_total_supply, fee_burn)
+    new_total_minted_provision = int(astra.cosmos_cli(0).total_minted_provision())
+    new_total_supply = int(astra.cosmos_cli(0).total_supply()["supply"][0]["amount"])
+    fee_burn = new_total_minted_provision - old_total_minted_provision - (new_total_supply - old_total_supply)
+    print(fee_burn)
     print("block_height", astra.cosmos_cli(0).block_height())
-    assert fee_burn > int(fee_coins / 2)
+    print(new_total_minted_provision - old_total_minted_provision, (new_total_supply - old_total_supply))
+    assert fee_burn == int(fee_coins / 2)
+
+
+def test_no_tx(astra):
+    old_block_height = int(astra.cosmos_cli(0).block_height())
+    print("old_block_height", old_block_height)
+    old_total_supply = int(astra.cosmos_cli(0).total_supply()["supply"][0]["amount"])
+    print("old_total_supply", old_total_supply)
+    wait_for_new_blocks(astra.cosmos_cli(0), 1)
+    new_total_supply = int(astra.cosmos_cli(0).total_supply()["supply"][0]["amount"])
+    print("new_total_supply", new_total_supply)
+    block_provisions = int(astra.cosmos_cli(0).block_provisions())
+    print("block_provisions", block_provisions)
+    fee_burn = block_provisions - (new_total_supply - old_total_supply)
+    print(new_total_supply - old_total_supply, fee_burn)
+    new_block_height = int(astra.cosmos_cli(0).block_height())
+    assert new_block_height == old_block_height + 1
+    assert fee_burn == 0

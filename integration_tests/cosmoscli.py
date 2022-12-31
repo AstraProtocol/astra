@@ -375,10 +375,15 @@ class CosmosCLI:
             self.raw("query", "staking", "params", output="json", node=self.node_rpc)
         )
 
-    def annual_provisions(self):
+    def total_minted_provision(self):
+        return float(json.loads(
+            self.raw("query", "mint", "total-minted-provision", output="json", node=self.node_rpc)
+        )["amount"])
+
+    def block_provisions(self):
         return json.loads(
-            self.raw("query", "mint", "annual-provisions", output="json", node=self.node_rpc)
-        )
+            self.raw("query", "mint", "block-provision", output="json", node=self.node_rpc)
+        )["amount"]
 
     def staking_pool(self, bonded=True):
         return int(

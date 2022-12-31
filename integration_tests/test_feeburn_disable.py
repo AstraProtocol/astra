@@ -32,10 +32,9 @@ def test_transfer(astra):
     fee_coins = 1000000000
     old_block_height =  astra.cosmos_cli(0).block_height()
     print("old_block_height", old_block_height)
-    old_block_provisions = round(astra.cosmos_cli(0).annual_provisions() / 6311520)
-    print("old_block_provisions", old_block_provisions)
-    old_total_supply = int(float(astra.cosmos_cli(0).total_supply()["supply"][0]["amount"]))
+    old_total_supply = int(astra.cosmos_cli(0).total_supply()["supply"][0]["amount"])
     print("old_total_supply", old_total_supply)
+    old_total_minted_provision = int(astra.cosmos_cli(0).total_minted_provision())
     tx = astra.cosmos_cli(0).transfer(team_addr, addr, str(amount_astra) + "astra", fees="%saastra" % fee_coins)
     tx_block_height = int(tx["height"])
     print("tx_block_height", tx_block_height)
@@ -77,16 +76,11 @@ def test_transfer(astra):
             "msg_index": 0,
         }
     ]
-    new_block_provisions = round(astra.cosmos_cli(0).annual_provisions() / 6311520)
-    print("new_block_provisions", new_block_provisions)
-    # wait_for_new_blocks(astra.cosmos_cli(0), 1)
-    # block_provisions1 = int(int(astra.cosmos_cli(0).annual_provisions()) / 6311520)
-    # print("block_provisions1", block_provisions1)
-    new_total_supply = int(float(astra.cosmos_cli(0).total_supply()["supply"][0]["amount"]))
-    if tx_block_height - old_block_height == 2:
-        diff_balance = new_block_provisions + old_block_provisions - (new_total_supply - old_total_supply)
-    else:
-        diff_balance = new_block_provisions - (new_total_supply - old_total_supply)
-    print(new_block_provisions, new_total_supply - old_total_supply, diff_balance)
-    print("block_height", astra.cosmos_cli(0).block_height())
-    assert diff_balance < 0
+
+    new_total_minted_provision = int(astra.cosmos_cli(0).total_minted_provision())
+    new_total_supply = int(astra.cosmos_cli(0).total_supply()["supply"][0]["amount"])
+    print("new_total_supply", new_total_supply)
+    diff_balance = new_total_minted_provision - old_total_minted_provision - (new_total_supply - old_total_supply)
+    print(new_total_minted_provision, new_total_supply - old_total_supply, diff_balance)
+    print(diff_balance)
+    assert diff_balance == 0
