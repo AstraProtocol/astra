@@ -10,7 +10,7 @@ from .utils import (AASTRA_DENOM, AUTHORIZATION_GENERIC, AUTHORIZATION_SEND, AUT
                     WITHDRAW_DELEGATOR_REWARD_TYPE_URL,
                     delegate_amount, exec_tx_by_grantee, grant_authorization,
                     query_command, query_total_reward_amount, revoke_authorization, transfer, wait_for_new_blocks,
-                    withdraw_all_rewards, wait_for_block, wait_for_new_epochs)
+                    withdraw_all_rewards, wait_for_block, wait_for_new_epochs, wait_for_port)
 
 pytestmark = pytest.mark.authz
 
@@ -25,7 +25,8 @@ def test_execute_tx_within_authorization_spend_limit(astra_temp, tmp_path):
     """
     test execute transaction within send authorization spend limit
     """
-    wait_for_block(astra_temp.cosmos_cli(0), 2)
+    wait_for_port(DEFAULT_BASE_PORT)
+    wait_for_new_blocks(astra_temp.cosmos_cli(0), 1)
     spend_limit = 200
     transaction_coins = 100
     granter_address = astra_temp.cosmos_cli(0).address("community")
@@ -86,7 +87,8 @@ def test_execute_tx_beyond_authorization_spend_limit(astra_temp, tmp_path):
     """
     test execute transaction beyond send authorization spend limit
     """
-    wait_for_block(astra_temp.cosmos_cli(0), 2)
+    wait_for_port(DEFAULT_BASE_PORT)
+    wait_for_new_blocks(astra_temp.cosmos_cli(0), 1)
     spend_limit = 50
     transaction_coins = 100
     granter_address = astra_temp.cosmos_cli(0).address("community")
@@ -140,6 +142,8 @@ def test_generic_authorization_grant(astra_temp, tmp_path):
     """
     test grant authorization with generic authorization with send msg type
     """
+    wait_for_port(DEFAULT_BASE_PORT)
+    wait_for_new_blocks(astra_temp.cosmos_cli(0), 1)
     delegate_coins = 1000000
     validator_address = astra_temp.cosmos_cli(0).validators()[0]["operator_address"]
     granter_address = astra_temp.cosmos_cli(0).address("community")
@@ -168,8 +172,7 @@ def test_generic_authorization_grant(astra_temp, tmp_path):
     assert rsp["code"] == 0, rsp["raw_log"]
 
     # wait epochs release token
-    wait_for_new_epochs(astra_temp.cosmos_cli(0),
-                        epoch_identifier=astra_temp.cosmos_cli(0).get_inflation_epoch_identifier())
+    wait_for_new_blocks(astra_temp.cosmos_cli(0), 1)
     generated_tx_txt = tmp_path / "generated_tx.txt"
     generated_tx_msg = withdraw_all_rewards(
         astra_temp,

@@ -4,7 +4,7 @@ from time import sleep
 import pytest
 from dateutil.parser import isoparse
 
-from .utils import DEFAULT_BASE_PORT, astra_to_aastra, parse_events, wait_for_block, wait_for_block_time, wait_for_port, GAS_USE
+from .utils import DEFAULT_BASE_PORT, astra_to_aastra, parse_events, wait_for_block, wait_for_block_time, wait_for_port, wait_for_new_blocks, GAS_USE
 
 pytestmark = pytest.mark.gov
 
@@ -26,6 +26,7 @@ def fn_vote_option(astra, vote):
     - check the result
     - check deposit refunded
     """
+    wait_for_new_blocks(astra.cosmos_cli(0), 1)
     wait_for_port(DEFAULT_BASE_PORT)
     max_validators = astra.cosmos_cli(0).staking_params()["max_validators"]
 
@@ -61,8 +62,9 @@ def fn_vote_option(astra, vote):
     ], proposal
     assert proposal["status"] == "PROPOSAL_STATUS_DEPOSIT_PERIOD", proposal
     # deposit_amount >= gov:min_deposit
-    deposit_amount = 10000000000
+    deposit_amount = 10000000
     amount = astra.cosmos_cli(0).balance(astra.cosmos_cli(0).address("team"))
+    print("team amount", amount)
     rsp = astra.cosmos_cli(0).gov_deposit("team", proposal_id, "%daastra" % deposit_amount)
     assert rsp["code"] == 0, rsp["raw_log"]
     assert astra.cosmos_cli(0).balance(astra.cosmos_cli(0).address("team")) == amount - deposit_amount
@@ -184,8 +186,8 @@ def test_community_pool_spend_proposal(astra):
     - pass it
     """
     # need at least several blocks to populate community pool
-    wait_for_block(astra.cosmos_cli(0), 3)
-
+    wait_for_port(DEFAULT_BASE_PORT)
+    wait_for_new_blocks(astra.cosmos_cli(0), 1)
     amount = int(astra.cosmos_cli(0).distribution_community())
     print("Distribution community amount: %d" % amount)
     assert amount > 0, "need positive pool to proceed this test"
@@ -241,7 +243,8 @@ def test_change_vote(astra):
     - change vote
     - check tally
     """
-    wait_for_block(astra.cosmos_cli(0), 2)
+    wait_for_port(DEFAULT_BASE_PORT)
+    wait_for_new_blocks(astra.cosmos_cli(0), 1)
     deposit_amount = 10000000
     rsp = astra.cosmos_cli(0).gov_propose(
         "community",
@@ -285,7 +288,8 @@ def test_inherit_vote(astra):
     - A vote No
     - change tally: {yes: v, no: a}
     """
-    wait_for_block(astra.cosmos_cli(0), 2)
+    wait_for_port(DEFAULT_BASE_PORT)
+    wait_for_new_blocks(astra.cosmos_cli(0), 1)
     deposit_amount = 10000000
     rsp = astra.cosmos_cli(0).gov_propose(
         "community",
@@ -318,7 +322,7 @@ def test_inherit_vote(astra):
 
     rsp = astra.cosmos_cli(0).gov_vote("validator", proposal_id, "yes")
     assert rsp["code"] == 0, rsp["raw_log"]
-    wait_for_block(astra.cosmos_cli(0), 2)
+    wait_for_new_blocks(astra.cosmos_cli(0), 1)
     assert astra.cosmos_cli(0).query_tally(proposal_id) == {
         "yes": str(astra_to_aastra(staked_amount_val1) + delegate_amount),
         "no": "0",
