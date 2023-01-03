@@ -8,3 +8,4 @@ pytest -m vesting -vv
 pytest -m byzantine -vv
 pytest -m eip1559 -vv
 pytest -m reward -vv
+pytest -m feeburn -vv

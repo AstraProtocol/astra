@@ -380,6 +380,11 @@ class CosmosCLI:
             self.raw("query", "mint", "total-minted-provision", output="json", node=self.node_rpc)
         )["amount"])
 
+    def total_fee_burn(self):
+        return float(json.loads(
+            self.raw("query", "feeburn", "total-fee-burn", output="json", node=self.node_rpc)
+        )["amount"])
+
     def block_provisions(self):
         return json.loads(
             self.raw("query", "mint", "block-provision", output="json", node=self.node_rpc)
@@ -809,6 +814,7 @@ class CosmosCLI:
 
     def gov_propose(self, proposer, kind, proposal, **kwargs):
         kwargs.setdefault("gas_prices", DEFAULT_GAS_PRICE)
+        kwargs.setdefault("gas", DEFAULT_GAS)
         if kind == "software-upgrade":
             return json.loads(
                 self.raw(

@@ -2,9 +2,6 @@ dotenv: .env
 astra_777-1:
   cmd: astrad
   start-flags: "--trace"
-  config:
-    consensus:
-      timeout_commit: "5s"
   app-config:
     minimum-gas-prices: 100aastra
     index-events:
