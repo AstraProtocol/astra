@@ -33,7 +33,9 @@ def test_transfer(astra):
     amount_astra = 1
     amount_aastra = astra_to_aastra(amount_astra)
     fee_coins = 1000000000
+    old_total_fee_burn = int(astra.cosmos_cli(0).total_fee_burn())
     tx = astra.cosmos_cli(0).transfer(team_addr, addr, str(amount_astra) + "astra", fees="%saastra" % fee_coins)
+    wait_for_new_blocks(astra.cosmos_cli(0), 1)
     tx_block_height = int(tx["height"])
     print("tx_block_height", tx_block_height)
     assert tx["logs"] == [
@@ -78,5 +80,7 @@ def test_transfer(astra):
     new_total_minted_provision = int(astra.cosmos_cli(0).total_minted_provision())
     total_fee_burn = int(astra.cosmos_cli(0).total_fee_burn())
     new_total_supply = int(astra.cosmos_cli(0).total_supply()["supply"][0]["amount"])
-    assert total_fee_burn == 0
-    assert genesis_total_supply + new_total_minted_provision == new_total_supply + total_fee_burn
+    print("old_total_fee_burn", old_total_fee_burn)
+    print("total_fee_burn", total_fee_burn)
+    assert total_fee_burn - old_total_fee_burn == 0
+    assert genesis_total_supply + new_total_minted_provision == new_total_supply + total_fee_burn - old_total_fee_burn

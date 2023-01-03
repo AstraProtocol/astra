@@ -10,6 +10,9 @@ from integration_tests.network import setup_astra
 from integration_tests.utils import astra_to_aastra, deploy_contract, CONTRACTS, KEYS, ADDRS, send_transaction, \
     wait_for_block, wait_for_new_blocks, GAS_USE, DEFAULT_BASE_PORT
 
+from .utils import ADDRS, KEYS, send_transaction, w3_wait_for_block
+
+
 pytestmark = pytest.mark.feeburn
 
 genesis_total_supply = 5000000000000000000000
@@ -32,7 +35,7 @@ def test_transfer(astra):
     amount_astra = 1
     amount_aastra = astra_to_aastra(amount_astra)
     fee_coins = 1000000000
-    old_block_height = astra.cosmos_cli(0).block_height()
+    old_total_fee_burn = int(astra.cosmos_cli(0).total_fee_burn())
     tx = astra.cosmos_cli(0).transfer(team_addr, addr, str(amount_astra) + "astra", fees="%saastra" % fee_coins)
     tx_block_height = int(tx["height"])
     print("tx_block_height", tx_block_height)
@@ -74,12 +77,13 @@ def test_transfer(astra):
             "msg_index": 0,
         }
     ]
+    wait_for_new_blocks(astra.cosmos_cli(0), 1)
     new_total_minted_provision = int(astra.cosmos_cli(0).total_minted_provision())
     new_total_supply = int(astra.cosmos_cli(0).total_supply()["supply"][0]["amount"])
     total_fee_burn = int(astra.cosmos_cli(0).total_fee_burn())
     print("total_fee_burn", total_fee_burn)
     assert genesis_total_supply + new_total_minted_provision == new_total_supply + total_fee_burn
-    assert total_fee_burn == int(fee_coins / 2)
+    assert total_fee_burn - old_total_fee_burn == int(fee_coins / 2)
 
 
 def test_no_tx(astra):
@@ -97,3 +101,31 @@ def test_no_tx(astra):
     new_block_height = int(astra.cosmos_cli(0).block_height())
     assert new_block_height == old_block_height + 1
     assert fee_burn == 0
+
+
+def test_dynamic_fee_tx_evm(astra):
+    """
+    test basic eip-1559 tx works:
+    - tx fee calculation is compliant to go-ethereum
+    - base fee adjustment is compliant to go-ethereum
+    """
+    w3 = astra.w3
+    amount = 10000
+    before = w3.eth.get_balance(ADDRS["team"])
+    tip_price = 1
+    max_price = 1000000000000 + tip_price
+    tx = {
+        "to": "0x0000000000000000000000000000000000000000",
+        "value": amount,
+        "gas": 21000,
+        "maxFeePerGas": max_price,
+        "maxPriorityFeePerGas": tip_price,
+    }
+    txreceipt = send_transaction(w3, tx, KEYS["team"])
+    assert txreceipt.status == 1
+    wait_for_new_blocks(astra.cosmos_cli(0), 1)
+    total_fee_burn = int(astra.cosmos_cli(0).total_fee_burn())
+    print("total_fee_burn", total_fee_burn)
+    new_total_minted_provision = int(astra.cosmos_cli(0).total_minted_provision())
+    new_total_supply = int(astra.cosmos_cli(0).total_supply()["supply"][0]["amount"])
+    assert genesis_total_supply + new_total_minted_provision == new_total_supply + total_fee_burn
