@@ -119,7 +119,7 @@ def test_correct_supplies(astra):
         print("SUCCESS WITH i =", i, "\n\n")
 
 
-def test_should_distribute_rewards_to_validators_when_new_epochs_arrive(astra):
+def test_should_distribute_rewards_to_validators_when_new_blocks_arrive(astra):
     cli0 = astra.cosmos_cli(0)
     cli1 = astra.cosmos_cli(1)
 
