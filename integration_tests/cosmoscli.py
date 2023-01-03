@@ -15,7 +15,7 @@ from dateutil.parser import isoparse
 from pystarport.utils import build_cli_args_safe, format_doc_string, interact
 from pystarport import ports
 import tomlkit
-from .utils import DEFAULT_GAS_PRICE, SUPERVISOR_CONFIG_FILE, DEFAULT_GAS
+from .utils import DEFAULT_GAS_PRICE, SUPERVISOR_CONFIG_FILE, DEFAULT_GAS, parse_int
 
 COMMON_PROG_OPTIONS = {
     # redirect to supervisord's stdout, easier to collect all logs
@@ -297,7 +297,7 @@ class CosmosCLI:
                 node=self.node_rpc,
             )
         )["commission"][0]
-        return float(coin["amount"])
+        return parse_int(coin["amount"])
 
     def distribution_community(self):
         coin = json.loads(
@@ -310,7 +310,7 @@ class CosmosCLI:
             )
         )["pool"]
         if len(coin) > 0:
-            return float(coin[0]["amount"])
+            return parse_int(coin[0]["amount"])
 
         return float(0.0)
 
@@ -325,7 +325,7 @@ class CosmosCLI:
                 node=self.node_rpc,
             )
         )["total"][0]
-        return float(coin["amount"])
+        return parse_int(coin["amount"])
 
     def address(self, name, bech="acc"):
         output = self.raw(
@@ -392,37 +392,45 @@ class CosmosCLI:
             )["bonded_tokens" if bonded else "not_bonded_tokens"]
         )
 
-    def get_inflation_params(self, height=None):
+    def get_mint_params(self, height=None):
         if height:
             return json.loads(
-                self.raw("query", "inflation", "params", "--height", height, output="json", node=self.node_rpc)
+                self.raw("query", "mint", "params", "--height", height, output="json", node=self.node_rpc)
             )
         return json.loads(
-            self.raw("query", "inflation", "params", output="json", node=self.node_rpc)
+            self.raw("query", "mint", "params", output="json", node=self.node_rpc)
         )
 
     def get_inflation_rate(self, height=None):
         if height:
             return json.loads(
-                self.raw("query", "inflation", "inflation-rate", "--height", height, output="json", node=self.node_rpc)
+                self.raw("query", "mint", "inflation", "--height", height, output="json", node=self.node_rpc)
             )
         return json.loads(
-            self.raw("query", "inflation", "inflation-rate", output="json", node=self.node_rpc)
+            self.raw("query", "mint", "inflation", output="json", node=self.node_rpc)
         )
 
-    def get_epoch_mint_provision(self):
-        res = self.raw("query", "inflation", "epoch-mint-provision", node=self.node_rpc).decode()
-        res = res[:-6]
-        if res[-1] == 'a':
-            res = res[:-1]
-        return int(float(res))
+    def get_block_provision(self):
+        res = json.loads(
+            self.raw("query", "mint", "block-provision", output=json, node=self.node_rpc)
+        )
+        if res:
+            return parse_int(res["amount"])
+        return None
 
     def get_circulating_supply(self):
-        res = self.raw("query", "inflation", "circulating-supply", node=self.node_rpc).decode()
-        res = res[:-6]
-        if res[-1] == 'a':
-            res = res[:-1]
-        return int(float(res))
+        res = json.loads(
+            self.raw("query", "mint", "circulating-supply", output=json, node=self.node_rpc)
+        )
+        if res:
+            return parse_int(res["amount"])
+
+        return None
+
+    def get_bonded_ratio(self):
+        return json.loads(
+            self.raw("query", "mint", "bonded-ratio", output=json, node=self.node_rpc)
+        )
 
     def get_inflation_epoch_identifier(self):
         inflation_period_info = self.get_inflation_period()
