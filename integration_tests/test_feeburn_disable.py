@@ -11,6 +11,9 @@ from integration_tests.utils import astra_to_aastra, deploy_contract, CONTRACTS,
 
 pytestmark = pytest.mark.feeburn
 
+genesis_total_supply = 5000000000000000000000
+
+
 
 @pytest.fixture(scope="module")
 def astra(tmp_path_factory):
@@ -30,11 +33,6 @@ def test_transfer(astra):
     amount_astra = 1
     amount_aastra = astra_to_aastra(amount_astra)
     fee_coins = 1000000000
-    old_block_height =  astra.cosmos_cli(0).block_height()
-    print("old_block_height", old_block_height)
-    old_total_supply = int(astra.cosmos_cli(0).total_supply()["supply"][0]["amount"])
-    print("old_total_supply", old_total_supply)
-    old_total_minted_provision = int(astra.cosmos_cli(0).total_minted_provision())
     tx = astra.cosmos_cli(0).transfer(team_addr, addr, str(amount_astra) + "astra", fees="%saastra" % fee_coins)
     tx_block_height = int(tx["height"])
     print("tx_block_height", tx_block_height)
@@ -78,9 +76,7 @@ def test_transfer(astra):
     ]
 
     new_total_minted_provision = int(astra.cosmos_cli(0).total_minted_provision())
+    total_fee_burn = int(astra.cosmos_cli(0).total_fee_burn())
     new_total_supply = int(astra.cosmos_cli(0).total_supply()["supply"][0]["amount"])
-    print("new_total_supply", new_total_supply)
-    diff_balance = new_total_minted_provision - old_total_minted_provision - (new_total_supply - old_total_supply)
-    print(new_total_minted_provision, new_total_supply - old_total_supply, diff_balance)
-    print(diff_balance)
-    assert diff_balance == 0
+    assert total_fee_burn == 0
+    assert genesis_total_supply + new_total_minted_provision == new_total_supply + total_fee_burn
