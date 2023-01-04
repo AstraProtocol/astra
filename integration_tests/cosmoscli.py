@@ -376,9 +376,14 @@ class CosmosCLI:
         )
 
     def total_minted_provision(self):
-        return float(json.loads(
+        return parse_int(json.loads(
             self.raw("query", "mint", "total-minted-provision", output="json", node=self.node_rpc)
         )["amount"])
+
+    def fee_burn_params(self):
+        return json.loads(
+            self.raw("query", "feeburn", "params", output="json", node=self.node_rpc)
+        )
 
     def total_fee_burn(self):
         return float(json.loads(
@@ -743,8 +748,8 @@ class CosmosCLI:
                         "show-validator",
                         home=self.data_dir,
                     )
-                        .strip()
-                        .decode()
+                    .strip()
+                    .decode()
                 )
                 + "'"
         )
