@@ -137,7 +137,7 @@ func (suite *KeeperTestSuite) SetupApp() {
 	suite.validator = validators[0]
 
 	suite.ethSigner = ethtypes.LatestSignerForChainID(s.app.EvmKeeper.ChainID())
-	err = suite.app.BankKeeper.MintCoins(suite.ctx, minttypes.ModuleName, sdk.Coins{{Denom: config.BaseDenom, Amount: sdk.NewInt(1000000)}})
+	err = suite.app.BankKeeper.MintCoins(suite.ctx, minttypes.ModuleName, sdk.Coins{{Denom: config.BaseDenom, Amount: sdk.NewInt(1000000000)}})
 	require.NoError(t, err)
 }
 

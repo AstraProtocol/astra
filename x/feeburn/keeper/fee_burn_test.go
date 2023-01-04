@@ -20,9 +20,11 @@ func (suite *KeeperTestSuite) TestBurnWhenDisableBurnFee() {
 	paramsUpdate.EnableFeeBurn = false
 	suite.app.FeeBurnKeeper.SetParams(suite.ctx, paramsUpdate)
 	params := suite.app.FeeBurnKeeper.GetParams(suite.ctx)
-	totalFees := sdk.Coins{{Denom: config.BaseDenom, Amount: sdk.NewInt(1000)}}
-	err := suite.app.FeeBurnKeeper.BurnFee(suite.ctx, suite.app.BankKeeper, totalFees, params)
-	suite.Require().NoError(err, types.ErrFeeBurnSend)
+	for i := 0; i < 10000; i++ {
+		totalFees := sdk.Coins{{Denom: config.BaseDenom, Amount: sdk.NewInt(int64(i))}}
+		err := suite.app.FeeBurnKeeper.BurnFee(suite.ctx, suite.app.BankKeeper, totalFees, params)
+		suite.Require().NoError(err, types.ErrFeeBurnSend)
+	}
 }
 
 func (suite *KeeperTestSuite) TestBurnWhenTotalFeeIsZero() {
@@ -33,16 +35,25 @@ func (suite *KeeperTestSuite) TestBurnWhenTotalFeeIsZero() {
 }
 
 func (suite *KeeperTestSuite) TestBurnSuccess() {
-	params := suite.app.FeeBurnKeeper.GetParams(suite.ctx)
-	totalFees := sdk.Coins{{Denom: config.BaseDenom, Amount: sdk.NewInt(1000)}}
-	supplyBefore := suite.app.BankKeeper.GetSupply(suite.ctx, config.BaseDenom)
-	// send coin to feecollector module
-	err := suite.app.BankKeeper.SendCoinsFromModuleToModule(suite.ctx, minttypes.ModuleName, authtypes.FeeCollectorName, totalFees)
-	suite.Require().NoError(err)
-	err = suite.app.FeeBurnKeeper.BurnFee(suite.ctx, suite.app.BankKeeper, totalFees, params)
-	suite.Require().NoError(err)
-
-	supplyAfter := suite.app.BankKeeper.GetSupply(suite.ctx, config.BaseDenom)
-	suite.Require().Equal(supplyBefore.Amount.Sub(totalFees.AmountOf(config.BaseDenom).Quo(sdk.NewInt(2))), supplyAfter.Amount)
-
+	for j := 0; j < 10; j++ {
+		newParams := suite.app.FeeBurnKeeper.GetParams(suite.ctx)
+		newParams.FeeBurn = sdk.NewDec(int64(j)).Quo(sdk.NewDec(int64(10)))
+		suite.app.FeeBurnKeeper.SetParams(suite.ctx, newParams)
+		for i := 1; i < 10000; i++ {
+			params := suite.app.FeeBurnKeeper.GetParams(suite.ctx)
+			totalFees := sdk.Coins{{Denom: config.BaseDenom, Amount: sdk.NewInt(int64(i))}}
+			supplyBefore := suite.app.BankKeeper.GetSupply(suite.ctx, config.BaseDenom)
+			totalFeeBurnBefore := suite.app.FeeBurnKeeper.GetTotalFeeBurn(suite.ctx)
+			// send coin to feecollector module
+			err := suite.app.BankKeeper.SendCoinsFromModuleToModule(suite.ctx, minttypes.ModuleName, authtypes.FeeCollectorName, totalFees)
+			suite.Require().NoError(err)
+			err = suite.app.FeeBurnKeeper.BurnFee(suite.ctx, suite.app.BankKeeper, totalFees, params)
+			suite.Require().NoError(err)
+			totalFeeBurnAfter := suite.app.FeeBurnKeeper.GetTotalFeeBurn(suite.ctx)
+			supplyAfter := suite.app.BankKeeper.GetSupply(suite.ctx, config.BaseDenom)
+			totalFeeBurn := params.FeeBurn.MulInt(sdk.NewInt(int64(i))).RoundInt()
+			suite.Require().Equal(supplyBefore.Amount.Sub(totalFeeBurn), supplyAfter.Amount)
+			suite.Require().Equal(true, totalFeeBurn.ToDec().Equal(totalFeeBurnAfter.Sub(totalFeeBurnBefore)))
+		}
+	}
 }

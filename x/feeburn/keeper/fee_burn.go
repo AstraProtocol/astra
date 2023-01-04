@@ -24,7 +24,7 @@ func (k Keeper) BurnFee(ctx sdk.Context, bankKeeper feeburntype.BankKeeper,
 		burnAmount := params.FeeBurn.MulInt(c.Amount).RoundInt()
 		if !burnAmount.IsZero() {
 			feeBurn = feeBurn.Add(sdk.NewCoin(c.Denom, burnAmount))
-			totalBurnAmount = totalBurnAmount.Add(params.FeeBurn.MulInt(c.Amount))
+			totalBurnAmount = totalBurnAmount.Add(burnAmount.ToDec())
 		}
 	}
 
@@ -36,8 +36,8 @@ func (k Keeper) BurnFee(ctx sdk.Context, bankKeeper feeburntype.BankKeeper,
 	if err != nil {
 		return sdkerrors.Wrapf(err, feeburntype.ErrFeeBurn.Error())
 	}
-	totalFeeBurn := k.GetTotalFeeBurn(ctx)
-	totalFeeBurn = totalFeeBurn.Add(totalBurnAmount)
-	k.SetTotalFeeBurn(ctx, totalFeeBurn)
+	newTotalFeeBurn := k.GetTotalFeeBurn(ctx)
+	newTotalFeeBurn = newTotalFeeBurn.Add(totalBurnAmount)
+	k.SetTotalFeeBurn(ctx, newTotalFeeBurn)
 	return nil
 }
