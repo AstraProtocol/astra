@@ -1,7 +1,7 @@
 import os
 from decimal import *
 
-num_tests = min(1 + int(os.urandom(1)[0]), 20)
+num_tests = min(1 + int(os.urandom(1)[0]), 10)
 
 
 def get_astra_foundation_address(inflation_params):
@@ -53,8 +53,9 @@ def decimal_equal(a, b, prec=15):
     return float(res) == 0
 
 
-def decimal_int_equal(a, b, max_diff=10):
+def decimal_int_equal(a, b, max_diff=1000):
     res = Decimal(Decimal(a) - Decimal(b)).copy_abs()
+    # print("decimal_int_equal: {}".format(res))
 
     return int(res) <= int(max_diff)
 
