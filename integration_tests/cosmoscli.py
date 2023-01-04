@@ -506,7 +506,8 @@ class CosmosCLI:
             )
         )
 
-    def delegate_amount(self, to_addr, amount, from_addr, gas_price=None):
+    def delegate_amount(self, to_addr, amount, from_addr, gas_price=None, **kwargs):
+        kwargs.setdefault("gas", DEFAULT_GAS)
         if gas_price is None:
             return json.loads(
                 self.raw(
@@ -521,6 +522,7 @@ class CosmosCLI:
                     keyring_backend="test",
                     chain_id=self.chain_id,
                     node=self.node_rpc,
+                    **kwargs
                 )
             )
         else:
@@ -538,6 +540,7 @@ class CosmosCLI:
                     chain_id=self.chain_id,
                     node=self.node_rpc,
                     gas_prices=gas_price,
+                    **kwargs
                 )
             )
 
@@ -563,8 +566,9 @@ class CosmosCLI:
 
     # to_validator_addr: astracncl1...  ,  from_from_validator_addraddr: astracl1...
     def redelegate_amount(
-            self, to_validator_addr, from_validator_addr, amount, from_addr
+            self, to_validator_addr, from_validator_addr, amount, from_addr, **kwargs
     ):
+        kwargs.setdefault("gas", DEFAULT_GAS)
         return json.loads(
             self.raw(
                 "tx",
@@ -579,6 +583,7 @@ class CosmosCLI:
                 keyring_backend="test",
                 chain_id=self.chain_id,
                 node=self.node_rpc,
+                **kwargs
             )
         )
 
@@ -700,6 +705,7 @@ class CosmosCLI:
     def broadcast_tx(self, tx_file, **kwargs):
         kwargs.setdefault("broadcast_mode", "block")
         kwargs.setdefault("output", "json")
+        kwargs.setdefault("gas", DEFAULT_GAS)
         return json.loads(
             self.raw("tx", "broadcast", tx_file, node=self.node_rpc, **kwargs)
         )
