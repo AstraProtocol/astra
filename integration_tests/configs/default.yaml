@@ -32,8 +32,10 @@ astra_777-1:
       coins: 100astra
     - name: signer1
       coins: 100000astra
+      mnemonic: ${SIGNER1_MNEMONIC}
     - name: signer2
       coins: 200000astra
+      mnemonic: ${SIGNER2_MNEMONIC}
 
   genesis:
     consensus_params:
