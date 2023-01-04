@@ -268,7 +268,7 @@ def test_should_distribute_fees_to_validators_when_execute_tx(astra):
     fee_burn_rate = fee_burn_params["params"]["fee_burn"]
 
     print("num_tests:", num_tests)
-    for i in range(0, 50):
+    for i in range(0, num_tests):
         wait_for_new_blocks(cli0, 2)
         amount_to_send = random.randint(1, 20) * 10 ** 16
         tx_fee = random.randint(10, 20) * 10 ** 15
