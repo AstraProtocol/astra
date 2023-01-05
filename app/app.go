@@ -3,16 +3,17 @@ package app
 import (
 	"context"
 	"encoding/json"
+	"io"
+	"net/http"
+	"os"
+	"path/filepath"
+
 	"github.com/AstraProtocol/astra/v2/x/feeburn"
 	feeBurnKeeper "github.com/AstraProtocol/astra/v2/x/feeburn/keeper"
 	feeBurnTypes "github.com/AstraProtocol/astra/v2/x/feeburn/types"
 	"github.com/AstraProtocol/astra/v2/x/mint"
 	mintkeeper "github.com/AstraProtocol/astra/v2/x/mint/keeper"
 	minttypes "github.com/AstraProtocol/astra/v2/x/mint/types"
-	"io"
-	"net/http"
-	"os"
-	"path/filepath"
 
 	"github.com/gorilla/mux"
 	"github.com/rakyll/statik/fs"
@@ -131,6 +132,8 @@ func init() {
 	}
 
 	DefaultNodeHome = filepath.Join(userHomeDir, ".astrad")
+	feemarkettypes.DefaultMinGasPrice = sdk.NewDec(10_000_000_000)
+	feemarkettypes.DefaultMinGasMultiplier = sdk.NewDecWithPrec(5, 1)
 
 	// manually update the power reduction by replacing micro (u) -> atto (a) astra
 	sdk.DefaultPowerReduction = ethermint.PowerReduction
