@@ -22,8 +22,8 @@ const (
 )
 
 // GenInflation randomized Inflation
-func GenInflation(r *rand.Rand) sdk.Dec {
-	return sdk.NewDecWithPrec(int64(r.Intn(99)), 2)
+func GenInflation(_ *rand.Rand) sdk.Dec {
+	return sdk.NewDecWithPrec(10, 2)
 }
 
 // GenInflationRateChange randomized InflationRateChange
