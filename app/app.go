@@ -120,9 +120,6 @@ import (
 	"github.com/evmos/evmos/v6/x/vesting"
 	vestingkeeper "github.com/evmos/evmos/v6/x/vesting/keeper"
 	vestingtypes "github.com/evmos/evmos/v6/x/vesting/types"
-
-	v1_1 "github.com/AstraProtocol/astra/v2/app/upgrades/v1_1"
-	v2 "github.com/AstraProtocol/astra/v2/app/upgrades/v2"
 )
 
 func init() {
@@ -936,19 +933,4 @@ func initParamsKeeper(
 }
 
 func (app *Astra) setupUpgradeHandlers() {
-	// v1.0.1 upgrade handler
-	app.UpgradeKeeper.SetUpgradeHandler(v1_1.UpgradeName,
-		v1_1.CreateUpgradeHandler(app.mm,
-			app.configurator,
-			app.StakingKeeper,
-			app.ParamsKeeper))
-
-	// v2 upgrade handler
-	app.UpgradeKeeper.SetUpgradeHandler(
-		v2.UpgradeName,
-		v2.CreateUpgradeHandler(
-			app.mm, app.configurator,
-		),
-	)
-
 }
