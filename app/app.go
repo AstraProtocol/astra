@@ -129,9 +129,6 @@ func init() {
 	}
 
 	DefaultNodeHome = filepath.Join(userHomeDir, ".astrad")
-	feemarkettypes.DefaultMinGasPrice = sdk.NewDec(10_000_000_000)
-	feemarkettypes.DefaultMinGasMultiplier = sdk.NewDecWithPrec(5, 1)
-
 	// manually update the power reduction by replacing micro (u) -> atto (a) astra
 	sdk.DefaultPowerReduction = ethermint.PowerReduction
 }
