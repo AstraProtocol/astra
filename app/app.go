@@ -3,6 +3,7 @@ package app
 import (
 	"context"
 	"encoding/json"
+	v1 "github.com/AstraProtocol/astra/v2/app/upgrades/v1"
 	"io"
 	"net/http"
 	"os"
@@ -709,6 +710,7 @@ func (app *Astra) Name() string { return app.BaseApp.Name() }
 
 // BeginBlocker updates every begin block
 func (app *Astra) BeginBlocker(ctx sdk.Context, req abci.RequestBeginBlock) abci.ResponseBeginBlock {
+	BeginBlockForks(ctx, app)
 	return app.mm.BeginBlock(ctx, req)
 }
 
@@ -930,4 +932,14 @@ func initParamsKeeper(
 }
 
 func (app *Astra) setupUpgradeHandlers() {
+
+	// v1 upgrade handler
+	app.UpgradeKeeper.SetUpgradeHandler(
+		v1.UpgradeName,
+		v1.CreateUpgradeHandler(
+			app.mm, app.configurator,
+			app.GovKeeper,
+			app.ParamsKeeper,
+		),
+	)
 }
