@@ -1,16 +1,17 @@
 package v1
 
 import (
+	"time"
+
 	"github.com/AstraProtocol/astra/v2/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
 	govkeeper "github.com/cosmos/cosmos-sdk/x/gov/keeper"
 	paramskeeper "github.com/cosmos/cosmos-sdk/x/params/keeper"
 	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
-	"time"
 )
 
-// CreateUpgradeHandler creates an SDK upgrade handler for v5
+// CreateUpgradeHandler creates an SDK upgrade handler for v1
 func CreateUpgradeHandler(
 	mm *module.Manager,
 	configurator module.Configurator,
