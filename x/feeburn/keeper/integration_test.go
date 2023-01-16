@@ -2,6 +2,9 @@ package keeper_test
 
 import (
 	"fmt"
+	"math"
+	"math/big"
+
 	"github.com/AstraProtocol/astra/v2/app"
 	"github.com/AstraProtocol/astra/v2/cmd/config"
 	"github.com/cosmos/cosmos-sdk/client/tx"
@@ -17,8 +20,6 @@ import (
 	"github.com/evmos/ethermint/tests"
 	evmtypes "github.com/evmos/ethermint/x/evm/types"
 	abci "github.com/tendermint/tendermint/abci/types"
-	"math"
-	"math/big"
 )
 
 var (
@@ -46,6 +47,34 @@ func (suite *KeeperTestSuite) TestBurnFeeCosmosTxDelegate() {
 	expectAmount = mintedCoin.Amount.Sub(expectAmount)
 	fmt.Println("expectAmount", expectAmount)
 	s.Require().Equal(getExpectTotalFeeBurn(1), expectAmount)
+}
+
+func (suite *KeeperTestSuite) TestBurnFeeCosmosTxDelegateFail() {
+	suite.SetupTest()
+	priv0, _ := ethsecp256k1.GenerateKey()
+	addr := getAddr(priv0)
+	accBalance := sdk.Coins{{Denom: config.BaseDenom, Amount: sdk.NewInt(int64(math.Pow10(18) * 2))}}
+	err := suite.FundAccount(suite.ctx, addr, accBalance)
+	feeParams := suite.app.FeeMarketKeeper.GetParams(suite.ctx)
+	feeParams.MinGasPrice = sdk.NewDec(10_000_000_000_000) // > DEFAULT_FEE
+	suite.app.FeeMarketKeeper.SetParams(suite.ctx, feeParams)
+	s.Commit()
+	suite.Require().NoError(err)
+
+	totalSupplyBefore := suite.app.BankKeeper.GetSupply(suite.ctx, config.BaseDenom)
+	fmt.Println("totalSupply", totalSupplyBefore)
+	delegateAmount := sdk.NewCoin(config.BaseDenom, sdk.NewInt(1))
+	delegate(priv0, delegateAmount)
+	s.Commit()
+	mintedCoin := getMintedCoin()
+	totalSupplyAfter := suite.app.BankKeeper.GetSupply(suite.ctx, config.BaseDenom)
+	fmt.Println("totalSupplyAfter", totalSupplyAfter)
+	expectAmount := totalSupplyAfter.Amount.Sub(totalSupplyBefore.Amount)
+	expectAmount = mintedCoin.Amount.Sub(expectAmount)
+	fmt.Println("expectAmount", expectAmount)
+
+	// transaction send fail, expect fee burn = 0
+	s.Require().Equal(true, expectAmount.Equal(sdk.NewInt(0)))
 }
 
 func (suite *KeeperTestSuite) TestBurnFeeCosmosTxSend() {
@@ -93,11 +122,34 @@ func (suite *KeeperTestSuite) TestEvmTx() {
 	s.Commit()
 	totalSupplyBefore := suite.app.BankKeeper.GetSupply(suite.ctx, config.BaseDenom)
 	fmt.Println("totalSupply", totalSupplyBefore)
-	sendEth(priv)
+	res := sendEth(priv)
+	s.Require().Equal(true, res.IsOK())
 	s.Commit()
 	totalSupplyAfter := suite.app.BankKeeper.GetSupply(suite.ctx, config.BaseDenom)
 	expectAmount := totalSupplyAfter.Amount.Sub(totalSupplyBefore.Amount)
 	s.Require().Equal(getMintedCoin().Amount.Sub(totalEvmFeeBurn), expectAmount)
+}
+
+func (suite *KeeperTestSuite) TestEvmTxFail() {
+	suite.SetupTest()
+	priv, _ := ethsecp256k1.GenerateKey()
+	accBalance := sdk.Coins{{Denom: config.BaseDenom, Amount: sdk.NewInt(int64(math.Pow10(16) * 1))}}
+	addr := getAddr(priv)
+	err := suite.FundAccount(suite.ctx, addr, accBalance)
+	s.Require().NoError(err)
+	feeParams := suite.app.FeeMarketKeeper.GetParams(suite.ctx)
+	feeParams.MinGasPrice = sdk.NewDec(50_000_000_000_000) // > DEFAULT_FEE
+	feeParams.BaseFee = sdk.NewInt(100_000_000_000)        // > DEFAULT_FEE
+	suite.app.FeeMarketKeeper.SetParams(suite.ctx, feeParams)
+	s.Commit()
+	totalFeeBurnBefore := suite.app.FeeBurnKeeper.GetTotalFeeBurn(suite.ctx)
+	res := sendEth(priv)
+	s.Require().Equal(false, res.IsOK())
+	s.Commit()
+	totalFeeBurnAfter := suite.app.FeeBurnKeeper.GetTotalFeeBurn(suite.ctx)
+	fmt.Println("totalFeeBurnAfter", totalFeeBurnAfter)
+	s.Require().Equal(true, totalFeeBurnAfter.Equal(totalFeeBurnBefore))
+
 }
 
 func (suite *KeeperTestSuite) TestEvmTxWhenDisableBurnFee() {
@@ -114,7 +166,8 @@ func (suite *KeeperTestSuite) TestEvmTxWhenDisableBurnFee() {
 	s.Commit()
 	totalSupplyBefore := suite.app.BankKeeper.GetSupply(suite.ctx, config.BaseDenom)
 	fmt.Println("totalSupply", totalSupplyBefore)
-	sendEth(priv)
+	res := sendEth(priv)
+	s.Require().Equal(true, res.IsOK())
 	s.Commit()
 	totalSupplyAfter := suite.app.BankKeeper.GetSupply(suite.ctx, config.BaseDenom)
 	expectAmount := totalSupplyAfter.Amount.Sub(totalSupplyBefore.Amount)
@@ -211,7 +264,7 @@ func prepareCosmosTx(priv *ethsecp256k1.PrivKey, msgs ...sdk.Msg) []byte {
 	return bz
 }
 
-func sendEth(priv *ethsecp256k1.PrivKey) string {
+func sendEth(priv *ethsecp256k1.PrivKey) abci.ResponseDeliverTx {
 
 	from := common.BytesToAddress(priv.PubKey().Address().Bytes())
 	nonce := s.app.EvmKeeper.GetNonce(s.ctx, from)
@@ -225,11 +278,10 @@ func sendEth(priv *ethsecp256k1.PrivKey) string {
 		big.NewInt(10000),
 		s.app.FeeMarketKeeper.GetBaseFee(s.ctx), big.NewInt(1), nil, &ethtypes.AccessList{})
 	msgEthereumTx.From = from.String()
-	performEthTx(priv, msgEthereumTx)
-	return msgEthereumTx.Hash
+	return performEthTx(priv, msgEthereumTx)
 }
 
-func performEthTx(priv *ethsecp256k1.PrivKey, msgEthereumTx *evmtypes.MsgEthereumTx) {
+func performEthTx(priv *ethsecp256k1.PrivKey, msgEthereumTx *evmtypes.MsgEthereumTx) abci.ResponseDeliverTx {
 	// Sign transaction
 	err := msgEthereumTx.Sign(s.ethSigner, tests.NewSigner(priv))
 	s.Require().NoError(err)
@@ -247,7 +299,7 @@ func performEthTx(priv *ethsecp256k1.PrivKey, msgEthereumTx *evmtypes.MsgEthereu
 
 	req := abci.RequestDeliverTx{Tx: bz}
 	res := s.app.BaseApp.DeliverTx(req)
-	s.Require().Equal(true, res.IsOK())
+	return res
 }
 
 func deliverTx(priv *ethsecp256k1.PrivKey, msgs ...sdk.Msg) abci.ResponseDeliverTx {
