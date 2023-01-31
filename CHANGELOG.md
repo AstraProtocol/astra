@@ -1,10 +1,9 @@
-<a name="v2.2.0"></a>
-## [v2.2.0](https://github.com/AstraProtocol/astra/compare/v2.1.3...v2.2.0) (2023-01-31)
+<a name="v2.2.4"></a>
+## [v2.2.4](https://github.com/AstraProtocol/astra/compare/v2.1.3...v2.2.4) (2023-01-31)
 
 ### Chore
 
 * update init.sh
-* upadte init.sh
 * update script gen
 * update swagger
 * remove code unused
