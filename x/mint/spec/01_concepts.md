@@ -34,8 +34,8 @@ Astra Foundation, Core Team, and the Community Pool. Here are the details:
 
 |                        |    % |         #ASAs | Minted at genesis |                                                                                  Vesting schedule |
 |:-----------------------|-----:|--------------:|------------------:|--------------------------------------------------------------------------------------------------:|
-| **Genesis Partners**   |  35% |   420,000,000 |       420,000,000 |                                                               100% minted and unlocked at genesis |
-| **Strategic Partners** |  40% |   480,000,000 |       480,000,000 |                                                               100% minted and unlocked at genesis |
+| **Genesis Partners**   |  39% |   468,000,000 |       468,000,000 |                                                               100% minted and unlocked at genesis |
+| **Strategic Partners** |  36% |   432,000,000 |       432,000,000 |                                                               100% minted and unlocked at genesis |
 | **Astra Foundation**   |  10% |   120,000,000 |       120,000,000 |                                                               100% minted and unlocked at genesis |
 | **Core Team**          |  10% |   120,000,000 |       120,000,000 |                                                50% unlocked at genesis, 50% unlocked after 1 year |
 | **Community Pool**     |   5% |    60,000,000 |        60,000,000 |                                          100% minted & locked at genesis, unlocked with GOV rules |
