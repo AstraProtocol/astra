@@ -1,0 +1,15 @@
+syntax = "proto3";
+package astra.feeburn.v1;
+
+import "gogoproto/gogo.proto";
+
+option go_package = "github.com/AstraProtocol/astra/v2/x/feeburn/types";
+
+// Params defines the parameters for the module.
+message Params {
+  bool enable_fee_burn = 1;
+  string fee_burn = 2 [
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
+    (gogoproto.nullable) = false
+  ];
+}

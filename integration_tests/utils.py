@@ -75,8 +75,7 @@ DEFAULT_BASE_PORT = 26650
 DEFAULT_GAS_PRICE = "1000000000aastra"
 DEFAULT_GAS = "300000"
 
-GAS_USE = 1000000000 * 200000
-
+GAS_USE = 1000000000 * 300000
 
 # Supervisor config file
 SUPERVISOR_CONFIG_FILE = "tasks.ini"
@@ -621,6 +620,15 @@ def send_transaction(w3, tx, key=KEYS["validator"]):
     signed = sign_transaction(w3, tx, key)
     txhash = w3.eth.send_raw_transaction(signed.rawTransaction)
     return w3.eth.wait_for_transaction_receipt(txhash)
+
+
+def parse_int(a):
+    if isinstance(a, str):
+        if "." in a:
+            return int(a.split(".")[0])
+        return int(a)
+
+    return int(a)
 
 
 def w3_wait_for_block(w3, height, timeout=240):

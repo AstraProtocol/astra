@@ -55,14 +55,3 @@ astra_777-1:
       distribution:
         params:
           community_tax: "0.0"
-      epochs:
-        epochs:
-          - identifier: "custom"
-            duration: "4s"
-      inflation:
-        params:
-          mint_denom: "aastra"
-          inflation_parameters:
-            max_staking_rewards: "20000000000000000000"
-        epoch_identifier: "custom"
-        epochs_per_period: "2"

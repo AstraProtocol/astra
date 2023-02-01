@@ -29,12 +29,13 @@ def test_dynamic_fee_tx(astra):
     tx = {
         "to": "0x0000000000000000000000000000000000000000",
         "value": amount,
-        "gas": 21000,
+        "gas": 50000,
         "maxFeePerGas": max_price,
         "maxPriorityFeePerGas": tip_price,
     }
     txreceipt = send_transaction(w3, tx, KEYS["team"])
     assert txreceipt.status == 1
+    print(txreceipt)
     blk = w3.eth.get_block(txreceipt.blockNumber)
     assert txreceipt.effectiveGasPrice == blk.baseFeePerGas + tip_price
 
@@ -52,6 +53,8 @@ def test_dynamic_fee_tx(astra):
     assert next_base_price == adjust_base_fee(
         blk.baseFeePerGas, blk.gasLimit, blk.gasUsed
     )
+
+    assert 1 > 2
 
 
 def test_base_fee_adjustment(astra):

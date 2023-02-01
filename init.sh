@@ -1,6 +1,10 @@
-KEY="mykey"
+KEY_GENESIS_VALIDATOR="genesis_validator"
+KEY_PARTNER="genesis_partner"
+KEY_STRATEGIC="strategic"
+KEY_FOUNDATION="foundation"
+KEY_CORE_TEAM="core_team"
 CHAINID="astra_11110-1"
-MONIKER="localtestnet"
+MONIKER="team"
 KEYRING="test"
 KEYALGO="eth_secp256k1"
 LOGLEVEL="info"
@@ -21,22 +25,31 @@ astrad config keyring-backend $KEYRING
 astrad config chain-id $CHAINID
 
 # if $KEY exists it should be deleted
-astrad keys add $KEY --keyring-backend $KEYRING --algo $KEYALGO
+astrad keys add $KEY_GENESIS_VALIDATOR --keyring-backend $KEYRING --algo $KEYALGO
+astrad keys add $KEY_PARTNER --keyring-backend $KEYRING --algo $KEYALGO
+astrad keys add $KEY_STRATEGIC --keyring-backend $KEYRING --algo $KEYALGO
+astrad keys add $KEY_FOUNDATION --keyring-backend $KEYRING --algo $KEYALGO
+astrad keys add $KEY_CORE_TEAM --keyring-backend $KEYRING --algo $KEYALGO
 
 # Set moniker and chain-id for Evmos (Moniker can be anything, chain-id must be an integer)
 astrad init $MONIKER --chain-id $CHAINID
 
 # Change parameter token denominations to aastra
 cat $HOME/.astrad/config/genesis.json | jq '.app_state["staking"]["params"]["bond_denom"]="aastra"' > $HOME/.astrad/config/tmp_genesis.json && mv $HOME/.astrad/config/tmp_genesis.json $HOME/.astrad/config/genesis.json
+cat $HOME/.astrad/config/genesis.json | jq '.app_state["staking"]["params"]["unbonding_time"]="300s"' > $HOME/.astrad/config/tmp_genesis.json && mv $HOME/.astrad/config/tmp_genesis.json $HOME/.astrad/config/genesis.json
 cat $HOME/.astrad/config/genesis.json | jq '.app_state["crisis"]["constant_fee"]["denom"]="aastra"' > $HOME/.astrad/config/tmp_genesis.json && mv $HOME/.astrad/config/tmp_genesis.json $HOME/.astrad/config/genesis.json
 cat $HOME/.astrad/config/genesis.json | jq '.app_state["gov"]["deposit_params"]["min_deposit"][0]["denom"]="aastra"' > $HOME/.astrad/config/tmp_genesis.json && mv $HOME/.astrad/config/tmp_genesis.json $HOME/.astrad/config/genesis.json
+cat $HOME/.astrad/config/genesis.json | jq '.app_state["gov"]["deposit_params"]["min_deposit"][0]["amount"]="20000000000000000000000"' > $HOME/.astrad/config/tmp_genesis.json && mv $HOME/.astrad/config/tmp_genesis.json $HOME/.astrad/config/genesis.json
+cat $HOME/.astrad/config/genesis.json | jq '.app_state["gov"]["deposit_params"]["max_deposit_period"] ="300s"' > $HOME/.astrad/config/tmp_genesis.json && mv $HOME/.astrad/config/tmp_genesis.json $HOME/.astrad/config/genesis.json
+cat $HOME/.astrad/config/genesis.json | jq '.app_state["gov"]["voting_params"]["voting_period"] ="300s"' > $HOME/.astrad/config/tmp_genesis.json && mv $HOME/.astrad/config/tmp_genesis.json $HOME/.astrad/config/genesis.json
 cat $HOME/.astrad/config/genesis.json | jq '.app_state["evm"]["params"]["evm_denom"]="aastra"' > $HOME/.astrad/config/tmp_genesis.json && mv $HOME/.astrad/config/tmp_genesis.json $HOME/.astrad/config/genesis.json
+cat $HOME/.astrad/config/genesis.json | jq '.app_state["distribution"]["fee_pool"]["community_pool"][0]["denom"]="aastra"' > $HOME/.astrad/config/tmp_genesis.json && mv $HOME/.astrad/config/tmp_genesis.json $HOME/.astrad/config/genesis.json
+cat $HOME/.astrad/config/genesis.json | jq '.app_state["distribution"]["fee_pool"]["community_pool"][0]["amount"]="60000000000000000000000000.000000000000000000"' > $HOME/.astrad/config/tmp_genesis.json && mv $HOME/.astrad/config/tmp_genesis.json $HOME/.astrad/config/genesis.json
 cat $HOME/.astrad/config/genesis.json | jq '.app_state["distribution"]["params"]["community_tax"]="0.0"' > $HOME/.astrad/config/tmp_genesis.json && mv $HOME/.astrad/config/tmp_genesis.json $HOME/.astrad/config/genesis.json
+cat $HOME/.astrad/config/genesis.json | jq '.app_state["slashing"]["params"]["signed_blocks_window"]="20000"' > $HOME/.astrad/config/tmp_genesis.json && mv $HOME/.astrad/config/tmp_genesis.json $HOME/.astrad/config/genesis.json
+cat $HOME/.astrad/config/genesis.json | jq '.app_state["slashing"]["params"]["downtime_jail_duration"]="1800s"' > $HOME/.astrad/config/tmp_genesis.json && mv $HOME/.astrad/config/tmp_genesis.json $HOME/.astrad/config/genesis.json
+cat $HOME/.astrad/config/genesis.json | jq '.app_state["slashing"]["params"]["slash_fraction_downtime"]="0.000100000000000000"' > $HOME/.astrad/config/tmp_genesis.json && mv $HOME/.astrad/config/tmp_genesis.json $HOME/.astrad/config/genesis.json
 
-
- cat $HOME/.astrad/config/genesis.json | jq '.app_state["epochs"]["epochs"][0]["identifier"]="hour"' > $HOME/.astrad/config/tmp_genesis.json && mv $HOME/.astrad/config/tmp_genesis.json $HOME/.astrad/config/genesis.json
- cat $HOME/.astrad/config/genesis.json | jq '.app_state["epochs"]["epochs"][0]["duration"]="3600s"' > $HOME/.astrad/config/tmp_genesis.json && mv $HOME/.astrad/config/tmp_genesis.json $HOME/.astrad/config/genesis.json
- cat $HOME/.astrad/config/genesis.json | jq '.app_state["inflation"]["epoch_identifier"]="hour"' > $HOME/.astrad/config/tmp_genesis.json && mv $HOME/.astrad/config/tmp_genesis.json $HOME/.astrad/config/genesis.json
 
 # increase block time (?)
 cat $HOME/.astrad/config/genesis.json | jq '.consensus_params["block"]["time_iota_ms"]="1000"' > $HOME/.astrad/config/tmp_genesis.json && mv $HOME/.astrad/config/tmp_genesis.json $HOME/.astrad/config/genesis.json
@@ -60,7 +73,7 @@ if [[ $1 == "pending" ]]; then
       sed -i '' 's/timeout_prevote_delta = "500ms"/timeout_prevote_delta = "5s"/g' $HOME/.astrad/config/config.toml
       sed -i '' 's/timeout_precommit = "1s"/timeout_precommit = "10s"/g' $HOME/.astrad/config/config.toml
       sed -i '' 's/timeout_precommit_delta = "500ms"/timeout_precommit_delta = "5s"/g' $HOME/.astrad/config/config.toml
-      sed -i '' 's/timeout_commit = "5s"/timeout_commit = "150s"/g' $HOME/.astrad/config/config.toml
+      sed -i '' 's/timeout_commit = "3s"/timeout_commit = "150s"/g' $HOME/.astrad/config/config.toml
       sed -i '' 's/timeout_broadcast_tx_commit = "10s"/timeout_broadcast_tx_commit = "150s"/g' $HOME/.astrad/config/config.toml
   else
       sed -i 's/create_empty_blocks_interval = "0s"/create_empty_blocks_interval = "30s"/g' $HOME/.astrad/config/config.toml
@@ -70,16 +83,21 @@ if [[ $1 == "pending" ]]; then
       sed -i 's/timeout_prevote_delta = "500ms"/timeout_prevote_delta = "5s"/g' $HOME/.astrad/config/config.toml
       sed -i 's/timeout_precommit = "1s"/timeout_precommit = "10s"/g' $HOME/.astrad/config/config.toml
       sed -i 's/timeout_precommit_delta = "500ms"/timeout_precommit_delta = "5s"/g' $HOME/.astrad/config/config.toml
-      sed -i 's/timeout_commit = "5s"/timeout_commit = "150s"/g' $HOME/.astrad/config/config.toml
+      sed -i 's/timeout_commit = "3s"/timeout_commit = "150s"/g' $HOME/.astrad/config/config.toml
       sed -i 's/timeout_broadcast_tx_commit = "10s"/timeout_broadcast_tx_commit = "150s"/g' $HOME/.astrad/config/config.toml
   fi
 fi
 
 # Allocate genesis accounts (cosmos formatted addresses)
-astrad add-genesis-account $KEY 100000000000000000000000000aastra --keyring-backend $KEYRING
+astrad add-genesis-account $KEY_PARTNER 468000000000000000000000000aastra --keyring-backend $KEYRING
+astrad add-genesis-account $KEY_STRATEGIC 432000000000000000000000000aastra --keyring-backend $KEYRING
+astrad add-genesis-account $KEY_FOUNDATION 120000000000000000000000000aastra --keyring-backend $KEYRING
+astrad add-genesis-account $KEY_CORE_TEAM 119999999000000000000000000aastra --keyring-backend $KEYRING
+astrad add-genesis-account $KEY_GENESIS_VALIDATOR 1000000000000000000aastra --keyring-backend $KEYRING
+astrad add-genesis-account astra1jv65s3grqf6v6jl3dp4t6c9t9rk99cd8y4fl3r 60000000000000000000000000aastra
 
 # Sign genesis transaction
-astrad gentx $KEY 1000000000000000000000aastra --keyring-backend $KEYRING --chain-id $CHAINID
+astrad gentx $KEY_GENESIS_VALIDATOR 1000000000000000000aastra --keyring-backend $KEYRING --chain-id $CHAINID
 
 # Collect genesis tx
 astrad collect-gentxs
@@ -92,4 +110,4 @@ if [[ $1 == "pending" ]]; then
 fi
 
 # Start the node (remove the --pruning=nothing flag if historical queries are not needed)
-astrad start --pruning=nothing $TRACE --log_level $LOGLEVEL --minimum-gas-prices=0.0001aastra --json-rpc.api eth,txpool,personal,net,debug,web3
+# astrad start --pruning=nothing $TRACE --log_level $LOGLEVEL --minimum-gas-prices=0.0001aastra --json-rpc.api eth,txpool,personal,net,debug,web3

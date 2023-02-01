@@ -4,7 +4,7 @@ from eth_bloom import BloomFilter
 from eth_utils import abi, big_endian_to_int
 from hexbytes import HexBytes
 
-from integration_tests.utils import astra_to_aastra, deploy_contract, CONTRACTS, KEYS, ADDRS, send_transaction, wait_for_block, GAS_USE
+from integration_tests.utils import DEFAULT_BASE_PORT, astra_to_aastra, deploy_contract, CONTRACTS, KEYS, ADDRS, send_transaction, wait_for_block, wait_for_new_blocks, wait_for_port, GAS_USE
 
 pytestmark = pytest.mark.normal
 
@@ -91,6 +91,8 @@ def test_transfer(astra):
     check simple transfer tx success
     - send 1astra from team to treasury
     """
+    wait_for_port(DEFAULT_BASE_PORT)
+    wait_for_new_blocks(astra.cosmos_cli(0), 1)
     team_addr = astra.cosmos_cli(0).address("team")
     treasury_addr = astra.cosmos_cli(0).address("treasury")
 
@@ -100,7 +102,8 @@ def test_transfer(astra):
     amount_astra = 1
     amount_aastra = astra_to_aastra(amount_astra)
 
-    tx = astra.cosmos_cli(0).transfer(team_addr, treasury_addr, str(amount_astra) + "astra")
+    fee_coins = 100000
+    tx = astra.cosmos_cli(0).transfer(team_addr, treasury_addr, str(amount_astra) + "astra", fees="%saastra" % fee_coins)
     print("transfer tx", tx["txhash"])
     assert tx["logs"] == [
         {
@@ -140,8 +143,6 @@ def test_transfer(astra):
             "msg_index": 0,
         }
     ]
-
-    wait_for_block(astra.cosmos_cli(0), 2)
-
-    assert astra.cosmos_cli(0).balance(team_addr) == team_balance - amount_aastra - GAS_USE
+    wait_for_new_blocks(astra.cosmos_cli(0), 1)
+    assert astra.cosmos_cli(0).balance(team_addr) == team_balance - amount_aastra - fee_coins
     assert astra.cosmos_cli(0).balance(treasury_addr) == treasury_balance + amount_aastra
