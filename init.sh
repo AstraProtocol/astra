@@ -5,7 +5,7 @@ KEY_FOUNDATION="foundation"
 KEY_CORE_TEAM="core_team"
 CHAINID="astra_11110-1"
 MONIKER="team"
-KEYRING="test"
+KEYRING="os"
 KEYALGO="eth_secp256k1"
 LOGLEVEL="info"
 # to trace evm
@@ -41,7 +41,7 @@ cat $HOME/.astrad/config/genesis.json | jq '.app_state["crisis"]["constant_fee"]
 cat $HOME/.astrad/config/genesis.json | jq '.app_state["gov"]["deposit_params"]["min_deposit"][0]["denom"]="aastra"' > $HOME/.astrad/config/tmp_genesis.json && mv $HOME/.astrad/config/tmp_genesis.json $HOME/.astrad/config/genesis.json
 cat $HOME/.astrad/config/genesis.json | jq '.app_state["gov"]["deposit_params"]["min_deposit"][0]["amount"]="20000000000000000000000"' > $HOME/.astrad/config/tmp_genesis.json && mv $HOME/.astrad/config/tmp_genesis.json $HOME/.astrad/config/genesis.json
 cat $HOME/.astrad/config/genesis.json | jq '.app_state["gov"]["deposit_params"]["max_deposit_period"] ="300s"' > $HOME/.astrad/config/tmp_genesis.json && mv $HOME/.astrad/config/tmp_genesis.json $HOME/.astrad/config/genesis.json
-cat $HOME/.astrad/config/genesis.json | jq '.app_state["gov"]["voting_params"]["voting_period"] ="300s"' > $HOME/.astrad/config/tmp_genesis.json && mv $HOME/.astrad/config/tmp_genesis.json $HOME/.astrad/config/genesis.json
+cat $HOME/.astrad/config/genesis.json | jq '.app_state["gov"]["voting_params"]["voting_period"] ="100s"' > $HOME/.astrad/config/tmp_genesis.json && mv $HOME/.astrad/config/tmp_genesis.json $HOME/.astrad/config/genesis.json
 cat $HOME/.astrad/config/genesis.json | jq '.app_state["evm"]["params"]["evm_denom"]="aastra"' > $HOME/.astrad/config/tmp_genesis.json && mv $HOME/.astrad/config/tmp_genesis.json $HOME/.astrad/config/genesis.json
 cat $HOME/.astrad/config/genesis.json | jq '.app_state["distribution"]["fee_pool"]["community_pool"][0]["denom"]="aastra"' > $HOME/.astrad/config/tmp_genesis.json && mv $HOME/.astrad/config/tmp_genesis.json $HOME/.astrad/config/genesis.json
 cat $HOME/.astrad/config/genesis.json | jq '.app_state["distribution"]["fee_pool"]["community_pool"][0]["amount"]="60000000000000000000000000.000000000000000000"' > $HOME/.astrad/config/tmp_genesis.json && mv $HOME/.astrad/config/tmp_genesis.json $HOME/.astrad/config/genesis.json
