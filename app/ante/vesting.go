@@ -152,7 +152,7 @@ func (vdd VestingDelegationDecorator) validateMsg(ctx sdk.Context, msg sdk.Msg) 
 			return nil
 		}
 
-		return sdkerrors.Wrapf(sdkerrors.ErrInvalidRequest, "account vesting cannot delegate")
+		return sdkerrors.Wrapf(sdkerrors.ErrInvalidRequest, "Vesting account cannot delegate")
 	}
 
 	return nil
