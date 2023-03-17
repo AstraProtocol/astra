@@ -132,7 +132,7 @@ func (vdd VestingDelegationDecorator) validateAuthz(ctx sdk.Context, execMsg *au
 
 // validateMsg checks that the only vested coins can be delegated
 func (vdd VestingDelegationDecorator) validateMsg(ctx sdk.Context, msg sdk.Msg) error {
-	delegateMsg, ok := msg.(*stakingtypes.MsgDelegate)
+	_, ok := msg.(*stakingtypes.MsgDelegate)
 	if !ok {
 		return nil
 	}
@@ -146,32 +146,13 @@ func (vdd VestingDelegationDecorator) validateMsg(ctx sdk.Context, msg sdk.Msg) 
 			)
 		}
 
-		clawbackAccount, isClawback := acc.(*vestingtypes.ClawbackVestingAccount)
+		_, isClawback := acc.(*vestingtypes.ClawbackVestingAccount)
 		if !isClawback {
 			// continue to next decorator as this logic only applies to vesting
 			return nil
 		}
 
-		// error if bond amount is > vested coins
-		bondDenom := vdd.sk.BondDenom(ctx)
-		coins := clawbackAccount.GetVestedOnly(ctx.BlockTime())
-		if coins == nil || coins.Empty() {
-			return sdkerrors.Wrap(
-				vestingtypes.ErrInsufficientVestedCoins,
-				"account has no vested coins",
-			)
-		}
-
-		vested := coins.AmountOf(bondDenom)
-		delegatedAmount := vdd.sk.GetDelegatorBonded(ctx, addr)
-		targetDelegateAmount := delegateMsg.Amount.Amount.Add(delegatedAmount)
-
-		if vested.LT(targetDelegateAmount) {
-			return sdkerrors.Wrapf(
-				vestingtypes.ErrInsufficientVestedCoins,
-				"cannot delegate unvested coins. coins vested < target delegation amount (%s < %s)",
-				vested, targetDelegateAmount)
-		}
+		return sdkerrors.Wrapf(sdkerrors.ErrInvalidRequest, "account vesting cannot delegate")
 	}
 
 	return nil
