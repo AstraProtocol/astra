@@ -354,7 +354,7 @@ func (suite *KeeperTestSuite) TestCrawbackVestingAccounts() {
 				suite.Require().Equal(expVested, vested)
 
 				err := suite.delegate(clawbackAccount, 1)
-				suite.Require().NoError(err, "can delegate vested tokens")
+				suite.Require().Error(err, "cannot delegate vested tokens")
 
 				err = suite.app.BankKeeper.SendCoins(
 					suite.ctx,
@@ -385,7 +385,7 @@ func (suite *KeeperTestSuite) TestCrawbackVestingAccounts() {
 				suite.Require().Equal(expVested, vested)
 
 				err := suite.delegate(clawbackAccount, 1)
-				suite.Require().NoError(err, "can delegate vested tokens")
+				suite.Require().Error(err, "cannot delegate vested tokens")
 
 				err = suite.delegate(clawbackAccount, 30)
 				suite.Require().Error(err, "cannot delegate unvested tokens")
