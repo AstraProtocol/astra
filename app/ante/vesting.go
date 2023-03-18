@@ -27,11 +27,11 @@ func NewEthVestingTransactionDecorator(ak evmtypes.AccountKeeper) EthVestingTran
 // vesting cliff and lockup period.
 //
 // This AnteHandler decorator will fail if:
-//  - the message is not a MsgEthereumTx
-//  - sender account cannot be found
-//  - sender account is not a ClawbackvestingAccount
-//  - blocktime is before surpassing vesting cliff end (with zero vested coins) AND
-//  - blocktime is before surpassing all lockup periods (with non-zero locked coins)
+//   - the message is not a MsgEthereumTx
+//   - sender account cannot be found
+//   - sender account is not a ClawbackvestingAccount
+//   - blocktime is before surpassing vesting cliff end (with zero vested coins) AND
+//   - blocktime is before surpassing all lockup periods (with non-zero locked coins)
 func (vtd EthVestingTransactionDecorator) AnteHandle(ctx sdk.Context, tx sdk.Tx, simulate bool, next sdk.AnteHandler) (newCtx sdk.Context, err error) {
 	for _, msg := range tx.GetMsgs() {
 		msgEthTx, ok := msg.(*evmtypes.MsgEthereumTx)
@@ -132,9 +132,14 @@ func (vdd VestingDelegationDecorator) validateAuthz(ctx sdk.Context, execMsg *au
 
 // validateMsg checks that the only vested coins can be delegated
 func (vdd VestingDelegationDecorator) validateMsg(ctx sdk.Context, msg sdk.Msg) error {
-	delegateMsg, ok := msg.(*stakingtypes.MsgDelegate)
+	_, ok := msg.(*stakingtypes.MsgDelegate)
+	msgError := "Vesting account cannot delegate"
 	if !ok {
-		return nil
+		_, isMsgCreateValidator := msg.(*stakingtypes.MsgCreateValidator)
+		if !isMsgCreateValidator {
+			return nil
+		}
+		msgError = "Vesting account cannot create validator"
 	}
 
 	for _, addr := range msg.GetSigners() {
@@ -146,30 +151,13 @@ func (vdd VestingDelegationDecorator) validateMsg(ctx sdk.Context, msg sdk.Msg) 
 			)
 		}
 
-		clawbackAccount, isClawback := acc.(*vestingtypes.ClawbackVestingAccount)
+		_, isClawback := acc.(*vestingtypes.ClawbackVestingAccount)
 		if !isClawback {
 			// continue to next decorator as this logic only applies to vesting
-			return nil
+			continue
 		}
 
-		// error if bond amount is > vested coins
-		bondDenom := vdd.sk.BondDenom(ctx)
-		coins := clawbackAccount.GetVestedOnly(ctx.BlockTime())
-		if coins == nil || coins.Empty() {
-			return sdkerrors.Wrap(
-				vestingtypes.ErrInsufficientVestedCoins,
-				"account has no vested coins",
-			)
-		}
-
-		vested := coins.AmountOf(bondDenom)
-		if vested.LT(delegateMsg.Amount.Amount) {
-			return sdkerrors.Wrapf(
-				vestingtypes.ErrInsufficientVestedCoins,
-				"cannot delegate unvested coins. coins vested < delegation amount (%s < %s)",
-				vested, delegateMsg.Amount.Amount,
-			)
-		}
+		return sdkerrors.Wrapf(sdkerrors.ErrInvalidRequest, msgError)
 	}
 
 	return nil
