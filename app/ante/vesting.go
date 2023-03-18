@@ -154,7 +154,7 @@ func (vdd VestingDelegationDecorator) validateMsg(ctx sdk.Context, msg sdk.Msg) 
 		_, isClawback := acc.(*vestingtypes.ClawbackVestingAccount)
 		if !isClawback {
 			// continue to next decorator as this logic only applies to vesting
-			return nil
+			continue
 		}
 
 		return sdkerrors.Wrapf(sdkerrors.ErrInvalidRequest, msgError)
