@@ -40,14 +40,12 @@ def test_staking_vesting_redelegate(astra):
         signer1_address,
         "0.025aastra",
     )
-    print(rsp)
     assert rsp["code"] == 0, rsp["raw_log"]
     wait_for_block(astra.cosmos_cli(0), 2)
     assert astra.cosmos_cli(0).staking_pool() == old_bonded + 2009999498
     rsp = astra.cosmos_cli(0).delegate_amount(
         validator2_operator_address, "1aastra", signer1_address, "0.025aastra"
     )
-    print(rsp)
     assert rsp["code"] == 0, rsp["raw_log"]
     wait_for_block(astra.cosmos_cli(0), 2)
     assert astra.cosmos_cli(0).staking_pool() == old_bonded + 2009999499
