@@ -18,10 +18,10 @@ import (
 	"github.com/AstraProtocol/astra/v2/testutil"
 	"github.com/evmos/ethermint/tests"
 
+	"github.com/AstraProtocol/astra/v2/x/vesting/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkvesting "github.com/cosmos/cosmos-sdk/x/auth/vesting/types"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
-	"github.com/evmos/evmos/v6/x/vesting/types"
 )
 
 func TestVestingTestingSuite(t *testing.T) {
