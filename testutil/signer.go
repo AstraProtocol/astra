@@ -1,9 +1,9 @@
 package testutil
 
 import (
+	"github.com/AstraProtocol/astra/v2/x/erc20/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	bankkeeper "github.com/cosmos/cosmos-sdk/x/bank/keeper"
-	"github.com/evmos/evmos/v6/x/erc20/types"
 )
 
 // FundAccount is a utility function that funds an account by minting and

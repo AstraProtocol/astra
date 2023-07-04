@@ -49,7 +49,7 @@ import (
 
 	"github.com/AstraProtocol/astra/v2/app"
 	"github.com/AstraProtocol/astra/v2/contracts"
-	"github.com/evmos/evmos/v6/x/erc20/types"
+	"github.com/AstraProtocol/astra/v2/x/erc20/types"
 )
 
 type KeeperTestSuite struct {

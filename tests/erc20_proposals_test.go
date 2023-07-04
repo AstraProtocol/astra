@@ -2,13 +2,13 @@ package tests
 
 import (
 	"fmt"
+	"github.com/AstraProtocol/astra/v2/x/erc20/keeper"
+	"github.com/AstraProtocol/astra/v2/x/erc20/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/evmos/ethermint/tests"
 	evmtypes "github.com/evmos/ethermint/x/evm/types"
-	"github.com/evmos/evmos/v6/x/erc20/keeper"
-	"github.com/evmos/evmos/v6/x/erc20/types"
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/suite"
 	"testing"

@@ -114,13 +114,13 @@ import (
 	feemarkettypes "github.com/evmos/ethermint/x/feemarket/types"
 
 	"github.com/AstraProtocol/astra/v2/app/ante"
-	"github.com/evmos/evmos/v6/x/erc20"
-	erc20client "github.com/evmos/evmos/v6/x/erc20/client"
-	erc20keeper "github.com/evmos/evmos/v6/x/erc20/keeper"
-	erc20types "github.com/evmos/evmos/v6/x/erc20/types"
-	"github.com/evmos/evmos/v6/x/vesting"
-	vestingkeeper "github.com/evmos/evmos/v6/x/vesting/keeper"
-	vestingtypes "github.com/evmos/evmos/v6/x/vesting/types"
+	"github.com/AstraProtocol/astra/v2/x/erc20"
+	erc20client "github.com/AstraProtocol/astra/v2/x/erc20/client"
+	erc20keeper "github.com/AstraProtocol/astra/v2/x/erc20/keeper"
+	erc20types "github.com/AstraProtocol/astra/v2/x/erc20/types"
+	"github.com/AstraProtocol/astra/v2/x/vesting"
+	vestingkeeper "github.com/AstraProtocol/astra/v2/x/vesting/keeper"
+	vestingtypes "github.com/AstraProtocol/astra/v2/x/vesting/types"
 )
 
 func init() {

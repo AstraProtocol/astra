@@ -17,7 +17,7 @@ import (
 
 	feeburnante "github.com/AstraProtocol/astra/v2/x/feeburn/ante"
 	feeburntypes "github.com/AstraProtocol/astra/v2/x/feeburn/types"
-	vestingtypes "github.com/evmos/evmos/v6/x/vesting/types"
+	vestingtypes "github.com/AstraProtocol/astra/v2/x/vesting/types"
 )
 
 // HandlerOptions defines the list of module keepers required to run the Evmos
