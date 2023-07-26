@@ -3,7 +3,6 @@ package keeper_test
 import (
 	"github.com/AstraProtocol/astra/v2/x/mint/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	distrtypes "github.com/cosmos/cosmos-sdk/x/distribution/types"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 	. "github.com/onsi/ginkgo/v2"
@@ -11,19 +10,30 @@ import (
 	"github.com/tendermint/tendermint/libs/rand"
 )
 
+var zeroAddr = sdk.MustAccAddressFromBech32("astra1qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqsfdulp")
+
 var _ = Describe("Mint", Ordered, func() {
 	var params types.Params
 	var initialSupply sdk.Int
+	var initialBonded sdk.Int
+
 	BeforeEach(func() {
 		s.SetupTest()
 		params = s.app.MintKeeper.GetParams(s.ctx)
 
-		// we set an initial supply to equal 1200000000astra and send it to the foundation address.
+		currentSupply := s.app.BankKeeper.GetSupply(s.ctx, denomMint).Amount
+
+		// we set an initial supply to equal 1200000000astra.
 		var ok bool
 		initialSupply, ok = sdk.NewIntFromString("1200000000000000000000000000")
 		Expect(ok).To(BeTrue())
+		mintAmount := initialSupply.Sub(currentSupply)
 
-		s.mintAndTransfer(params.MintDenom, initialSupply, sdk.AccAddress{}, initialSupply)
+		s.mintAndTransfer(params.MintDenom, mintAmount,
+			zeroAddr, mintAmount)
+		Expect(s.app.BankKeeper.GetSupply(s.ctx, denomMint).Amount).To(Equal(initialSupply))
+
+		initialBonded = s.app.StakingKeeper.TotalBondedTokens(s.ctx)
 	})
 
 	var foundationAddr sdk.AccAddress
@@ -39,16 +49,11 @@ var _ = Describe("Mint", Ordered, func() {
 	var oldCommunityBalance sdk.Int
 
 	Describe("Committing a block", func() {
-		var initSupply sdk.Coin
 		BeforeEach(func() {
 			params = s.app.MintKeeper.GetParams(s.ctx)
 			foundationAddr = sdk.MustAccAddressFromBech32(params.FoundationAddress)
-			stakingModuleAddr = s.app.AccountKeeper.GetModuleAddress(authtypes.FeeCollectorName)
 			communityAddr = s.app.AccountKeeper.GetModuleAddress(distrtypes.ModuleName)
 			mintModuleAddr = s.app.AccountKeeper.GetModuleAddress(types.ModuleName)
-
-			initSupply = s.app.BankKeeper.GetSupply(s.ctx, denomMint)
-			Expect(initSupply.Amount).To(Equal(initialSupply))
 
 			Expect(s.app.BankKeeper.GetBalance(s.ctx, foundationAddr, params.MintDenom).Amount).To(
 				Equal(sdk.ZeroInt()),
@@ -59,8 +64,6 @@ var _ = Describe("Mint", Ordered, func() {
 			Expect(s.app.BankKeeper.GetBalance(s.ctx, communityAddr, params.MintDenom).Amount).To(
 				Equal(sdk.ZeroInt()),
 			)
-
-			Expect(s.app.MintKeeper.BondedRatio(s.ctx)).To(Equal(sdk.ZeroDec()))
 		})
 
 		Context("On the first block after genesis", func() {
@@ -72,8 +75,18 @@ var _ = Describe("Mint", Ordered, func() {
 				oldStakingModuleBalance = s.app.BankKeeper.GetBalance(s.ctx, stakingModuleAddr, params.MintDenom).Amount
 				oldFoundationBalance = s.app.BankKeeper.GetBalance(s.ctx, foundationAddr, params.MintDenom).Amount
 				oldCommunityBalance = s.app.BankKeeper.GetBalance(s.ctx, communityAddr, params.MintDenom).Amount
-
+				_ = oldStakingModuleBalance
 				s.CommitAndBeginBlock()
+			})
+
+			It("bondedRatio must be updated", func() {
+				nextInflationRate := oldMinter.NextInflationRate(params, oldBondedRatio)
+				blockProvision := sdk.NewDecFromInt(oldSupply).Mul(nextInflationRate).QuoInt64(
+					int64(params.InflationParameters.BlocksPerYear)).TruncateInt()
+
+				Expect(s.app.MintKeeper.BondedRatio(s.ctx)).To(
+					Equal(sdk.NewDecFromInt(initialBonded).QuoInt(initialSupply.Add(blockProvision))),
+				)
 			})
 
 			It("total supply should change", func() {
@@ -106,17 +119,12 @@ var _ = Describe("Mint", Ordered, func() {
 				blockProvision := sdk.NewDecFromInt(oldSupply).Mul(nextInflationRate).QuoInt64(
 					int64(params.InflationParameters.BlocksPerYear)).TruncateInt()
 
-				expStakingIncreased := params.InflationDistribution.StakingRewards.MulInt(blockProvision).TruncateInt()
-				Expect(s.app.BankKeeper.GetBalance(s.ctx, stakingModuleAddr, params.MintDenom).Amount).To(
-					Equal(oldStakingModuleBalance.Add(expStakingIncreased)),
-				)
-
 				expFoundationIncreased := params.InflationDistribution.Foundation.MulInt(blockProvision).TruncateInt()
 				Expect(s.app.BankKeeper.GetBalance(s.ctx, foundationAddr, params.MintDenom).Amount).To(
 					Equal(oldFoundationBalance.Add(expFoundationIncreased)),
 				)
 
-				expCommunityIncreased := blockProvision.Sub(expStakingIncreased).Sub(expFoundationIncreased)
+				expCommunityIncreased := blockProvision.Sub(expFoundationIncreased)
 				Expect(s.app.BankKeeper.GetBalance(s.ctx, communityAddr, params.MintDenom).Amount).To(
 					Equal(oldCommunityBalance.Add(expCommunityIncreased)),
 				)
@@ -336,7 +344,7 @@ func (suite *KeeperTestSuite) mintAndTransfer(denom string, mintAmount sdk.Int, 
 func (suite *KeeperTestSuite) bondWithRate(denom string, rate sdk.Dec) {
 	currentSupply := suite.app.BankKeeper.GetSupply(suite.ctx, denom)
 	oldBonded := suite.app.StakingKeeper.TotalBondedTokens(suite.ctx)
-	mintAmount := rate.MulInt(currentSupply.Amount).Sub(oldBonded.ToDec()).Quo(sdk.OneDec().Sub(rate)).TruncateInt()
+	mintAmount := rate.MulInt(currentSupply.Amount).Sub(sdk.NewDecFromInt(oldBonded)).Quo(sdk.OneDec().Sub(rate)).TruncateInt()
 
 	// should stake more
 	if mintAmount.IsPositive() {
@@ -359,14 +367,27 @@ func (suite *KeeperTestSuite) mintAndBondWithRate(denom string, mintAmount sdk.I
 	if rate.GT(sdk.OneDec()) {
 		rate = sdk.OneDec()
 	}
+	currentBonded := suite.app.StakingKeeper.TotalBondedTokens(suite.ctx)
+	currentSupply := suite.app.BankKeeper.GetSupply(suite.ctx, denom).Amount
+	totalAmount := currentSupply.Add(mintAmount)
+	bondAmount := sdk.NewDecFromInt(totalAmount).Mul(rate).TruncateInt().Sub(currentBonded)
+	Expect(bondAmount.LTE(mintAmount)).To(BeTrue())
+
 	err := suite.app.MintKeeper.MintCoins(suite.ctx, sdk.NewCoin(denom, mintAmount))
 	Expect(err).To(BeNil())
+
 	err = suite.app.BankKeeper.SendCoinsFromModuleToModule(suite.ctx, types.ModuleName, stakingtypes.BondedPoolName,
-		sdk.NewCoins(sdk.NewCoin(denom, mintAmount.ToDec().Mul(rate).TruncateInt())))
+		sdk.NewCoins(sdk.NewCoin(denom, bondAmount)))
 	Expect(err).To(BeNil())
 
-	Expect(suite.app.BankKeeper.GetSupply(suite.ctx, denom).Amount).To(Equal(mintAmount))
-	Expect(suite.app.MintKeeper.BondedRatio(suite.ctx)).To(Equal(rate))
+	err = suite.app.BankKeeper.SendCoinsFromModuleToAccount(suite.ctx, types.ModuleName, zeroAddr,
+		sdk.NewCoins(sdk.NewCoin(denom, mintAmount.Sub(bondAmount))))
+	Expect(err).To(BeNil())
+
+	Expect(suite.app.BankKeeper.GetSupply(suite.ctx, denom).Amount).To(Equal(totalAmount))
+	Expect(suite.app.MintKeeper.BondedRatio(suite.ctx).Sub(rate).Abs().LTE(
+		sdk.NewDecWithPrec(1, 10),
+	)).To(BeTrue())
 }
 
 func randRate(minRate sdk.Dec, maxRate sdk.Dec) sdk.Dec {

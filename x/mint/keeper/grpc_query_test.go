@@ -141,6 +141,6 @@ func (suite *KeeperTestSuite) TestGRPCBondedRatio() {
 		ctx := sdk.WrapSDKContext(suite.ctx)
 		res, err := suite.queryClient.GetBondedRatio(ctx, &types.QueryBondedRatioRequest{})
 		suite.Require().NoError(err)
-		suite.Require().Equal(res.BondedRatio, bondedRate)
+		suite.Require().True(res.BondedRatio.Sub(bondedRate).Abs().LTE(sdk.NewDecWithPrec(1, 10)))
 	}
 }

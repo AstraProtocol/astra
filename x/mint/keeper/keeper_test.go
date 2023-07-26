@@ -43,7 +43,7 @@ func TestKeeperTestSuite(t *testing.T) {
 	gomega.RegisterFailHandler(ginkgo.Fail)
 
 	suite.Run(t, s)
-	//ginkgo.RunSpecs(t, "Keeper Suite")
+	ginkgo.RunSpecs(t, "Keeper Suite")
 }
 
 func (suite *KeeperTestSuite) SetupTest() {
