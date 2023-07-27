@@ -5,12 +5,10 @@ import (
 	"encoding/json"
 	"fmt"
 
-	"github.com/AstraProtocol/astra/v2/x/feeburn/client/rest"
 	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
 
 	// this line is used by starport scaffolding # 1
 
-	"github.com/gorilla/mux"
 	"github.com/grpc-ecosystem/grpc-gateway/runtime"
 	"github.com/spf13/cobra"
 
@@ -66,11 +64,6 @@ func (AppModuleBasic) ValidateGenesis(cdc codec.JSONCodec, config client.TxEncod
 		return fmt.Errorf("failed to unmarshal %s genesis state: %w", types.ModuleName, err)
 	}
 	return genState.Validate()
-}
-
-// RegisterRESTRoutes registers the capability module's REST service handlers.
-func (AppModuleBasic) RegisterRESTRoutes(clientCtx client.Context, rtr *mux.Router) {
-	rest.RegisterRoutes(clientCtx, rtr)
 }
 
 // RegisterGRPCGatewayRoutes registers the gRPC Gateway routes for the module.

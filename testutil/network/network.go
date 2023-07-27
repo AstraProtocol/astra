@@ -7,6 +7,8 @@ import (
 	"errors"
 	"fmt"
 	"github.com/AstraProtocol/astra/v2/app"
+	cmdcfg "github.com/AstraProtocol/astra/v2/cmd/config"
+	pruningtypes "github.com/cosmos/cosmos-sdk/pruning/types"
 	"net/http"
 	"net/url"
 	"os"
@@ -41,19 +43,18 @@ import (
 	servertypes "github.com/cosmos/cosmos-sdk/server/types"
 	"github.com/cosmos/cosmos-sdk/simapp"
 	"github.com/cosmos/cosmos-sdk/simapp/params"
-	storetypes "github.com/cosmos/cosmos-sdk/store/types"
 	"github.com/cosmos/cosmos-sdk/testutil"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
 	"github.com/cosmos/cosmos-sdk/x/genutil"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
-	"github.com/evmos/ethermint/crypto/hd"
+	"github.com/evmos/evmos/v12/crypto/hd"
 
-	"github.com/evmos/ethermint/encoding"
-	"github.com/evmos/ethermint/server/config"
-	ethermint "github.com/evmos/ethermint/types"
-	evmtypes "github.com/evmos/ethermint/x/evm/types"
+	"github.com/evmos/evmos/v12/encoding"
+	"github.com/evmos/evmos/v12/server/config"
+	ethermint "github.com/evmos/evmos/v12/types"
+	evmtypes "github.com/evmos/evmos/v12/x/evm/types"
 )
 
 // package-wide network lock to only allow one test network at a time
@@ -99,22 +100,22 @@ func DefaultConfig() Config {
 	encCfg := encoding.MakeConfig(app.ModuleBasics)
 
 	return Config{
-		Codec:             encCfg.Marshaler,
+		Codec:             encCfg.Codec,
 		TxConfig:          encCfg.TxConfig,
 		LegacyAmino:       encCfg.Amino,
 		InterfaceRegistry: encCfg.InterfaceRegistry,
 		AccountRetriever:  authtypes.AccountRetriever{},
 		AppConstructor:    NewAppConstructor(encCfg),
-		GenesisState:      app.ModuleBasics.DefaultGenesis(encCfg.Marshaler),
+		GenesisState:      app.ModuleBasics.DefaultGenesis(encCfg.Codec),
 		TimeoutCommit:     2 * time.Second,
 		ChainID:           fmt.Sprintf("astra_%d-1", tmrand.Int63n(9999999999999)+1),
 		NumValidators:     4,
-		BondDenom:         ethermint.AttoPhoton,
-		MinGasPrices:      fmt.Sprintf("0.000006%s", ethermint.AttoPhoton),
+		BondDenom:         cmdcfg.BaseDenom,
+		MinGasPrices:      fmt.Sprintf("0.000006%s", cmdcfg.BaseDenom),
 		AccountTokens:     sdk.TokensFromConsensusPower(1000, ethermint.PowerReduction),
 		StakingTokens:     sdk.TokensFromConsensusPower(500, ethermint.PowerReduction),
 		BondedTokens:      sdk.TokensFromConsensusPower(100, ethermint.PowerReduction),
-		PruningStrategy:   storetypes.PruningOptionNothing,
+		PruningStrategy:   pruningtypes.PruningOptionNothing,
 		CleanupDir:        true,
 		SigningAlgo:       string(hd.EthSecp256k1Type),
 		KeyringOptions:    []keyring.Option{hd.EthSecp256k1Option()},
@@ -129,7 +130,7 @@ func NewAppConstructor(encodingCfg params.EncodingConfig) AppConstructor {
 			val.Ctx.Logger, dbm.NewMemDB(), nil, true, make(map[int64]bool), val.Ctx.Config.RootDir, 0,
 			encodingCfg,
 			simapp.EmptyAppOptions{},
-			baseapp.SetPruning(storetypes.NewPruningOptionsFromString(val.AppConfig.Pruning)),
+			baseapp.SetPruning(pruningtypes.NewPruningOptionsFromString(val.AppConfig.Pruning)),
 			baseapp.SetMinGasPrices(val.AppConfig.MinGasPrices),
 		)
 	}
@@ -369,7 +370,7 @@ func New(l Logger, baseDir string, cfg Config) (*Network, error) {
 		nodeIDs[i] = nodeID
 		valPubKeys[i] = pubKey
 
-		kb, err := keyring.New(sdk.KeyringServiceName(), keyring.BackendTest, clientDir, buf, cfg.KeyringOptions...)
+		kb, err := keyring.New(sdk.KeyringServiceName(), keyring.BackendTest, clientDir, buf, cfg.Codec, cfg.KeyringOptions...)
 		if err != nil {
 			return nil, err
 		}
@@ -468,7 +469,7 @@ func New(l Logger, baseDir string, cfg Config) (*Network, error) {
 			return nil, err
 		}
 
-		customAppTemplate, _ := config.AppConfig(ethermint.AttoPhoton)
+		customAppTemplate, _ := config.AppConfig(cmdcfg.BaseDenom)
 		srvconfig.SetConfigTemplate(customAppTemplate)
 		srvconfig.WriteConfigFile(filepath.Join(nodeDir, "config/app.toml"), appCfg)
 

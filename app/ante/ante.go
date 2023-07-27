@@ -4,8 +4,6 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	authante "github.com/cosmos/cosmos-sdk/x/auth/ante"
-
-	ethante "github.com/evmos/ethermint/app/ante"
 )
 
 // NewAnteHandler returns an ante handler responsible for attempting to route an
@@ -17,8 +15,6 @@ func NewAnteHandler(options HandlerOptions) sdk.AnteHandler {
 		ctx sdk.Context, tx sdk.Tx, sim bool,
 	) (newCtx sdk.Context, err error) {
 		var anteHandler sdk.AnteHandler
-
-		defer ethante.Recover(ctx.Logger(), &err)
 
 		txWithExtensions, ok := tx.(authante.HasExtensionOptionsTx)
 		if ok {

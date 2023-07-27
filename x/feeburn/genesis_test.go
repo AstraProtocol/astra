@@ -5,6 +5,7 @@ import (
 	"github.com/AstraProtocol/astra/v2/app"
 	"github.com/AstraProtocol/astra/v2/x/feeburn"
 	"github.com/AstraProtocol/astra/v2/x/feeburn/types"
+	utiltx "github.com/evmos/evmos/v12/testutil/tx"
 
 	"testing"
 	"time"
@@ -16,8 +17,7 @@ import (
 	tmversion "github.com/tendermint/tendermint/proto/tendermint/version"
 	"github.com/tendermint/tendermint/version"
 
-	"github.com/evmos/ethermint/tests"
-	feemarkettypes "github.com/evmos/ethermint/x/feemarket/types"
+	feemarkettypes "github.com/evmos/evmos/v12/x/feemarket/types"
 )
 
 type GenesisTestSuite struct {
@@ -31,7 +31,7 @@ type GenesisTestSuite struct {
 
 func (suite *GenesisTestSuite) SetupTest() {
 	// consensus key
-	consAddress := sdk.ConsAddress(tests.GenerateAddress().Bytes())
+	consAddress := sdk.ConsAddress(utiltx.GenerateAddress().Bytes())
 
 	suite.app = app.Setup(false, feemarkettypes.DefaultGenesisState())
 	suite.ctx = suite.app.BaseApp.NewContext(false, tmproto.Header{

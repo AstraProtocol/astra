@@ -2,6 +2,7 @@ package keeper_test
 
 import (
 	"fmt"
+	utiltx "github.com/evmos/evmos/v12/testutil/tx"
 	"math"
 	"math/big"
 
@@ -15,10 +16,9 @@ import (
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 	"github.com/ethereum/go-ethereum/common"
 	ethtypes "github.com/ethereum/go-ethereum/core/types"
-	"github.com/evmos/ethermint/crypto/ethsecp256k1"
-	"github.com/evmos/ethermint/encoding"
-	"github.com/evmos/ethermint/tests"
-	evmtypes "github.com/evmos/ethermint/x/evm/types"
+	"github.com/evmos/evmos/v12/crypto/ethsecp256k1"
+	"github.com/evmos/evmos/v12/encoding"
+	evmtypes "github.com/evmos/evmos/v12/x/evm/types"
 	abci "github.com/tendermint/tendermint/abci/types"
 )
 
@@ -272,18 +272,25 @@ func sendEth(priv *ethsecp256k1.PrivKey) abci.ResponseDeliverTx {
 	privNew, _ := ethsecp256k1.GenerateKey()
 	addrRecv := common.BytesToAddress(privNew.PubKey().Address().Bytes())
 
-	msgEthereumTx := evmtypes.NewTx(s.app.EvmKeeper.ChainID(), nonce, &addrRecv,
-		big.NewInt(100),
-		100000,
-		big.NewInt(10000),
-		s.app.FeeMarketKeeper.GetBaseFee(s.ctx), big.NewInt(1), nil, &ethtypes.AccessList{})
+	msgEthereumTx := evmtypes.NewTx(&evmtypes.EvmTxArgs{
+		Nonce:     nonce,
+		GasLimit:  10000,
+		Input:     nil,
+		GasFeeCap: s.app.FeeMarketKeeper.GetBaseFee(s.ctx),
+		GasPrice:  big.NewInt(10000),
+		ChainID:   s.app.EvmKeeper.ChainID(),
+		Amount:    big.NewInt(100),
+		GasTipCap: big.NewInt(1),
+		To:        &addrRecv,
+		Accesses:  &ethtypes.AccessList{},
+	})
 	msgEthereumTx.From = from.String()
 	return performEthTx(priv, msgEthereumTx)
 }
 
 func performEthTx(priv *ethsecp256k1.PrivKey, msgEthereumTx *evmtypes.MsgEthereumTx) abci.ResponseDeliverTx {
 	// Sign transaction
-	err := msgEthereumTx.Sign(s.ethSigner, tests.NewSigner(priv))
+	err := msgEthereumTx.Sign(s.ethSigner, utiltx.NewSigner(priv))
 	s.Require().NoError(err)
 
 	// Assemble transaction from fields

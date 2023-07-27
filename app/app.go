@@ -4,6 +4,13 @@ import (
 	"context"
 	"encoding/json"
 	v1 "github.com/AstraProtocol/astra/v2/app/upgrades/v1"
+	"github.com/cosmos/cosmos-sdk/client/grpc/node"
+	storetypes "github.com/cosmos/cosmos-sdk/store/types"
+	authsims "github.com/cosmos/cosmos-sdk/x/auth/simulation"
+	govclient "github.com/cosmos/cosmos-sdk/x/gov/client"
+	govv1beta1 "github.com/cosmos/cosmos-sdk/x/gov/types/v1beta1"
+	ibctestingtypes "github.com/cosmos/ibc-go/v6/testing/types"
+	evmante "github.com/evmos/evmos/v12/app/ante/evm"
 	"io"
 	"net/http"
 	"os"
@@ -28,7 +35,6 @@ import (
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/grpc/tmservice"
-	"github.com/cosmos/cosmos-sdk/client/rpc"
 	"github.com/cosmos/cosmos-sdk/codec"
 	"github.com/cosmos/cosmos-sdk/codec/types"
 	"github.com/cosmos/cosmos-sdk/server/api"
@@ -70,6 +76,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/gov"
 	govkeeper "github.com/cosmos/cosmos-sdk/x/gov/keeper"
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
+	govv1 "github.com/cosmos/cosmos-sdk/x/gov/types/v1"
 	"github.com/cosmos/cosmos-sdk/x/params"
 	paramsclient "github.com/cosmos/cosmos-sdk/x/params/client"
 	paramskeeper "github.com/cosmos/cosmos-sdk/x/params/keeper"
@@ -85,42 +92,35 @@ import (
 	upgradeclient "github.com/cosmos/cosmos-sdk/x/upgrade/client"
 	upgradekeeper "github.com/cosmos/cosmos-sdk/x/upgrade/keeper"
 	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
-	ethermintapp "github.com/evmos/ethermint/app"
-
-	"github.com/cosmos/ibc-go/v3/modules/apps/transfer"
-	ibctransferkeeper "github.com/cosmos/ibc-go/v3/modules/apps/transfer/keeper"
-	ibctransfertypes "github.com/cosmos/ibc-go/v3/modules/apps/transfer/types"
-	ibc "github.com/cosmos/ibc-go/v3/modules/core"
-	ibcclient "github.com/cosmos/ibc-go/v3/modules/core/02-client"
-	ibcclientclient "github.com/cosmos/ibc-go/v3/modules/core/02-client/client"
-	porttypes "github.com/cosmos/ibc-go/v3/modules/core/05-port/types"
-	ibchost "github.com/cosmos/ibc-go/v3/modules/core/24-host"
-	ibckeeper "github.com/cosmos/ibc-go/v3/modules/core/keeper"
-	ibctesting "github.com/cosmos/ibc-go/v3/testing"
+	"github.com/cosmos/ibc-go/v6/modules/apps/transfer"
+	ibctransferkeeper "github.com/cosmos/ibc-go/v6/modules/apps/transfer/keeper"
+	ibctransfertypes "github.com/cosmos/ibc-go/v6/modules/apps/transfer/types"
+	ibc "github.com/cosmos/ibc-go/v6/modules/core"
+	ibcclient "github.com/cosmos/ibc-go/v6/modules/core/02-client"
+	ibcclientclient "github.com/cosmos/ibc-go/v6/modules/core/02-client/client"
+	porttypes "github.com/cosmos/ibc-go/v6/modules/core/05-port/types"
+	ibchost "github.com/cosmos/ibc-go/v6/modules/core/24-host"
+	ibckeeper "github.com/cosmos/ibc-go/v6/modules/core/keeper"
+	ibctesting "github.com/cosmos/ibc-go/v6/testing"
 
 	// unnamed import of statik for swagger UI support
 	_ "github.com/AstraProtocol/astra/v2/client/docs/statik"
-	"github.com/evmos/ethermint/encoding"
+	"github.com/evmos/evmos/v12/encoding"
 
-	srvflags "github.com/evmos/ethermint/server/flags"
-	ethermint "github.com/evmos/ethermint/types"
-	"github.com/evmos/ethermint/x/evm"
-	evmrest "github.com/evmos/ethermint/x/evm/client/rest"
-	evmkeeper "github.com/evmos/ethermint/x/evm/keeper"
-	evmtypes "github.com/evmos/ethermint/x/evm/types"
+	srvflags "github.com/evmos/evmos/v12/server/flags"
+	evmostypes "github.com/evmos/evmos/v12/types"
+	"github.com/evmos/evmos/v12/x/evm"
+	evmkeeper "github.com/evmos/evmos/v12/x/evm/keeper"
+	evmtypes "github.com/evmos/evmos/v12/x/evm/types"
 
-	"github.com/evmos/ethermint/x/feemarket"
-	feemarketkeeper "github.com/evmos/ethermint/x/feemarket/keeper"
-	feemarkettypes "github.com/evmos/ethermint/x/feemarket/types"
+	"github.com/evmos/evmos/v12/x/feemarket"
+	feemarketkeeper "github.com/evmos/evmos/v12/x/feemarket/keeper"
+	feemarkettypes "github.com/evmos/evmos/v12/x/feemarket/types"
 
 	"github.com/AstraProtocol/astra/v2/app/ante"
-	"github.com/evmos/evmos/v6/x/erc20"
-	erc20client "github.com/evmos/evmos/v6/x/erc20/client"
-	erc20keeper "github.com/evmos/evmos/v6/x/erc20/keeper"
-	erc20types "github.com/evmos/evmos/v6/x/erc20/types"
-	"github.com/evmos/evmos/v6/x/vesting"
-	vestingkeeper "github.com/evmos/evmos/v6/x/vesting/keeper"
-	vestingtypes "github.com/evmos/evmos/v6/x/vesting/types"
+	"github.com/evmos/evmos/v12/x/vesting"
+	vestingkeeper "github.com/evmos/evmos/v12/x/vesting/keeper"
+	vestingtypes "github.com/evmos/evmos/v12/x/vesting/types"
 )
 
 func init() {
@@ -131,7 +131,7 @@ func init() {
 
 	DefaultNodeHome = filepath.Join(userHomeDir, ".astrad")
 	// manually update the power reduction by replacing micro (u) -> atto (a) astra
-	sdk.DefaultPowerReduction = ethermint.PowerReduction
+	sdk.DefaultPowerReduction = evmostypes.PowerReduction
 }
 
 const (
@@ -159,11 +159,15 @@ var (
 		mint.AppModuleBasic{},
 		distr.AppModuleBasic{},
 		gov.NewAppModuleBasic(
-			paramsclient.ProposalHandler, distrclient.ProposalHandler, upgradeclient.ProposalHandler, upgradeclient.CancelProposalHandler,
-			ibcclientclient.UpdateClientProposalHandler, ibcclientclient.UpgradeProposalHandler,
-			// Astra proposal types
-			erc20client.RegisterCoinProposalHandler, erc20client.RegisterERC20ProposalHandler,
-			erc20client.ToggleTokenConversionProposalHandler,
+			[]govclient.ProposalHandler{
+				paramsclient.ProposalHandler, distrclient.ProposalHandler,
+				upgradeclient.LegacyProposalHandler,
+				upgradeclient.LegacyCancelProposalHandler,
+				ibcclientclient.UpdateClientProposalHandler, ibcclientclient.UpgradeProposalHandler,
+				// Astra proposal types
+				//erc20client.RegisterCoinProposalHandler, erc20client.RegisterERC20ProposalHandler,
+				//erc20client.ToggleTokenConversionProposalHandler,
+			},
 		),
 		params.AppModuleBasic{},
 		crisis.AppModuleBasic{},
@@ -177,7 +181,6 @@ var (
 		vesting.AppModuleBasic{},
 		evm.AppModuleBasic{},
 		feemarket.AppModuleBasic{},
-		erc20.AppModuleBasic{},
 		feeburn.AppModuleBasic{},
 	)
 
@@ -191,7 +194,6 @@ var (
 		govtypes.ModuleName:            {authtypes.Burner},
 		ibctransfertypes.ModuleName:    {authtypes.Minter, authtypes.Burner},
 		evmtypes.ModuleName:            {authtypes.Minter, authtypes.Burner}, // used for secure addition and subtraction of balance using module account
-		erc20types.ModuleName:          {authtypes.Minter, authtypes.Burner},
 		feeBurnTypes.ModuleName:        {authtypes.Burner},
 	}
 
@@ -221,9 +223,9 @@ type Astra struct {
 	invCheckPeriod uint
 
 	// keys to access the substores
-	keys    map[string]*sdk.KVStoreKey
-	tkeys   map[string]*sdk.TransientStoreKey
-	memKeys map[string]*sdk.MemoryStoreKey
+	keys    map[string]*storetypes.KVStoreKey
+	tkeys   map[string]*storetypes.TransientStoreKey
+	memKeys map[string]*storetypes.MemoryStoreKey
 
 	// keepers
 	AccountKeeper    authkeeper.AccountKeeper
@@ -247,7 +249,6 @@ type Astra struct {
 	ScopedTransferKeeper capabilitykeeper.ScopedKeeper
 
 	// Ethermint keepers
-	Erc20Keeper     erc20keeper.Keeper
 	EvmKeeper       *evmkeeper.Keeper
 	FeeMarketKeeper feemarketkeeper.Keeper
 
@@ -281,7 +282,7 @@ func NewAstraApp(
 	appOpts servertypes.AppOptions,
 	baseAppOptions ...func(*baseapp.BaseApp),
 ) *Astra {
-	appCodec := encodingConfig.Marshaler
+	appCodec := encodingConfig.Codec
 	cdc := encodingConfig.Amino
 	interfaceRegistry := encodingConfig.InterfaceRegistry
 
@@ -306,11 +307,11 @@ func NewAstraApp(
 		feegrant.StoreKey, authzkeeper.StoreKey,
 		// ibc keys
 		ibchost.StoreKey, ibctransfertypes.StoreKey,
-		// ethermint keys
+		// evmostypes keys
 		evmtypes.StoreKey, feemarkettypes.StoreKey,
 		// astra keys
 		minttypes.StoreKey,
-		erc20types.StoreKey,
+		//erc20types.StoreKey,
 		vestingtypes.StoreKey,
 		feeBurnTypes.StoreKey,
 	)
@@ -333,7 +334,8 @@ func NewAstraApp(
 	// init params keeper and subspaces
 	app.ParamsKeeper = initParamsKeeper(appCodec, cdc, keys[paramstypes.StoreKey], tkeys[paramstypes.TStoreKey])
 	// set the BaseApp's parameter store
-	bApp.SetParamStore(app.ParamsKeeper.Subspace(baseapp.Paramspace).WithKeyTable(paramskeeper.ConsensusParamsKeyTable()))
+	bApp.SetParamStore(app.ParamsKeeper.Subspace(baseapp.Paramspace).WithKeyTable(
+		paramstypes.ConsensusParamsKeyTable()))
 
 	// add capability keeper and ScopeToModule for ibc module
 	app.CapabilityKeeper = capabilitykeeper.NewKeeper(appCodec, keys[capabilitytypes.StoreKey], memKeys[capabilitytypes.MemStoreKey])
@@ -347,7 +349,8 @@ func NewAstraApp(
 
 	// use custom Ethermint account for contracts
 	app.AccountKeeper = authkeeper.NewAccountKeeper(
-		appCodec, keys[authtypes.StoreKey], app.GetSubspace(authtypes.ModuleName), ethermint.ProtoAccount, maccPerms,
+		appCodec, keys[authtypes.StoreKey], app.GetSubspace(authtypes.ModuleName),
+		evmostypes.ProtoAccount, maccPerms, sdk.GetConfig().GetBech32AccountAddrPrefix(),
 	)
 	app.BankKeeper = bankkeeper.NewBaseKeeper(
 		appCodec, keys[banktypes.StoreKey], app.AccountKeeper, app.GetSubspace(banktypes.ModuleName), app.BlockedAddrs(),
@@ -357,7 +360,7 @@ func NewAstraApp(
 	)
 	app.DistrKeeper = distrkeeper.NewKeeper(
 		appCodec, keys[distrtypes.StoreKey], app.GetSubspace(distrtypes.ModuleName), app.AccountKeeper, app.BankKeeper,
-		&stakingKeeper, authtypes.FeeCollectorName, app.ModuleAccountAddrs(),
+		&stakingKeeper, authtypes.FeeCollectorName,
 	)
 	app.MintKeeper = mintkeeper.NewKeeper(
 		appCodec, keys[minttypes.StoreKey], app.GetSubspace(minttypes.ModuleName), &stakingKeeper,
@@ -378,22 +381,35 @@ func NewAstraApp(
 		app.GetSubspace(crisistypes.ModuleName), invCheckPeriod, app.BankKeeper, authtypes.FeeCollectorName,
 	)
 	app.FeeGrantKeeper = feegrantkeeper.NewKeeper(appCodec, keys[feegrant.StoreKey], app.AccountKeeper)
-	app.UpgradeKeeper = upgradekeeper.NewKeeper(skipUpgradeHeights, keys[upgradetypes.StoreKey], appCodec, homePath, app.BaseApp)
+	app.UpgradeKeeper = upgradekeeper.NewKeeper(skipUpgradeHeights, keys[upgradetypes.StoreKey], appCodec,
+		homePath, app.BaseApp, authtypes.NewModuleAddress(govtypes.ModuleName).String())
 
-	app.AuthzKeeper = authzkeeper.NewKeeper(keys[authzkeeper.StoreKey], appCodec, app.BaseApp.MsgServiceRouter())
+	app.AuthzKeeper = authzkeeper.NewKeeper(keys[authzkeeper.StoreKey],
+		appCodec, app.BaseApp.MsgServiceRouter(), app.AccountKeeper)
 
 	tracer := cast.ToString(appOpts.Get(srvflags.EVMTracer))
 
 	// Create Ethermint keepers
 	app.FeeMarketKeeper = feemarketkeeper.NewKeeper(
-		appCodec, app.GetSubspace(feemarkettypes.ModuleName), keys[feemarkettypes.StoreKey], tkeys[feemarkettypes.TransientKey],
+		appCodec,
+		authtypes.NewModuleAddress(govtypes.ModuleName),
+		keys[feemarkettypes.StoreKey],
+		tkeys[feemarkettypes.TransientKey],
+		app.GetSubspace(feemarkettypes.ModuleName),
 	)
 
 	// Create Ethermint keepers
 	app.EvmKeeper = evmkeeper.NewKeeper(
-		appCodec, keys[evmtypes.StoreKey], tkeys[evmtypes.TransientKey], app.GetSubspace(evmtypes.ModuleName),
-		app.AccountKeeper, app.BankKeeper, &stakingKeeper, app.FeeMarketKeeper,
+		appCodec,
+		keys[evmtypes.StoreKey],
+		tkeys[evmtypes.TransientKey],
+		authtypes.NewModuleAddress(govtypes.ModuleName),
+		app.AccountKeeper,
+		app.BankKeeper,
+		&stakingKeeper,
+		app.FeeMarketKeeper,
 		tracer,
+		app.GetSubspace(evmtypes.ModuleName),
 	)
 
 	// Create IBC Keeper
@@ -402,17 +418,25 @@ func NewAstraApp(
 	)
 
 	// register the proposal types
-	govRouter := govtypes.NewRouter()
-	govRouter.AddRoute(govtypes.RouterKey, govtypes.ProposalHandler).
+	govRouter := govv1beta1.NewRouter()
+	govRouter.AddRoute(govtypes.RouterKey, govv1beta1.ProposalHandler).
 		AddRoute(paramproposal.RouterKey, params.NewParamChangeProposalHandler(app.ParamsKeeper)).
 		AddRoute(distrtypes.RouterKey, distr.NewCommunityPoolSpendProposalHandler(app.DistrKeeper)).
 		AddRoute(upgradetypes.RouterKey, upgrade.NewSoftwareUpgradeProposalHandler(app.UpgradeKeeper)).
-		AddRoute(ibchost.RouterKey, ibcclient.NewClientProposalHandler(app.IBCKeeper.ClientKeeper)).
-		AddRoute(erc20types.RouterKey, erc20.NewErc20ProposalHandler(&app.Erc20Keeper))
+		AddRoute(ibchost.RouterKey, ibcclient.NewClientProposalHandler(app.IBCKeeper.ClientKeeper))
+	//AddRoute(erc20types.RouterKey, erc20.NewErc20ProposalHandler(&app.Erc20Keeper))
 
+	govConfig := govtypes.DefaultConfig()
 	govKeeper := govkeeper.NewKeeper(
-		appCodec, keys[govtypes.StoreKey], app.GetSubspace(govtypes.ModuleName),
-		app.AccountKeeper, app.BankKeeper, &stakingKeeper, govRouter,
+		appCodec,
+		keys[govtypes.StoreKey],
+		app.GetSubspace(govtypes.ModuleName),
+		app.AccountKeeper,
+		app.BankKeeper,
+		&stakingKeeper,
+		govRouter,
+		app.MsgServiceRouter(),
+		govConfig,
 	)
 
 	// register the staking hooks
@@ -430,10 +454,17 @@ func NewAstraApp(
 		app.AccountKeeper, app.BankKeeper, app.StakingKeeper,
 	)
 
-	app.Erc20Keeper = erc20keeper.NewKeeper(
-		keys[erc20types.StoreKey], appCodec, app.GetSubspace(erc20types.ModuleName),
-		app.AccountKeeper, app.BankKeeper, app.EvmKeeper,
-	)
+	////Temporarily turn of Erc20Keeper due to unusability
+	//app.Erc20Keeper = erc20keeper.NewKeeper(
+	//	keys[erc20types.StoreKey],
+	//	appCodec,
+	//	authtypes.NewModuleAddress(govtypes.ModuleName),
+	//	app.AccountKeeper,
+	//	app.BankKeeper,
+	//	app.EvmKeeper,
+	//	app.StakingKeeper,
+	//	nil,
+	//)
 
 	app.GovKeeper = *govKeeper.SetHooks(
 		govtypes.NewMultiGovHooks(),
@@ -441,7 +472,7 @@ func NewAstraApp(
 
 	app.EvmKeeper = app.EvmKeeper.SetHooks(
 		evmkeeper.NewMultiEvmHooks(
-			app.Erc20Keeper.Hooks(),
+			//app.Erc20Keeper.Hooks(),
 			app.FeeBurnKeeper.Hooks(),
 		),
 	)
@@ -498,7 +529,7 @@ func NewAstraApp(
 			app.AccountKeeper, app.StakingKeeper, app.BaseApp.DeliverTx,
 			encodingConfig.TxConfig,
 		),
-		auth.NewAppModule(appCodec, app.AccountKeeper, ethermintapp.RandomGenesisAccounts),
+		auth.NewAppModule(appCodec, app.AccountKeeper, authsims.RandomGenesisAccounts),
 		bank.NewAppModule(appCodec, app.BankKeeper, app.AccountKeeper),
 		capability.NewAppModule(appCodec, *app.CapabilityKeeper),
 		crisis.NewAppModule(&app.CrisisKeeper, skipGenesisInvariants),
@@ -516,11 +547,11 @@ func NewAstraApp(
 		ibc.NewAppModule(app.IBCKeeper),
 		transferModule,
 		// Ethermint app modules
-		evm.NewAppModule(app.EvmKeeper, app.AccountKeeper),
-		feemarket.NewAppModule(app.FeeMarketKeeper),
+		evm.NewAppModule(app.EvmKeeper, app.AccountKeeper, app.GetSubspace(evmtypes.ModuleName)),
+		feemarket.NewAppModule(app.FeeMarketKeeper, app.GetSubspace(feemarkettypes.ModuleName)),
 		// Astra app modules
 		mint.NewAppModule(appCodec, app.MintKeeper, app.AccountKeeper),
-		erc20.NewAppModule(app.Erc20Keeper, app.AccountKeeper),
+		//erc20.NewAppModule(app.Erc20Keeper, app.AccountKeeper, app.GetSubspace(erc20types.ModuleName)),
 		vesting.NewAppModule(app.VestingKeeper, app.AccountKeeper, app.BankKeeper, app.StakingKeeper),
 		feeburn.NewAppModule(appCodec, app.FeeBurnKeeper, app.AccountKeeper, app.BankKeeper),
 	)
@@ -553,7 +584,7 @@ func NewAstraApp(
 		feegrant.ModuleName,
 		paramstypes.ModuleName,
 		vestingtypes.ModuleName,
-		erc20types.ModuleName,
+		//erc20types.ModuleName,
 		feeBurnTypes.ModuleName,
 	)
 
@@ -580,7 +611,7 @@ func NewAstraApp(
 		upgradetypes.ModuleName,
 		// Astra modules
 		vestingtypes.ModuleName,
-		erc20types.ModuleName,
+		//erc20types.ModuleName,
 		feeBurnTypes.ModuleName,
 	)
 
@@ -613,7 +644,7 @@ func NewAstraApp(
 
 		// Astra modules
 		vestingtypes.ModuleName,
-		erc20types.ModuleName,
+		//erc20types.ModuleName,
 		feeBurnTypes.ModuleName,
 		// NOTE: crisis module must go at the end to check for invariants on each module
 		crisistypes.ModuleName,
@@ -632,7 +663,7 @@ func NewAstraApp(
 	// NOTE: this is not required apps that don't use the simulator for fuzz testing
 	// transactions
 	app.sm = module.NewSimulationManager(
-		auth.NewAppModule(appCodec, app.AccountKeeper, ethermintapp.RandomGenesisAccounts),
+		auth.NewAppModule(appCodec, app.AccountKeeper, authsims.RandomGenesisAccounts),
 		bank.NewAppModule(appCodec, app.BankKeeper, app.AccountKeeper),
 		capability.NewAppModule(appCodec, *app.CapabilityKeeper),
 		gov.NewAppModule(appCodec, app.GovKeeper, app.AccountKeeper, app.BankKeeper),
@@ -646,8 +677,8 @@ func NewAstraApp(
 		authzmodule.NewAppModule(appCodec, app.AuthzKeeper, app.AccountKeeper, app.BankKeeper, app.interfaceRegistry),
 		ibc.NewAppModule(app.IBCKeeper),
 		transferModule,
-		evm.NewAppModule(app.EvmKeeper, app.AccountKeeper),
-		feemarket.NewAppModule(app.FeeMarketKeeper),
+		evm.NewAppModule(app.EvmKeeper, app.AccountKeeper, app.GetSubspace(evmtypes.ModuleName)),
+		feemarket.NewAppModule(app.FeeMarketKeeper, app.GetSubspace(feemarkettypes.ModuleName)),
 	)
 
 	app.sm.RegisterStoreDecoders()
@@ -662,19 +693,22 @@ func NewAstraApp(
 	app.SetBeginBlocker(app.BeginBlocker)
 	maxGasWanted := cast.ToUint64(appOpts.Get(srvflags.EVMMaxTxGasWanted))
 	options := ante.HandlerOptions{
-		AccountKeeper:   app.AccountKeeper,
-		BankKeeper:      app.BankKeeper,
-		BankKeeperFork:  app.BankKeeper,
-		EvmKeeper:       app.EvmKeeper,
-		StakingKeeper:   app.StakingKeeper,
-		FeegrantKeeper:  app.FeeGrantKeeper,
-		FeeBurnKeeper:   app.FeeBurnKeeper,
-		IBCKeeper:       app.IBCKeeper,
-		FeeMarketKeeper: app.FeeMarketKeeper,
-		SignModeHandler: encodingConfig.TxConfig.SignModeHandler(),
-		SigGasConsumer:  SigVerificationGasConsumer,
-		Cdc:             appCodec,
-		MaxTxGasWanted:  maxGasWanted,
+		AccountKeeper:          app.AccountKeeper,
+		BankKeeper:             app.BankKeeper,
+		BankKeeperFork:         app.BankKeeper,
+		EvmKeeper:              app.EvmKeeper,
+		DistributionKeeper:     app.DistrKeeper,
+		StakingKeeper:          app.StakingKeeper,
+		FeegrantKeeper:         app.FeeGrantKeeper,
+		ExtensionOptionChecker: evmostypes.HasDynamicFeeExtensionOption,
+		FeeBurnKeeper:          app.FeeBurnKeeper,
+		IBCKeeper:              app.IBCKeeper,
+		FeeMarketKeeper:        app.FeeMarketKeeper,
+		SignModeHandler:        encodingConfig.TxConfig.SignModeHandler(),
+		SigGasConsumer:         SigVerificationGasConsumer,
+		Cdc:                    appCodec,
+		MaxTxGasWanted:         maxGasWanted,
+		TxFeeChecker:           evmante.NewDynamicFeeChecker(app.EvmKeeper),
 	}
 
 	if err := options.Validate(); err != nil {
@@ -794,21 +828,21 @@ func (app *Astra) InterfaceRegistry() types.InterfaceRegistry {
 // GetKey returns the KVStoreKey for the provided store key.
 //
 // NOTE: This is solely to be used for testing purposes.
-func (app *Astra) GetKey(storeKey string) *sdk.KVStoreKey {
+func (app *Astra) GetKey(storeKey string) *storetypes.KVStoreKey {
 	return app.keys[storeKey]
 }
 
 // GetTKey returns the TransientStoreKey for the provided store key.
 //
 // NOTE: This is solely to be used for testing purposes.
-func (app *Astra) GetTKey(storeKey string) *sdk.TransientStoreKey {
+func (app *Astra) GetTKey(storeKey string) *storetypes.TransientStoreKey {
 	return app.tkeys[storeKey]
 }
 
 // GetMemKey returns the MemStoreKey for the provided mem key.
 //
 // NOTE: This is solely used for testing purposes.
-func (app *Astra) GetMemKey(storeKey string) *sdk.MemoryStoreKey {
+func (app *Astra) GetMemKey(storeKey string) *storetypes.MemoryStoreKey {
 	return app.memKeys[storeKey]
 }
 
@@ -829,9 +863,6 @@ func (app *Astra) SimulationManager() *module.SimulationManager {
 // API server.
 func (app *Astra) RegisterAPIRoutes(apiSvr *api.Server, apiConfig config.APIConfig) {
 	clientCtx := apiSvr.ClientCtx
-	rpc.RegisterRoutes(clientCtx, apiSvr.Router)
-
-	evmrest.RegisterTxRoutes(clientCtx, apiSvr.Router)
 
 	// Register new tx routes from grpc-gateway.
 	authtx.RegisterGRPCGatewayRoutes(clientCtx, apiSvr.GRPCGatewayRouter)
@@ -839,7 +870,6 @@ func (app *Astra) RegisterAPIRoutes(apiSvr *api.Server, apiConfig config.APIConf
 	tmservice.RegisterGRPCGatewayRoutes(clientCtx, apiSvr.GRPCGatewayRouter)
 
 	// Register legacy and grpc-gateway routes for all modules.
-	ModuleBasics.RegisterRESTRoutes(clientCtx, apiSvr.Router)
 	ModuleBasics.RegisterGRPCGatewayRoutes(clientCtx, apiSvr.GRPCGatewayRouter)
 
 	// register swagger API from root so that other applications can override easily
@@ -853,7 +883,17 @@ func (app *Astra) RegisterTxService(clientCtx client.Context) {
 }
 
 func (app *Astra) RegisterTendermintService(clientCtx client.Context) {
-	tmservice.RegisterTendermintService(app.BaseApp.GRPCQueryRouter(), clientCtx, app.interfaceRegistry)
+	tmservice.RegisterTendermintService(clientCtx,
+		app.BaseApp.GRPCQueryRouter(),
+		app.interfaceRegistry,
+		app.Query,
+	)
+}
+
+// RegisterNodeService registers the node gRPC service on the provided
+// application gRPC query router.
+func (app *Astra) RegisterNodeService(clientCtx client.Context) {
+	node.RegisterNodeService(clientCtx, app.GRPCQueryRouter())
 }
 
 // IBC Go TestingApp functions
@@ -864,7 +904,7 @@ func (app *Astra) GetBaseApp() *baseapp.BaseApp {
 }
 
 // GetStakingKeeper implements the TestingApp interface.
-func (app *Astra) GetStakingKeeper() stakingkeeper.Keeper {
+func (app *Astra) GetStakingKeeper() ibctestingtypes.StakingKeeper {
 	return app.StakingKeeper
 }
 
@@ -907,7 +947,7 @@ func GetMaccPerms() map[string][]string {
 
 // initParamsKeeper init params keeper and its subspaces
 func initParamsKeeper(
-	appCodec codec.BinaryCodec, legacyAmino *codec.LegacyAmino, key, tkey sdk.StoreKey,
+	appCodec codec.BinaryCodec, legacyAmino *codec.LegacyAmino, key, tkey storetypes.StoreKey,
 ) paramskeeper.Keeper {
 	paramsKeeper := paramskeeper.NewKeeper(appCodec, legacyAmino, key, tkey)
 
@@ -917,16 +957,16 @@ func initParamsKeeper(
 	paramsKeeper.Subspace(stakingtypes.ModuleName)
 	paramsKeeper.Subspace(distrtypes.ModuleName)
 	paramsKeeper.Subspace(slashingtypes.ModuleName)
-	paramsKeeper.Subspace(govtypes.ModuleName).WithKeyTable(govtypes.ParamKeyTable())
+	paramsKeeper.Subspace(govtypes.ModuleName).WithKeyTable(govv1.ParamKeyTable())
 	paramsKeeper.Subspace(crisistypes.ModuleName)
 	paramsKeeper.Subspace(ibctransfertypes.ModuleName)
 	paramsKeeper.Subspace(ibchost.ModuleName)
-	// ethermint subspaces
+	// evmostypes subspaces
 	paramsKeeper.Subspace(evmtypes.ModuleName)
 	paramsKeeper.Subspace(feemarkettypes.ModuleName)
 	// astra subspaces
 	paramsKeeper.Subspace(minttypes.ModuleName)
-	paramsKeeper.Subspace(erc20types.ModuleName)
+	//paramsKeeper.Subspace(erc20types.ModuleName)
 	paramsKeeper.Subspace(feeBurnTypes.ModuleName)
 	return paramsKeeper
 }

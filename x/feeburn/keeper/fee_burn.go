@@ -26,7 +26,7 @@ func (k Keeper) BurnFee(ctx sdk.Context, bankKeeper feeburntype.BankKeeper,
 		burnAmount := params.FeeBurn.MulInt(c.Amount).RoundInt()
 		if burnAmount.IsPositive() && strings.Compare(c.Denom, config.BaseDenom) == 0 {
 			feeBurn = feeBurn.Add(sdk.NewCoin(c.Denom, burnAmount))
-			totalBurnAmount = totalBurnAmount.Add(burnAmount.ToDec())
+			totalBurnAmount = totalBurnAmount.Add(sdk.NewDecFromInt(burnAmount))
 		}
 	}
 	err := bankKeeper.SendCoinsFromModuleToModule(ctx, authtypes.FeeCollectorName, feeburntype.ModuleName, feeBurn)

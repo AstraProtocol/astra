@@ -7,9 +7,9 @@ import (
 	"github.com/cosmos/cosmos-sdk/types/tx/signing"
 	authsigning "github.com/cosmos/cosmos-sdk/x/auth/signing"
 	minttypes "github.com/cosmos/cosmos-sdk/x/mint/types"
-	"github.com/evmos/ethermint/crypto/ethsecp256k1"
-	"github.com/evmos/ethermint/encoding"
-	feemarkettypes "github.com/evmos/ethermint/x/feemarket/types"
+	"github.com/evmos/evmos/v12/crypto/ethsecp256k1"
+	"github.com/evmos/evmos/v12/encoding"
+	feemarkettypes "github.com/evmos/evmos/v12/x/feemarket/types"
 	"math"
 	"testing"
 

@@ -4,6 +4,8 @@ import (
 	"errors"
 	"fmt"
 	"github.com/cosmos/cosmos-sdk/client/pruning"
+	snapshotstypes "github.com/cosmos/cosmos-sdk/snapshots/types"
+	tmconfig "github.com/tendermint/tendermint/config"
 	"io"
 	"os"
 	"path/filepath"
@@ -32,12 +34,12 @@ import (
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
 	"github.com/cosmos/cosmos-sdk/x/crisis"
 	genutilcli "github.com/cosmos/cosmos-sdk/x/genutil/client/cli"
-	ethermintclient "github.com/evmos/ethermint/client"
-	"github.com/evmos/ethermint/client/debug"
-	"github.com/evmos/ethermint/encoding"
-	ethermintserver "github.com/evmos/ethermint/server"
-	servercfg "github.com/evmos/ethermint/server/config"
-	srvflags "github.com/evmos/ethermint/server/flags"
+	evmosclient "github.com/evmos/evmos/v12/client"
+	"github.com/evmos/evmos/v12/client/debug"
+	"github.com/evmos/evmos/v12/encoding"
+	evmosserver "github.com/evmos/evmos/v12/server"
+	servercfg "github.com/evmos/evmos/v12/server/config"
+	srvflags "github.com/evmos/evmos/v12/server/flags"
 
 	"github.com/AstraProtocol/astra/v2/app"
 	cmdcfg "github.com/AstraProtocol/astra/v2/cmd/config"
@@ -53,7 +55,7 @@ const (
 func NewRootCmd() (*cobra.Command, params.EncodingConfig) {
 	encodingConfig := encoding.MakeConfig(app.ModuleBasics)
 	initClientCtx := client.Context{}.
-		WithCodec(encodingConfig.Marshaler).
+		WithCodec(encodingConfig.Codec).
 		WithInterfaceRegistry(encodingConfig.InterfaceRegistry).
 		WithTxConfig(encodingConfig.TxConfig).
 		WithLegacyAmino(encodingConfig.Amino).
@@ -95,7 +97,7 @@ func NewRootCmd() (*cobra.Command, params.EncodingConfig) {
 			// TODO: define our own token
 			customAppTemplate, customAppConfig := initAppConfig()
 
-			return sdkserver.InterceptConfigsPreRunHandler(cmd, customAppTemplate, customAppConfig)
+			return sdkserver.InterceptConfigsPreRunHandler(cmd, customAppTemplate, customAppConfig, tmconfig.DefaultConfig())
 		},
 	}
 
@@ -110,7 +112,7 @@ func NewRootCmd() (*cobra.Command, params.EncodingConfig) {
 	}
 
 	rootCmd.AddCommand(
-		ethermintclient.ValidateChainID(
+		evmosclient.ValidateChainID(
 			InitCmd(app.ModuleBasics, app.DefaultNodeHome),
 		),
 		genutilcli.CollectGenTxsCmd(banktypes.GenesisBalancesIterator{}, app.DefaultNodeHome),
@@ -125,14 +127,15 @@ func NewRootCmd() (*cobra.Command, params.EncodingConfig) {
 		pruning.PruningCmd(ac.newApp),
 	)
 
-	ethermintserver.AddCommands(rootCmd, app.DefaultNodeHome, ac.newApp, ac.appExport, addModuleInitFlags)
+	evmosserver.AddCommands(rootCmd,
+		evmosserver.NewDefaultStartOptions(ac.newApp, app.DefaultNodeHome), ac.appExport, addModuleInitFlags)
 
 	// add keybase, auxiliary RPC, query, and tx child commands
 	rootCmd.AddCommand(
 		rpc.StatusCommand(),
 		queryCommand(),
 		txCommand(),
-		ethermintclient.KeyCommands(app.DefaultNodeHome),
+		evmosclient.KeyCommands(app.DefaultNodeHome),
 	)
 	rootCmd, err := srvflags.AddTxFlags(rootCmd)
 	if err != nil {
@@ -140,7 +143,7 @@ func NewRootCmd() (*cobra.Command, params.EncodingConfig) {
 	}
 
 	// add rosetta
-	rootCmd.AddCommand(sdkserver.RosettaCommand(encodingConfig.InterfaceRegistry, encodingConfig.Marshaler))
+	rootCmd.AddCommand(sdkserver.RosettaCommand(encodingConfig.InterfaceRegistry, encodingConfig.Codec))
 
 	return rootCmd, encodingConfig
 }
@@ -247,6 +250,10 @@ func (a appCreator) newApp(logger log.Logger, db dbm.DB, traceStore io.Writer, a
 	if err != nil {
 		panic(err)
 	}
+	snapshotOptions := snapshotstypes.NewSnapshotOptions(
+		cast.ToUint64(appOpts.Get(sdkserver.FlagStateSyncSnapshotInterval)),
+		cast.ToUint32(appOpts.Get(sdkserver.FlagStateSyncSnapshotKeepRecent)),
+	)
 
 	astraApp := app.NewAstraApp(
 		logger, db, traceStore, true, skipUpgradeHeights,
@@ -262,9 +269,7 @@ func (a appCreator) newApp(logger log.Logger, db dbm.DB, traceStore io.Writer, a
 		baseapp.SetInterBlockCache(cache),
 		baseapp.SetTrace(cast.ToBool(appOpts.Get(sdkserver.FlagTrace))),
 		baseapp.SetIndexEvents(cast.ToStringSlice(appOpts.Get(sdkserver.FlagIndexEvents))),
-		baseapp.SetSnapshotStore(snapshotStore),
-		baseapp.SetSnapshotInterval(cast.ToUint64(appOpts.Get(sdkserver.FlagStateSyncSnapshotInterval))),
-		baseapp.SetSnapshotKeepRecent(cast.ToUint32(appOpts.Get(sdkserver.FlagStateSyncSnapshotKeepRecent))),
+		baseapp.SetSnapshot(snapshotStore, snapshotOptions),
 		baseapp.SetIAVLCacheSize(cast.ToInt(appOpts.Get(sdkserver.FlagIAVLCacheSize))),
 		baseapp.SetIAVLDisableFastNode(cast.ToBool(appOpts.Get(sdkserver.FlagDisableIAVLFastNode))),
 	)

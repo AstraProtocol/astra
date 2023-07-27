@@ -13,13 +13,13 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/staking"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 
-	"github.com/evmos/ethermint/encoding"
+	"github.com/evmos/evmos/v12/encoding"
 )
 
 // NewDefaultGenesisState generates the default state for the application.
 func NewDefaultGenesisState() simapp.GenesisState {
 	encCfg := encoding.MakeConfig(ModuleBasics)
-	return ModuleBasics.DefaultGenesis(encCfg.Marshaler)
+	return ModuleBasics.DefaultGenesis(encCfg.Codec)
 }
 
 // ExportAppStateAndValidators exports the state of the application for a genesis

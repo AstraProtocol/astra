@@ -8,12 +8,12 @@ import (
 	"github.com/AstraProtocol/astra/v2/app"
 	ibctesting "github.com/AstraProtocol/astra/v2/ibc/testing"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	transfertypes "github.com/cosmos/ibc-go/v3/modules/apps/transfer/types"
-	clienttypes "github.com/cosmos/ibc-go/v3/modules/core/02-client/types"
-	channeltypes "github.com/cosmos/ibc-go/v3/modules/core/04-channel/types"
-	ibcgotesting "github.com/cosmos/ibc-go/v3/testing"
+	transfertypes "github.com/cosmos/ibc-go/v6/modules/apps/transfer/types"
+	clienttypes "github.com/cosmos/ibc-go/v6/modules/core/02-client/types"
+	channeltypes "github.com/cosmos/ibc-go/v6/modules/core/04-channel/types"
+	ibcgotesting "github.com/cosmos/ibc-go/v6/testing"
 
-	erc20types "github.com/evmos/evmos/v6/x/erc20/types"
+	erc20types "github.com/evmos/evmos/v12/x/erc20/types"
 )
 
 type IBCTestingSuite struct {
@@ -107,13 +107,13 @@ func (suite *IBCTestingSuite) Test2() {
 
 	path := suite.pathEVM
 
-	transfer := transfertypes.NewFungibleTokenPacketData("aastra", "100", sender, receiver)
+	transfer := transfertypes.NewFungibleTokenPacketData("aastra", "100", sender, receiver, "")
 	bz := transfertypes.ModuleCdc.MustMarshalJSON(&transfer)
 	packet := channeltypes.NewPacket(bz, 1, path.EndpointA.ChannelConfig.PortID, path.EndpointA.ChannelID,
 		path.EndpointB.ChannelConfig.PortID, path.EndpointB.ChannelID, timeoutHeight, 0)
 
 	// send on endpointA
-	err = path.EndpointA.SendPacket(packet)
+	_, err = path.EndpointA.SendPacket(packet.TimeoutHeight, packet.TimeoutTimestamp, packet.Data)
 	suite.Require().NoError(err)
 
 	// receive on endpointB

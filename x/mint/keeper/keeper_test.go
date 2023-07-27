@@ -6,7 +6,7 @@ import (
 	"github.com/AstraProtocol/astra/v2/x/mint/types"
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	evm "github.com/evmos/ethermint/x/evm/types"
+	evm "github.com/evmos/evmos/v12/x/evm/types"
 	"github.com/onsi/ginkgo/v2"
 	"github.com/onsi/gomega"
 	"github.com/stretchr/testify/require"

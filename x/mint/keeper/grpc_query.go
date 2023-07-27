@@ -67,7 +67,7 @@ func (k Keeper) CirculatingSupply(
 	ctx := sdk.UnwrapSDKContext(c)
 	circulatingSupply := k.StakingTokenSupply(ctx)
 
-	coin := sdk.NewDecCoinFromDec(config.BaseDenom, circulatingSupply.ToDec())
+	coin := sdk.NewDecCoinFromDec(config.BaseDenom, sdk.NewDecFromInt(circulatingSupply))
 
 	return &types.QueryCirculatingSupplyResponse{CirculatingSupply: coin}, nil
 }

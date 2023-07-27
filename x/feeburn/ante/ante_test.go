@@ -5,7 +5,7 @@ import (
 	"github.com/AstraProtocol/astra/v2/x/feeburn/ante"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
-	"github.com/evmos/ethermint/crypto/ethsecp256k1"
+	"github.com/evmos/evmos/v12/crypto/ethsecp256k1"
 	"math"
 )
 

@@ -32,7 +32,8 @@ func CreateUpgradeHandler(
 }
 
 func UpdateGovParams(ctx sdk.Context, gk govkeeper.Keeper, pk paramskeeper.Keeper) {
+	tmp := time.Hour
 	votingParams := gk.GetVotingParams(ctx)
-	votingParams.VotingPeriod = time.Hour
+	votingParams.VotingPeriod = &tmp
 	gk.SetVotingParams(ctx, votingParams)
 }

@@ -6,6 +6,7 @@ import (
 	"bufio"
 	"encoding/json"
 	"fmt"
+	govv1 "github.com/cosmos/cosmos-sdk/x/gov/types/v1"
 	"net"
 	"os"
 	"path/filepath"
@@ -36,12 +37,12 @@ import (
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 
-	"github.com/evmos/ethermint/crypto/hd"
-	"github.com/evmos/ethermint/server/config"
-	srvflags "github.com/evmos/ethermint/server/flags"
+	"github.com/evmos/evmos/v12/crypto/hd"
+	"github.com/evmos/evmos/v12/server/config"
+	srvflags "github.com/evmos/evmos/v12/server/flags"
 
-	ethermint "github.com/evmos/ethermint/types"
-	evmtypes "github.com/evmos/ethermint/x/evm/types"
+	ethermint "github.com/evmos/evmos/v12/types"
+	evmtypes "github.com/evmos/evmos/v12/x/evm/types"
 
 	cmdcfg "github.com/AstraProtocol/astra/v2/cmd/config"
 	astrakr "github.com/AstraProtocol/astra/v2/crypto/keyring"
@@ -267,7 +268,7 @@ func initTestnetFiles(
 		memo := fmt.Sprintf("%s@%s:%d", nodeIDs[i], ip, listenP2pPort)
 		genFiles = append(genFiles, nodeConfig.GenesisFile())
 
-		kb, err := keyring.New(sdk.KeyringServiceName(), args.keyringBackend, nodeDir, inBuf, astrakr.Option())
+		kb, err := keyring.New(sdk.KeyringServiceName(), args.keyringBackend, nodeDir, inBuf, clientCtx.Codec, astrakr.Option())
 		if err != nil {
 			return err
 		}
@@ -349,7 +350,7 @@ func initTestnetFiles(
 
 		customAppTemplate, customAppConfig := config.AppConfig(cmdcfg.BaseDenom)
 		srvconfig.SetConfigTemplate(customAppTemplate)
-		if err := sdkserver.InterceptConfigsPreRunHandler(cmd, customAppTemplate, customAppConfig); err != nil {
+		if err := sdkserver.InterceptConfigsPreRunHandler(cmd, customAppTemplate, customAppConfig, tmconfig.DefaultConfig()); err != nil {
 			return err
 		}
 
@@ -408,7 +409,7 @@ func initGenFiles(
 	stakingGenState.Params.BondDenom = coinDenom
 	appGenState[stakingtypes.ModuleName] = clientCtx.Codec.MustMarshalJSON(&stakingGenState)
 
-	var govGenState govtypes.GenesisState
+	var govGenState govv1.GenesisState
 	clientCtx.Codec.MustUnmarshalJSON(appGenState[govtypes.ModuleName], &govGenState)
 
 	govGenState.DepositParams.MinDeposit[0].Denom = coinDenom

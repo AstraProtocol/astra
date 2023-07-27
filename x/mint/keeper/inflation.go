@@ -4,7 +4,7 @@ import (
 	"github.com/AstraProtocol/astra/v2/cmd/config"
 	"github.com/AstraProtocol/astra/v2/x/mint/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	ethermint "github.com/evmos/ethermint/types"
+	ethermint "github.com/evmos/evmos/v12/types"
 )
 
 // GetProportions returns the amount of coins given its distribution and the total amount of coins.
@@ -72,9 +72,9 @@ func (k Keeper) AllocateInflation(ctx sdk.Context, mintedCoin sdk.Coin) error {
 
 	// update the total minted provision
 	totalMintedProvision := k.GetTotalMintProvision(ctx)
-	mintedAmt := mintedCoin.Amount.ToDec()
+	mintedAmt := sdk.NewDecFromInt(mintedCoin.Amount)
 	if mintedCoin.Denom == config.DisplayDenom {
-		mintedAmt = mintedAmt.Mul(ethermint.PowerReduction.ToDec())
+		mintedAmt = mintedAmt.Mul(sdk.NewDecFromInt(ethermint.PowerReduction))
 	}
 	newTotalMintedProvision := totalMintedProvision.Add(mintedAmt)
 	k.SetTotalMintProvision(ctx, newTotalMintedProvision)

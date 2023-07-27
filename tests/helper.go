@@ -10,6 +10,7 @@ import (
 	stakingkeeper "github.com/cosmos/cosmos-sdk/x/staking/keeper"
 	"github.com/ethereum/go-ethereum/core"
 	"github.com/ethereum/go-ethereum/core/vm"
+	utiltx "github.com/evmos/evmos/v12/testutil/tx"
 	"github.com/stretchr/testify/mock"
 	"math"
 	"math/big"
@@ -38,18 +39,17 @@ import (
 
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
 	ethtypes "github.com/ethereum/go-ethereum/core/types"
-	"github.com/evmos/ethermint/crypto/ethsecp256k1"
-	"github.com/evmos/ethermint/encoding"
-	evmConfig "github.com/evmos/ethermint/server/config"
-	"github.com/evmos/ethermint/tests"
-	ethermint "github.com/evmos/ethermint/types"
-	"github.com/evmos/ethermint/x/evm/statedb"
-	evm "github.com/evmos/ethermint/x/evm/types"
-	feemarkettypes "github.com/evmos/ethermint/x/feemarket/types"
+	"github.com/evmos/evmos/v12/crypto/ethsecp256k1"
+	"github.com/evmos/evmos/v12/encoding"
+	evmConfig "github.com/evmos/evmos/v12/server/config"
+	ethermint "github.com/evmos/evmos/v12/types"
+	"github.com/evmos/evmos/v12/x/evm/statedb"
+	evm "github.com/evmos/evmos/v12/x/evm/types"
+	feemarkettypes "github.com/evmos/evmos/v12/x/feemarket/types"
 
 	"github.com/AstraProtocol/astra/v2/app"
 	"github.com/AstraProtocol/astra/v2/contracts"
-	"github.com/evmos/evmos/v6/x/erc20/types"
+	"github.com/evmos/evmos/v12/x/erc20/types"
 )
 
 type KeeperTestSuite struct {
@@ -120,7 +120,7 @@ func (suite *KeeperTestSuite) DoSetupTest(t require.TestingT) {
 	priv, err := ethsecp256k1.GenerateKey()
 	require.NoError(t, err)
 	suite.address = common.BytesToAddress(priv.PubKey().Address().Bytes())
-	suite.signer = tests.NewSigner(priv)
+	suite.signer = utiltx.NewSigner(priv)
 
 	// consensus key
 	priv, err = ethsecp256k1.GenerateKey()
@@ -263,17 +263,17 @@ func (suite *KeeperTestSuite) DeployContract(name, symbol string, decimals uint8
 
 	nonce := suite.app.EvmKeeper.GetNonce(suite.ctx, suite.address)
 
-	erc20DeployTx := evm.NewTxContract(
-		chainID,
-		nonce,
-		nil,     // amount
-		res.Gas, // gasLimit
-		nil,     // gasPrice
-		suite.app.FeeMarketKeeper.GetBaseFee(suite.ctx),
-		big.NewInt(1),
-		data,                   // input
-		&ethtypes.AccessList{}, // accesses
-	)
+	erc20DeployTx := evm.NewTx(&evm.EvmTxArgs{
+		Nonce:     nonce,
+		GasLimit:  res.Gas,
+		Input:     data,
+		GasFeeCap: suite.app.FeeMarketKeeper.GetBaseFee(suite.ctx),
+		GasPrice:  nil,
+		ChainID:   chainID,
+		Amount:    nil,
+		GasTipCap: big.NewInt(1),
+		Accesses:  &ethtypes.AccessList{},
+	})
 
 	erc20DeployTx.From = suite.address.Hex()
 	err = erc20DeployTx.Sign(ethtypes.LatestSignerForChainID(chainID), suite.signer)
@@ -312,17 +312,17 @@ func (suite *KeeperTestSuite) DeployContractMaliciousDelayed(name string, symbol
 
 	nonce := suite.app.EvmKeeper.GetNonce(suite.ctx, suite.address)
 
-	erc20DeployTx := evm.NewTxContract(
-		chainID,
-		nonce,
-		nil,     // amount
-		res.Gas, // gasLimit
-		nil,     // gasPrice
-		suite.app.FeeMarketKeeper.GetBaseFee(suite.ctx),
-		big.NewInt(1),
-		data,                   // input
-		&ethtypes.AccessList{}, // accesses
-	)
+	erc20DeployTx := evm.NewTx(&evm.EvmTxArgs{
+		Nonce:     nonce,
+		GasLimit:  res.Gas,
+		Input:     data,
+		GasFeeCap: suite.app.FeeMarketKeeper.GetBaseFee(suite.ctx),
+		GasPrice:  nil,
+		ChainID:   chainID,
+		Amount:    nil,
+		GasTipCap: big.NewInt(1),
+		Accesses:  &ethtypes.AccessList{},
+	})
 
 	erc20DeployTx.From = suite.address.Hex()
 	err = erc20DeployTx.Sign(ethtypes.LatestSignerForChainID(chainID), suite.signer)
@@ -355,17 +355,17 @@ func (suite *KeeperTestSuite) DeployContractDirectBalanceManipulation(name strin
 
 	nonce := suite.app.EvmKeeper.GetNonce(suite.ctx, suite.address)
 
-	erc20DeployTx := evm.NewTxContract(
-		chainID,
-		nonce,
-		nil,     // amount
-		res.Gas, // gasLimit
-		nil,     // gasPrice
-		suite.app.FeeMarketKeeper.GetBaseFee(suite.ctx),
-		big.NewInt(1),
-		data,                   // input
-		&ethtypes.AccessList{}, // accesses
-	)
+	erc20DeployTx := evm.NewTx(&evm.EvmTxArgs{
+		Nonce:     nonce,
+		GasLimit:  res.Gas,
+		Input:     data,
+		GasFeeCap: suite.app.FeeMarketKeeper.GetBaseFee(suite.ctx),
+		GasPrice:  nil,
+		ChainID:   chainID,
+		Amount:    nil,
+		GasTipCap: big.NewInt(1),
+		Accesses:  &ethtypes.AccessList{},
+	})
 
 	erc20DeployTx.From = suite.address.Hex()
 	err = erc20DeployTx.Sign(ethtypes.LatestSignerForChainID(chainID), suite.signer)
@@ -434,16 +434,18 @@ func (suite *KeeperTestSuite) sendTx(contractAddr, from common.Address, transfer
 	suite.MintFeeCollector(sdk.NewCoins(sdk.NewCoin(config.BaseDenom, sdk.NewInt(suite.app.FeeMarketKeeper.GetBaseFee(suite.ctx).Int64()*int64(res.Gas)))))
 
 	ercTransferTx := evm.NewTx(
-		chainID,
-		nonce,
-		&contractAddr,
-		nil,
-		res.Gas,
-		nil,
-		suite.app.FeeMarketKeeper.GetBaseFee(suite.ctx),
-		big.NewInt(1),
-		transferData,
-		&ethtypes.AccessList{}, // accesses
+		&evm.EvmTxArgs{
+			Nonce:     nonce,
+			GasLimit:  res.Gas,
+			Input:     transferData,
+			GasFeeCap: suite.app.FeeMarketKeeper.GetBaseFee(suite.ctx),
+			GasPrice:  nil,
+			ChainID:   chainID,
+			Amount:    nil,
+			GasTipCap: big.NewInt(1),
+			To:        nil,
+			Accesses:  &ethtypes.AccessList{},
+		},
 	)
 
 	ercTransferTx.From = suite.address.Hex()

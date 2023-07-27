@@ -20,13 +20,13 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/genutil"
 	genutiltypes "github.com/cosmos/cosmos-sdk/x/genutil/types"
 
-	ethermint "github.com/evmos/ethermint/types"
-	evmtypes "github.com/evmos/ethermint/x/evm/types"
+	ethermint "github.com/evmos/evmos/v12/types"
+	evmtypes "github.com/evmos/evmos/v12/x/evm/types"
 
 	astrakr "github.com/AstraProtocol/astra/v2/crypto/keyring"
 
-	vestingcli "github.com/evmos/evmos/v6/x/vesting/client/cli"
-	vestingtypes "github.com/evmos/evmos/v6/x/vesting/types"
+	vestingcli "github.com/evmos/evmos/v12/x/vesting/client/cli"
+	vestingtypes "github.com/evmos/evmos/v12/x/vesting/types"
 )
 
 const (
@@ -67,6 +67,7 @@ contain valid denominations. Accounts may optionally be supplied with vesting pa
 						keyringBackend,
 						clientCtx.HomeDir,
 						inBuf,
+						clientCtx.Codec,
 						astrakr.Option(),
 					)
 					if err != nil {
@@ -78,10 +79,13 @@ contain valid denominations. Accounts may optionally be supplied with vesting pa
 
 				info, err := kr.Key(args[0])
 				if err != nil {
-					return fmt.Errorf("failed to get address from Keyring: %w", err)
+					return fmt.Errorf("failed to get info from Keyring: %w", err)
 				}
 
-				addr = info.GetAddress()
+				addr, err = info.GetAddress()
+				if err != nil {
+					return fmt.Errorf("failed to get address from keyring: %w", err)
+				}
 			}
 
 			coins, err := sdk.ParseCoinsNormalized(args[1])

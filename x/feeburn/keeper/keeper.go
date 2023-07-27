@@ -15,7 +15,7 @@ import (
 type (
 	Keeper struct {
 		cdc              codec.BinaryCodec
-		storeKey         sdk.StoreKey
+		storeKey         storetypes.StoreKey
 		paramstore       paramtypes.Subspace
 		bankKeeper       types.BankKeeper
 		feeCollectorName string
