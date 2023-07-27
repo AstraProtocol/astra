@@ -40,7 +40,6 @@ type HandlerOptions struct {
 	SigGasConsumer         func(meter sdk.GasMeter, sig signing.SignatureV2, params authtypes.Params) error
 	Cdc                    codec.BinaryCodec
 	MaxTxGasWanted         uint64
-	TxFeeChecker           anteutils.TxFeeChecker
 }
 
 // Validate checks if the keepers are defined
@@ -111,8 +110,8 @@ func newCosmosAnteHandler(options HandlerOptions) sdk.AnteHandler {
 		ante.NewTxTimeoutHeightDecorator(),
 		ante.NewValidateMemoDecorator(options.AccountKeeper),
 		ante.NewConsumeGasForTxSizeDecorator(options.AccountKeeper),
-		cosmosante.NewDeductFeeDecorator(options.AccountKeeper, options.BankKeeper, options.DistributionKeeper,
-			options.FeegrantKeeper, options.StakingKeeper, options.TxFeeChecker),
+		ante.NewDeductFeeDecorator(options.AccountKeeper, options.BankKeeper,
+			options.FeegrantKeeper, nil),
 		feeburnante.NewFeeBurnDecorator(options.BankKeeperFork, options.FeeBurnKeeper),
 		NewVestingDelegationDecorator(options.AccountKeeper, options.StakingKeeper, options.Cdc), // TODO(thanhnv): sync with evmos
 		NewValidatorCommissionDecorator(options.Cdc),
@@ -143,8 +142,8 @@ func newCosmosAnteHandlerEip712(options HandlerOptions) sdk.AnteHandler {
 		ante.NewTxTimeoutHeightDecorator(),
 		ante.NewValidateMemoDecorator(options.AccountKeeper),
 		ante.NewConsumeGasForTxSizeDecorator(options.AccountKeeper),
-		cosmosante.NewDeductFeeDecorator(options.AccountKeeper, options.BankKeeper, options.DistributionKeeper,
-			options.FeegrantKeeper, options.StakingKeeper, options.TxFeeChecker),
+		ante.NewDeductFeeDecorator(options.AccountKeeper, options.BankKeeper,
+			options.FeegrantKeeper, nil),
 		feeburnante.NewFeeBurnDecorator(options.BankKeeperFork, options.FeeBurnKeeper),
 		NewVestingDelegationDecorator(options.AccountKeeper, options.StakingKeeper, options.Cdc), //TODO(vesting delegation)
 		NewValidatorCommissionDecorator(options.Cdc),

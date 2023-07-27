@@ -274,7 +274,7 @@ func sendEth(priv *ethsecp256k1.PrivKey) abci.ResponseDeliverTx {
 
 	msgEthereumTx := evmtypes.NewTx(&evmtypes.EvmTxArgs{
 		Nonce:     nonce,
-		GasLimit:  10000,
+		GasLimit:  100000,
 		Input:     nil,
 		GasFeeCap: s.app.FeeMarketKeeper.GetBaseFee(s.ctx),
 		GasPrice:  big.NewInt(10000),

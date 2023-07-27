@@ -201,8 +201,8 @@ filippo.io/edwards25519 v1.0.0-rc.1 h1:m0VOOB23frXZvAOK44usCgLWvtsxIoMCTBGJZlpmG
 filippo.io/edwards25519 v1.0.0-rc.1/go.mod h1:N1IkdkCkiLB6tki+MYJoSx2JTY9NUlxZE7eHn5EwJns=
 git.sr.ht/~sircmpwn/getopt v0.0.0-20191230200459-23622cc906b3/go.mod h1:wMEGFFFNuPos7vHmWXfszqImLppbc0wEhh6JBfJIUgw=
 git.sr.ht/~sircmpwn/go-bare v0.0.0-20210406120253-ab86bc2846d9/go.mod h1:BVJwbDfVjCjoFiKrhkei6NdGcZYpkDkdyCdg1ukytRA=
-github.com/AstraProtocol/evmos/v12 v12.1.6-astra-v3 h1:mSqJmTBH5hpCw/TVrNb1IVz4eZFQkZ7dYpvxMSYnGfk=
-github.com/AstraProtocol/evmos/v12 v12.1.6-astra-v3/go.mod h1:hvVvUCZeMNq4Z+Xf1/r+iF0OrbBRc73u1Hm7F9PwIKc=
+github.com/AstraProtocol/evmos/v12 v12.1.6-astra-v4 h1:VQbEh7zTN61t7YmDzGTWDf39CTdk8opmay9DW5m8Vvg=
+github.com/AstraProtocol/evmos/v12 v12.1.6-astra-v4/go.mod h1:62wMcZtnS2zW+rfteMhOabIY9DoD4x7dcbOGpH272uU=
 github.com/Azure/azure-sdk-for-go/sdk/azcore v0.21.1/go.mod h1:fBF9PQNqB8scdgpZ3ufzaLntG0AG7C1WjPMsiFOmfHM=
 github.com/Azure/azure-sdk-for-go/sdk/internal v0.8.3/go.mod h1:KLF4gFr6DcKFZwSuH8w8yEK6DpFl3LP5rhdvAb7Yz5I=
 github.com/Azure/azure-sdk-for-go/sdk/storage/azblob v0.3.0/go.mod h1:tPaiy8S5bQ+S5sOiDlINkp7+Ef339+Nz5L5XO+cnOHo=

@@ -10,7 +10,6 @@ import (
 	govclient "github.com/cosmos/cosmos-sdk/x/gov/client"
 	govv1beta1 "github.com/cosmos/cosmos-sdk/x/gov/types/v1beta1"
 	ibctestingtypes "github.com/cosmos/ibc-go/v6/testing/types"
-	evmante "github.com/evmos/evmos/v12/app/ante/evm"
 	"io"
 	"net/http"
 	"os"
@@ -708,7 +707,6 @@ func NewAstraApp(
 		SigGasConsumer:         SigVerificationGasConsumer,
 		Cdc:                    appCodec,
 		MaxTxGasWanted:         maxGasWanted,
-		TxFeeChecker:           evmante.NewDynamicFeeChecker(app.EvmKeeper),
 	}
 
 	if err := options.Validate(); err != nil {
