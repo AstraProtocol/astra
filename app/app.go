@@ -389,15 +389,23 @@ func NewAstraApp(
 	tracer := cast.ToString(appOpts.Get(srvflags.EVMTracer))
 
 	// Create Ethermint keepers
+	feeMarketSubspace := app.GetSubspace(feemarkettypes.ModuleName)
+	if !feeMarketSubspace.HasKeyTable() {
+		feeMarketSubspace.WithKeyTable(feemarkettypes.ParamKeyTable())
+	}
 	app.FeeMarketKeeper = feemarketkeeper.NewKeeper(
 		appCodec,
 		authtypes.NewModuleAddress(govtypes.ModuleName),
 		keys[feemarkettypes.StoreKey],
 		tkeys[feemarkettypes.TransientKey],
-		app.GetSubspace(feemarkettypes.ModuleName),
+		feeMarketSubspace,
 	)
 
 	// Create Ethermint keepers
+	evmSubspace := app.GetSubspace(evmtypes.ModuleName)
+	if !evmSubspace.HasKeyTable() {
+		evmSubspace.WithKeyTable(evmtypes.ParamKeyTable())
+	}
 	app.EvmKeeper = evmkeeper.NewKeeper(
 		appCodec,
 		keys[evmtypes.StoreKey],
@@ -408,7 +416,7 @@ func NewAstraApp(
 		&stakingKeeper,
 		app.FeeMarketKeeper,
 		tracer,
-		app.GetSubspace(evmtypes.ModuleName),
+		evmSubspace,
 	)
 
 	// Create IBC Keeper
