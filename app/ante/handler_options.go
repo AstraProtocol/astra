@@ -25,21 +25,20 @@ import (
 // HandlerOptions defines the list of module keepers required to run the Evmos
 // AnteHandler decorators.
 type HandlerOptions struct {
-	AccountKeeper          evmtypes.AccountKeeper
-	BankKeeper             evmtypes.BankKeeper
-	BankKeeperFork         feeburntypes.BankKeeper
-	IBCKeeper              *ibckeeper.Keeper
-	FeeMarketKeeper        evmante.FeeMarketKeeper
-	StakingKeeper          vestingtypes.StakingKeeper
-	EvmKeeper              evmante.EVMKeeper
-	DistributionKeeper     anteutils.DistributionKeeper
-	FeegrantKeeper         ante.FeegrantKeeper
-	ExtensionOptionChecker ante.ExtensionOptionChecker
-	FeeBurnKeeper          feeburntypes.FeeBurnKeeper
-	SignModeHandler        authsigning.SignModeHandler
-	SigGasConsumer         func(meter sdk.GasMeter, sig signing.SignatureV2, params authtypes.Params) error
-	Cdc                    codec.BinaryCodec
-	MaxTxGasWanted         uint64
+	AccountKeeper      evmtypes.AccountKeeper
+	BankKeeper         evmtypes.BankKeeper
+	BankKeeperFork     feeburntypes.BankKeeper
+	IBCKeeper          *ibckeeper.Keeper
+	FeeMarketKeeper    evmante.FeeMarketKeeper
+	StakingKeeper      vestingtypes.StakingKeeper
+	EvmKeeper          evmante.EVMKeeper
+	DistributionKeeper anteutils.DistributionKeeper
+	FeegrantKeeper     ante.FeegrantKeeper
+	FeeBurnKeeper      feeburntypes.FeeBurnKeeper
+	SignModeHandler    authsigning.SignModeHandler
+	SigGasConsumer     func(meter sdk.GasMeter, sig signing.SignatureV2, params authtypes.Params) error
+	Cdc                codec.BinaryCodec
+	MaxTxGasWanted     uint64
 }
 
 // Validate checks if the keepers are defined
@@ -104,14 +103,14 @@ func newCosmosAnteHandler(options HandlerOptions) sdk.AnteHandler {
 			sdk.MsgTypeURL(&sdkvesting.MsgCreateVestingAccount{}),
 		),
 		ante.NewSetUpContextDecorator(),
-		ante.NewExtensionOptionsDecorator(options.ExtensionOptionChecker),
+		ante.NewExtensionOptionsDecorator(nil), // see https://github.com/cosmos/cosmos-sdk/blob/release/v0.46.x/CHANGELOG.md#api-breaking-changes-5
 		cosmosante.NewMinGasPriceDecorator(options.FeeMarketKeeper, options.EvmKeeper),
 		ante.NewValidateBasicDecorator(),
 		ante.NewTxTimeoutHeightDecorator(),
 		ante.NewValidateMemoDecorator(options.AccountKeeper),
 		ante.NewConsumeGasForTxSizeDecorator(options.AccountKeeper),
 		ante.NewDeductFeeDecorator(options.AccountKeeper, options.BankKeeper,
-			options.FeegrantKeeper, nil),
+			options.FeegrantKeeper, nil), // see https://github.com/cosmos/cosmos-sdk/blob/release/v0.46.x/CHANGELOG.md#api-breaking-changes-5
 		feeburnante.NewFeeBurnDecorator(options.BankKeeperFork, options.FeeBurnKeeper),
 		NewVestingDelegationDecorator(options.AccountKeeper, options.StakingKeeper, options.Cdc), // TODO(thanhnv): sync with evmos
 		NewValidatorCommissionDecorator(options.Cdc),

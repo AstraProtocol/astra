@@ -10,6 +10,10 @@ import (
 	govclient "github.com/cosmos/cosmos-sdk/x/gov/client"
 	govv1beta1 "github.com/cosmos/cosmos-sdk/x/gov/types/v1beta1"
 	ibctestingtypes "github.com/cosmos/ibc-go/v6/testing/types"
+	"github.com/evmos/evmos/v12/x/erc20"
+	erc20client "github.com/evmos/evmos/v12/x/erc20/client"
+	erc20keeper "github.com/evmos/evmos/v12/x/erc20/keeper"
+	erc20types "github.com/evmos/evmos/v12/x/erc20/types"
 	"io"
 	"net/http"
 	"os"
@@ -164,8 +168,8 @@ var (
 				upgradeclient.LegacyCancelProposalHandler,
 				ibcclientclient.UpdateClientProposalHandler, ibcclientclient.UpgradeProposalHandler,
 				// Astra proposal types
-				//erc20client.RegisterCoinProposalHandler, erc20client.RegisterERC20ProposalHandler,
-				//erc20client.ToggleTokenConversionProposalHandler,
+				erc20client.RegisterCoinProposalHandler, erc20client.RegisterERC20ProposalHandler,
+				erc20client.ToggleTokenConversionProposalHandler,
 			},
 		),
 		params.AppModuleBasic{},
@@ -180,6 +184,7 @@ var (
 		vesting.AppModuleBasic{},
 		evm.AppModuleBasic{},
 		feemarket.AppModuleBasic{},
+		erc20.AppModuleBasic{},
 		feeburn.AppModuleBasic{},
 	)
 
@@ -194,6 +199,7 @@ var (
 		ibctransfertypes.ModuleName:    {authtypes.Minter, authtypes.Burner},
 		evmtypes.ModuleName:            {authtypes.Minter, authtypes.Burner}, // used for secure addition and subtraction of balance using module account
 		feeBurnTypes.ModuleName:        {authtypes.Burner},
+		erc20types.ModuleName:          {authtypes.Minter, authtypes.Burner},
 	}
 
 	// module accounts that are allowed to receive tokens
@@ -255,6 +261,7 @@ type Astra struct {
 	MintKeeper    mintkeeper.Keeper
 	VestingKeeper vestingkeeper.Keeper
 	FeeBurnKeeper feeBurnKeeper.Keeper
+	Erc20Keeper   erc20keeper.Keeper
 
 	// the module manager
 	mm *module.Manager
@@ -310,7 +317,7 @@ func NewAstraApp(
 		evmtypes.StoreKey, feemarkettypes.StoreKey,
 		// astra keys
 		minttypes.StoreKey,
-		//erc20types.StoreKey,
+		erc20types.StoreKey,
 		vestingtypes.StoreKey,
 		feeBurnTypes.StoreKey,
 	)
@@ -430,8 +437,8 @@ func NewAstraApp(
 		AddRoute(paramproposal.RouterKey, params.NewParamChangeProposalHandler(app.ParamsKeeper)).
 		AddRoute(distrtypes.RouterKey, distr.NewCommunityPoolSpendProposalHandler(app.DistrKeeper)).
 		AddRoute(upgradetypes.RouterKey, upgrade.NewSoftwareUpgradeProposalHandler(app.UpgradeKeeper)).
-		AddRoute(ibchost.RouterKey, ibcclient.NewClientProposalHandler(app.IBCKeeper.ClientKeeper))
-	//AddRoute(erc20types.RouterKey, erc20.NewErc20ProposalHandler(&app.Erc20Keeper))
+		AddRoute(ibchost.RouterKey, ibcclient.NewClientProposalHandler(app.IBCKeeper.ClientKeeper)).
+		AddRoute(erc20types.RouterKey, erc20.NewErc20ProposalHandler(&app.Erc20Keeper))
 
 	govConfig := govtypes.DefaultConfig()
 	govKeeper := govkeeper.NewKeeper(
@@ -462,16 +469,16 @@ func NewAstraApp(
 	)
 
 	////Temporarily turn of Erc20Keeper due to unusability
-	//app.Erc20Keeper = erc20keeper.NewKeeper(
-	//	keys[erc20types.StoreKey],
-	//	appCodec,
-	//	authtypes.NewModuleAddress(govtypes.ModuleName),
-	//	app.AccountKeeper,
-	//	app.BankKeeper,
-	//	app.EvmKeeper,
-	//	app.StakingKeeper,
-	//	nil,
-	//)
+	app.Erc20Keeper = erc20keeper.NewKeeper(
+		keys[erc20types.StoreKey],
+		appCodec,
+		authtypes.NewModuleAddress(govtypes.ModuleName),
+		app.AccountKeeper,
+		app.BankKeeper,
+		app.EvmKeeper,
+		app.StakingKeeper,
+		nil,
+	)
 
 	app.GovKeeper = *govKeeper.SetHooks(
 		govtypes.NewMultiGovHooks(),
@@ -558,7 +565,7 @@ func NewAstraApp(
 		feemarket.NewAppModule(app.FeeMarketKeeper, app.GetSubspace(feemarkettypes.ModuleName)),
 		// Astra app modules
 		mint.NewAppModule(appCodec, app.MintKeeper, app.AccountKeeper),
-		//erc20.NewAppModule(app.Erc20Keeper, app.AccountKeeper, app.GetSubspace(erc20types.ModuleName)),
+		erc20.NewAppModule(app.Erc20Keeper, app.AccountKeeper, app.GetSubspace(erc20types.ModuleName)),
 		vesting.NewAppModule(app.VestingKeeper, app.AccountKeeper, app.BankKeeper, app.StakingKeeper),
 		feeburn.NewAppModule(appCodec, app.FeeBurnKeeper, app.AccountKeeper, app.BankKeeper),
 	)
@@ -591,7 +598,7 @@ func NewAstraApp(
 		feegrant.ModuleName,
 		paramstypes.ModuleName,
 		vestingtypes.ModuleName,
-		//erc20types.ModuleName,
+		erc20types.ModuleName,
 		feeBurnTypes.ModuleName,
 	)
 
@@ -618,7 +625,7 @@ func NewAstraApp(
 		upgradetypes.ModuleName,
 		// Astra modules
 		vestingtypes.ModuleName,
-		//erc20types.ModuleName,
+		erc20types.ModuleName,
 		feeBurnTypes.ModuleName,
 	)
 
@@ -651,7 +658,7 @@ func NewAstraApp(
 
 		// Astra modules
 		vestingtypes.ModuleName,
-		//erc20types.ModuleName,
+		erc20types.ModuleName,
 		feeBurnTypes.ModuleName,
 		// NOTE: crisis module must go at the end to check for invariants on each module
 		crisistypes.ModuleName,
@@ -700,21 +707,20 @@ func NewAstraApp(
 	app.SetBeginBlocker(app.BeginBlocker)
 	maxGasWanted := cast.ToUint64(appOpts.Get(srvflags.EVMMaxTxGasWanted))
 	options := ante.HandlerOptions{
-		AccountKeeper:          app.AccountKeeper,
-		BankKeeper:             app.BankKeeper,
-		BankKeeperFork:         app.BankKeeper,
-		EvmKeeper:              app.EvmKeeper,
-		DistributionKeeper:     app.DistrKeeper,
-		StakingKeeper:          app.StakingKeeper,
-		FeegrantKeeper:         app.FeeGrantKeeper,
-		ExtensionOptionChecker: evmostypes.HasDynamicFeeExtensionOption,
-		FeeBurnKeeper:          app.FeeBurnKeeper,
-		IBCKeeper:              app.IBCKeeper,
-		FeeMarketKeeper:        app.FeeMarketKeeper,
-		SignModeHandler:        encodingConfig.TxConfig.SignModeHandler(),
-		SigGasConsumer:         SigVerificationGasConsumer,
-		Cdc:                    appCodec,
-		MaxTxGasWanted:         maxGasWanted,
+		AccountKeeper:      app.AccountKeeper,
+		BankKeeper:         app.BankKeeper,
+		BankKeeperFork:     app.BankKeeper,
+		EvmKeeper:          app.EvmKeeper,
+		DistributionKeeper: app.DistrKeeper,
+		StakingKeeper:      app.StakingKeeper,
+		FeegrantKeeper:     app.FeeGrantKeeper,
+		FeeBurnKeeper:      app.FeeBurnKeeper,
+		IBCKeeper:          app.IBCKeeper,
+		FeeMarketKeeper:    app.FeeMarketKeeper,
+		SignModeHandler:    encodingConfig.TxConfig.SignModeHandler(),
+		SigGasConsumer:     SigVerificationGasConsumer,
+		Cdc:                appCodec,
+		MaxTxGasWanted:     maxGasWanted,
 	}
 
 	if err := options.Validate(); err != nil {
