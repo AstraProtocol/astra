@@ -1,9 +1,9 @@
 package keeper_test
 
 import (
-	"github.com/AstraProtocol/astra/v2/app"
-	"github.com/AstraProtocol/astra/v2/cmd/config"
-	"github.com/AstraProtocol/astra/v2/x/mint/types"
+	"github.com/AstraProtocol/astra/v3/app"
+	"github.com/AstraProtocol/astra/v3/cmd/config"
+	"github.com/AstraProtocol/astra/v3/x/mint/types"
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	evm "github.com/evmos/evmos/v12/x/evm/types"

@@ -2,9 +2,9 @@ package feeburn_test
 
 import (
 	"fmt"
-	"github.com/AstraProtocol/astra/v2/app"
-	"github.com/AstraProtocol/astra/v2/x/feeburn"
-	"github.com/AstraProtocol/astra/v2/x/feeburn/types"
+	"github.com/AstraProtocol/astra/v3/app"
+	"github.com/AstraProtocol/astra/v3/x/feeburn"
+	"github.com/AstraProtocol/astra/v3/x/feeburn/types"
 	utiltx "github.com/evmos/evmos/v12/testutil/tx"
 
 	"testing"

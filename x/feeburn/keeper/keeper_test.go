@@ -1,9 +1,9 @@
 package keeper_test
 
 import (
-	"github.com/AstraProtocol/astra/v2/app"
-	"github.com/AstraProtocol/astra/v2/cmd/config"
-	"github.com/AstraProtocol/astra/v2/x/feeburn/types"
+	"github.com/AstraProtocol/astra/v3/app"
+	"github.com/AstraProtocol/astra/v3/cmd/config"
+	"github.com/AstraProtocol/astra/v3/x/feeburn/types"
 	"github.com/cosmos/cosmos-sdk/crypto/keyring"
 	minttypes "github.com/cosmos/cosmos-sdk/x/mint/types"
 	utiltx "github.com/evmos/evmos/v12/testutil/tx"

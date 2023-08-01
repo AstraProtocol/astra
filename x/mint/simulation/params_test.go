@@ -6,7 +6,7 @@ import (
 
 	"github.com/stretchr/testify/require"
 
-	"github.com/AstraProtocol/astra/v2/x/mint/simulation"
+	"github.com/AstraProtocol/astra/v3/x/mint/simulation"
 )
 
 func TestParamChangest(t *testing.T) {

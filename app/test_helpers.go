@@ -2,7 +2,7 @@ package app
 
 import (
 	"encoding/json"
-	minttypes "github.com/AstraProtocol/astra/v2/x/mint/types"
+	minttypes "github.com/AstraProtocol/astra/v3/x/mint/types"
 	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
 	cryptocodec "github.com/cosmos/cosmos-sdk/crypto/codec"
 	"github.com/cosmos/cosmos-sdk/crypto/keys/secp256k1"
@@ -24,7 +24,7 @@ import (
 	"github.com/evmos/evmos/v12/encoding"
 	feemarkettypes "github.com/evmos/evmos/v12/x/feemarket/types"
 
-	"github.com/AstraProtocol/astra/v2/cmd/config"
+	"github.com/AstraProtocol/astra/v3/cmd/config"
 )
 
 func init() {

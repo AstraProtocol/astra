@@ -6,11 +6,11 @@ import (
 
 	"github.com/stretchr/testify/require"
 
+	"github.com/AstraProtocol/astra/v3/x/mint/simulation"
+	"github.com/AstraProtocol/astra/v3/x/mint/types"
 	"github.com/cosmos/cosmos-sdk/simapp"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/kv"
-	"github.com/AstraProtocol/astra/v2/x/mint/simulation"
-	"github.com/AstraProtocol/astra/v2/x/mint/types"
 )
 
 func TestDecodeStore(t *testing.T) {

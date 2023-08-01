@@ -3,8 +3,8 @@ package mint
 import (
 	"time"
 
-	"github.com/AstraProtocol/astra/v2/x/mint/keeper"
-	"github.com/AstraProtocol/astra/v2/x/mint/types"
+	"github.com/AstraProtocol/astra/v3/x/mint/keeper"
+	"github.com/AstraProtocol/astra/v3/x/mint/types"
 	"github.com/cosmos/cosmos-sdk/telemetry"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )

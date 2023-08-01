@@ -6,7 +6,7 @@ const (
 
 	TestnetUpgradeHeight = 5_000_000
 
-	MainnetUpgradeHeight = 5000000
+	MainnetUpgradeHeight = 10
 
 	UpgradeInfo = ``
 )

@@ -16,8 +16,8 @@ import (
 	evmante "github.com/evmos/evmos/v12/app/ante/evm"
 	evmtypes "github.com/evmos/evmos/v12/x/evm/types"
 
-	feeburnante "github.com/AstraProtocol/astra/v2/x/feeburn/ante"
-	feeburntypes "github.com/AstraProtocol/astra/v2/x/feeburn/types"
+	feeburnante "github.com/AstraProtocol/astra/v3/x/feeburn/ante"
+	feeburntypes "github.com/AstraProtocol/astra/v3/x/feeburn/types"
 	anteutils "github.com/evmos/evmos/v12/app/ante/utils"
 	vestingtypes "github.com/evmos/evmos/v12/x/vesting/types"
 )

@@ -14,9 +14,9 @@ import (
 
 	abci "github.com/tendermint/tendermint/abci/types"
 
-	"github.com/AstraProtocol/astra/v2/x/feeburn/client/cli"
-	"github.com/AstraProtocol/astra/v2/x/feeburn/keeper"
-	"github.com/AstraProtocol/astra/v2/x/feeburn/types"
+	"github.com/AstraProtocol/astra/v3/x/feeburn/client/cli"
+	"github.com/AstraProtocol/astra/v3/x/feeburn/keeper"
+	"github.com/AstraProtocol/astra/v3/x/feeburn/types"
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"

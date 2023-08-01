@@ -1,7 +1,7 @@
 package keeper_test
 
 import (
-	"github.com/AstraProtocol/astra/v2/x/feeburn/types"
+	"github.com/AstraProtocol/astra/v3/x/feeburn/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 

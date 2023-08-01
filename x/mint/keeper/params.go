@@ -1,7 +1,7 @@
 package keeper
 
 import (
-	"github.com/AstraProtocol/astra/v2/x/mint/types"
+	"github.com/AstraProtocol/astra/v3/x/mint/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 

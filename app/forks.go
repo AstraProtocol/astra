@@ -1,8 +1,8 @@
 package app
 
 import (
-	v1 "github.com/AstraProtocol/astra/v2/app/upgrades/v1"
-	v3 "github.com/AstraProtocol/astra/v2/app/upgrades/v3"
+	v1 "github.com/AstraProtocol/astra/v3/app/upgrades/v1"
+	v3 "github.com/AstraProtocol/astra/v3/app/upgrades/v3"
 	"strings"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"

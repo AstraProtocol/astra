@@ -7,8 +7,8 @@ import (
 	svrcmd "github.com/cosmos/cosmos-sdk/server/cmd"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
-	"github.com/AstraProtocol/astra/v2/app"
-	cmdcfg "github.com/AstraProtocol/astra/v2/cmd/config"
+	"github.com/AstraProtocol/astra/v3/app"
+	cmdcfg "github.com/AstraProtocol/astra/v3/cmd/config"
 )
 
 func main() {

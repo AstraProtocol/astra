@@ -1,8 +1,8 @@
 package keeper
 
 import (
-	"github.com/AstraProtocol/astra/v2/cmd/config"
-	feeburntype "github.com/AstraProtocol/astra/v2/x/feeburn/types"
+	"github.com/AstraProtocol/astra/v3/cmd/config"
+	feeburntype "github.com/AstraProtocol/astra/v3/x/feeburn/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
