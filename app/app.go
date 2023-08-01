@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	v1 "github.com/AstraProtocol/astra/v2/app/upgrades/v1"
+	v3 "github.com/AstraProtocol/astra/v2/app/upgrades/v3"
 	"github.com/cosmos/cosmos-sdk/client/grpc/node"
 	storetypes "github.com/cosmos/cosmos-sdk/store/types"
 	authsims "github.com/cosmos/cosmos-sdk/x/auth/simulation"
@@ -978,7 +979,7 @@ func initParamsKeeper(
 	paramsKeeper.Subspace(feemarkettypes.ModuleName)
 	// astra subspaces
 	paramsKeeper.Subspace(minttypes.ModuleName)
-	//paramsKeeper.Subspace(erc20types.ModuleName)
+	paramsKeeper.Subspace(erc20types.ModuleName)
 	paramsKeeper.Subspace(feeBurnTypes.ModuleName)
 	return paramsKeeper
 }
@@ -992,6 +993,14 @@ func (app *Astra) setupUpgradeHandlers() {
 			app.mm, app.configurator,
 			app.GovKeeper,
 			app.ParamsKeeper,
+		),
+	)
+
+	app.UpgradeKeeper.SetUpgradeHandler(
+		v3.UpgradeName,
+		v3.CreateUpgradeHandler(
+			app.mm, app.configurator,
+			app.StakingKeeper,
 		),
 	)
 }

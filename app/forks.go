@@ -2,6 +2,7 @@ package app
 
 import (
 	v1 "github.com/AstraProtocol/astra/v2/app/upgrades/v1"
+	v3 "github.com/AstraProtocol/astra/v2/app/upgrades/v3"
 	"strings"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -21,6 +22,17 @@ func BeginBlockForks(ctx sdk.Context, app *Astra) {
 			Name:   v1.UpgradeName,
 			Info:   v1.UpgradeInfo,
 			Height: v1.UpgradeHeight,
+		}
+
+		err := app.UpgradeKeeper.ScheduleUpgrade(ctx, upgradePlan)
+		if err != nil {
+			panic(err)
+		}
+	case v3.MainnetUpgradeHeight:
+		upgradePlan := upgradetypes.Plan{
+			Name:   v3.UpgradeName,
+			Info:   v3.UpgradeInfo,
+			Height: v3.MainnetUpgradeHeight,
 		}
 
 		err := app.UpgradeKeeper.ScheduleUpgrade(ctx, upgradePlan)
