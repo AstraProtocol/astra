@@ -200,7 +200,10 @@ require (
 replace (
 	github.com/99designs/keyring => github.com/cosmos/keyring v1.1.7-0.20210622111912-ef00f8ac3d76
 	github.com/confio/ics23/go => github.com/cosmos/cosmos-sdk/ics23/go v0.8.0
+	github.com/cosmos/cosmos-sdk => /Users/lamp/go/src/github.com/cosmos/cosmos-sdk
+	github.com/cosmos/iavl => /Users/lamp/go/src/github.com/cosmos/iavl
 	github.com/evmos/evmos/v12 => github.com/AstraProtocol/evmos/v12 v12.1.6-astra-v4
 	github.com/gogo/protobuf => github.com/regen-network/protobuf v1.3.3-alpha.regen.1
+	github.com/syndtr/goleveldb => github.com/syndtr/goleveldb v1.0.1-0.20210819022825-2ae1ddf74ef7
 	github.com/tendermint/tendermint => github.com/cometbft/cometbft v0.34.29
 )
