@@ -2,11 +2,11 @@ package v3
 
 const (
 	// UpgradeName is the shared upgrade plan name for mainnet and testnet
-	UpgradeName = "v3.0.1-rc"
+	UpgradeName = "v3.0.0"
 
-	TestnetUpgradeHeight = 5_000_000
+	TestnetUpgradeHeight = 75
 
-	MainnetUpgradeHeight = 10
+	MainnetUpgradeHeight = 1000000
 
 	UpgradeInfo = ``
 )
