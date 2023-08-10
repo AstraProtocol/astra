@@ -113,7 +113,6 @@ func newCosmosAnteHandler(options HandlerOptions) sdk.AnteHandler {
 			options.FeegrantKeeper, nil), // see https://github.com/cosmos/cosmos-sdk/blob/release/v0.46.x/CHANGELOG.md#api-breaking-changes-5
 		feeburnante.NewFeeBurnDecorator(options.BankKeeperFork, options.FeeBurnKeeper),
 		NewVestingDelegationDecorator(options.AccountKeeper, options.StakingKeeper, options.Cdc), // TODO(thanhnv): sync with evmos
-		NewValidatorCommissionDecorator(options.Cdc),
 		// SetPubKeyDecorator must be called before all signature verification decorators
 		ante.NewSetPubKeyDecorator(options.AccountKeeper),
 		ante.NewValidateSigCountDecorator(options.AccountKeeper),
@@ -145,7 +144,6 @@ func newCosmosAnteHandlerEip712(options HandlerOptions) sdk.AnteHandler {
 			options.FeegrantKeeper, nil),
 		feeburnante.NewFeeBurnDecorator(options.BankKeeperFork, options.FeeBurnKeeper),
 		NewVestingDelegationDecorator(options.AccountKeeper, options.StakingKeeper, options.Cdc), //TODO(vesting delegation)
-		NewValidatorCommissionDecorator(options.Cdc),
 		// SetPubKeyDecorator must be called before all signature verification decorators
 		ante.NewSetPubKeyDecorator(options.AccountKeeper),
 		ante.NewValidateSigCountDecorator(options.AccountKeeper),
