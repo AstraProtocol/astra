@@ -31,6 +31,7 @@ func init() {
 	cfg := sdk.GetConfig()
 	config.SetBech32Prefixes(cfg)
 	config.SetBip44CoinType(cfg)
+	config.RegisterDenoms()
 }
 
 // DefaultTestingAppInit defines the IBC application used for testing
@@ -53,12 +54,6 @@ var DefaultConsensusParams = &abci.ConsensusParams{
 			tmtypes.ABCIPubKeyTypeEd25519,
 		},
 	},
-}
-
-func init() {
-	cfg := sdk.GetConfig()
-	config.SetBech32Prefixes(cfg)
-	config.SetBip44CoinType(cfg)
 }
 
 // Setup initializes a new Astra. A Nop logger is set in Astra.

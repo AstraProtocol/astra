@@ -3,6 +3,7 @@ package feeburn_test
 import (
 	"fmt"
 	"github.com/AstraProtocol/astra/v3/app"
+	"github.com/AstraProtocol/astra/v3/cmd/config"
 	"github.com/AstraProtocol/astra/v3/x/feeburn"
 	"github.com/AstraProtocol/astra/v3/x/feeburn/types"
 	utiltx "github.com/evmos/evmos/v12/testutil/tx"
@@ -30,6 +31,8 @@ type GenesisTestSuite struct {
 }
 
 func (suite *GenesisTestSuite) SetupTest() {
+	config.SetBech32Prefixes(sdk.GetConfig())
+	config.SetBip44CoinType(sdk.GetConfig())
 	// consensus key
 	consAddress := sdk.ConsAddress(utiltx.GenerateAddress().Bytes())
 
