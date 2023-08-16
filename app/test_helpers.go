@@ -31,7 +31,6 @@ func init() {
 	cfg := sdk.GetConfig()
 	config.SetBech32Prefixes(cfg)
 	config.SetBip44CoinType(cfg)
-	config.RegisterDenoms()
 }
 
 // DefaultTestingAppInit defines the IBC application used for testing
