@@ -1,8 +1,8 @@
 package keeper
 
 import (
-	"github.com/AstraProtocol/astra/v2/cmd/config"
-	feeburntype "github.com/AstraProtocol/astra/v2/x/feeburn/types"
+	"github.com/AstraProtocol/astra/v3/cmd/config"
+	feeburntype "github.com/AstraProtocol/astra/v3/x/feeburn/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
@@ -26,7 +26,7 @@ func (k Keeper) BurnFee(ctx sdk.Context, bankKeeper feeburntype.BankKeeper,
 		burnAmount := params.FeeBurn.MulInt(c.Amount).RoundInt()
 		if burnAmount.IsPositive() && strings.Compare(c.Denom, config.BaseDenom) == 0 {
 			feeBurn = feeBurn.Add(sdk.NewCoin(c.Denom, burnAmount))
-			totalBurnAmount = totalBurnAmount.Add(burnAmount.ToDec())
+			totalBurnAmount = totalBurnAmount.Add(sdk.NewDecFromInt(burnAmount))
 		}
 	}
 	err := bankKeeper.SendCoinsFromModuleToModule(ctx, authtypes.FeeCollectorName, feeburntype.ModuleName, feeBurn)

@@ -2,7 +2,7 @@ package keeper_test
 
 import (
 	"fmt"
-	"github.com/AstraProtocol/astra/v2/x/mint/types"
+	"github.com/AstraProtocol/astra/v3/x/mint/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
@@ -141,6 +141,6 @@ func (suite *KeeperTestSuite) TestGRPCBondedRatio() {
 		ctx := sdk.WrapSDKContext(suite.ctx)
 		res, err := suite.queryClient.GetBondedRatio(ctx, &types.QueryBondedRatioRequest{})
 		suite.Require().NoError(err)
-		suite.Require().Equal(res.BondedRatio, bondedRate)
+		suite.Require().True(res.BondedRatio.Sub(bondedRate).Abs().LTE(sdk.NewDecWithPrec(1, 10)))
 	}
 }

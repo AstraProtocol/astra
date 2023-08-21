@@ -1,12 +1,12 @@
 package keeper
 
 import (
-	"github.com/AstraProtocol/astra/v2/cmd/config"
+	"github.com/AstraProtocol/astra/v3/cmd/config"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/ethereum/go-ethereum/core"
 	ethtypes "github.com/ethereum/go-ethereum/core/types"
 
-	evmtypes "github.com/AstraProtocol/astra/v2/x/feeburn/types"
+	evmtypes "github.com/AstraProtocol/astra/v3/x/feeburn/types"
 )
 
 var _ evmtypes.EvmHooks = Hooks{}

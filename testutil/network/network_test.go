@@ -11,10 +11,10 @@ import (
 	"github.com/stretchr/testify/suite"
 
 	"github.com/ethereum/go-ethereum/ethclient"
-	"github.com/evmos/ethermint/server/config"
-	"github.com/evmos/ethermint/testutil/network"
+	"github.com/evmos/evmos/v12/server/config"
+	"github.com/evmos/evmos/v12/testutil/network"
 
-	astranetwork "github.com/AstraProtocol/astra/v2/testutil/network"
+	astranetwork "github.com/AstraProtocol/astra/v3/testutil/network"
 )
 
 type IntegrationTestSuite struct {

@@ -1,9 +1,120 @@
+
+<a name="v2.2.5"></a>
+## [v2.2.5](https://github.com/AstraProtocol/astra/compare/v2.2.4...v2.2.5) (2023-03-18)
+
+### Feat
+
+* Vesting account cannot delegate, create validator ([#181](https://github.com/AstraProtocol/astra/issues/181))
+
+
+<a name="v2.2.5-rc"></a>
+## [v2.2.5-rc](https://github.com/AstraProtocol/astra/compare/v2.2.4...v2.2.5-rc) (2023-03-17)
+
+### Chore
+
+* update typo
+* update CHANGELOG.md and refactor go.mod
+* update Genesis Distribution
+* update changelog
+* update init.sh
+* upadte init.sh
+* update script gen
+* update swagger
+* remove code unused
+* remove proto unused
+
+### Deps
+
+* bump ginkgo to v2.7.1, gomega to v1.26.0
+
+### Docs
+
+* add module feeburn
+
+### Feat
+
+* account vesting cannot delegate
+* add get total_fee_burn in module fee
+* add feeburn rest api
+* add module feeburn
+* add NewMinGasPriceDecorator
+
+### Fix
+
+* fix validate vesting account
+* integer overflow ([#161](https://github.com/AstraProtocol/astra/issues/161))
+* totalBurnAmount incorrect
+* miss feeburn in ante handler
+
+### Refactor
+
+* update error code
+* update logic check burn amount
+* remove default MinGasPrice
+* remove upgrade handler
+* add default DefaultMinGasPrice, DefaultMinGasMultiplier
+* add handler errror ([#160](https://github.com/AstraProtocol/astra/issues/160))
+* update proto
+* reorder module
+* update astra app
+
+### Test
+
+* check fee burn when test fail
+* update unittest for mint module
+* update integration tests
+* update test_fee_payer ([#159](https://github.com/AstraProtocol/astra/issues/159))
+* update test_fee_payer
+* update integration tests for mint
+* update integration test cases
+* upadte integration tests for mint
+* update integration test
+* add integration test evm tx
+* update integration test feeburn
+* add feeburn integration test
+* fix unittest invalid denom
+
+
 <a name="v2.2.4"></a>
-## [v2.2.4](https://github.com/AstraProtocol/astra/compare/v2.1.3...v2.2.4) (2023-01-31)
+## [v2.2.4](https://github.com/AstraProtocol/astra/compare/v2.2.4-rc...v2.2.4) (2023-02-01)
+
+### Feat
+
+* add module mint, feeburn ([#157](https://github.com/AstraProtocol/astra/issues/157))
+
+
+<a name="v2.2.4-rc"></a>
+## [v2.2.4-rc](https://github.com/AstraProtocol/astra/compare/v2.2.3-rc...v2.2.4-rc) (2023-01-12)
+
+
+<a name="v2.2.3-rc"></a>
+## [v2.2.3-rc](https://github.com/AstraProtocol/astra/compare/v2.2.2-rc...v2.2.3-rc) (2023-01-12)
+
+
+<a name="v2.2.2-rc"></a>
+## [v2.2.2-rc](https://github.com/AstraProtocol/astra/compare/v2.2.1-rc...v2.2.2-rc) (2023-01-11)
+
+### Refactor
+
+* remove default MinGasPrice
+* remove upgrade handler
+
+
+<a name="v2.2.1-rc"></a>
+## [v2.2.1-rc](https://github.com/AstraProtocol/astra/compare/v2.2.0-rc...v2.2.1-rc) (2023-01-05)
+
+### Refactor
+
+* add default DefaultMinGasPrice, DefaultMinGasMultiplier
+
+
+<a name="v2.2.0-rc"></a>
+## [v2.2.0-rc](https://github.com/AstraProtocol/astra/compare/v2.1.3...v2.2.0-rc) (2023-01-05)
 
 ### Chore
 
 * update init.sh
+* upadte init.sh
 * update script gen
 * update swagger
 * remove code unused
@@ -27,9 +138,7 @@
 * miss feeburn in ante handler
 
 ### Refactor
-* remove default MinGasPrice
-* remove upgrade handler
-* add default DefaultMinGasPrice, DefaultMinGasMultiplier
+
 * add handler errror ([#160](https://github.com/AstraProtocol/astra/issues/160))
 * update proto
 * reorder module

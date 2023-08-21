@@ -3,7 +3,7 @@ package v1
 import (
 	"time"
 
-	"github.com/AstraProtocol/astra/v2/types"
+	"github.com/AstraProtocol/astra/v3/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
 	govkeeper "github.com/cosmos/cosmos-sdk/x/gov/keeper"
@@ -32,7 +32,8 @@ func CreateUpgradeHandler(
 }
 
 func UpdateGovParams(ctx sdk.Context, gk govkeeper.Keeper, pk paramskeeper.Keeper) {
+	tmp := time.Hour
 	votingParams := gk.GetVotingParams(ctx)
-	votingParams.VotingPeriod = time.Hour
+	votingParams.VotingPeriod = &tmp
 	gk.SetVotingParams(ctx, votingParams)
 }

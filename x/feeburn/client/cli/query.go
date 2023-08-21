@@ -12,7 +12,7 @@ import (
 	// "github.com/cosmos/cosmos-sdk/client/flags"
 	// sdk "github.com/cosmos/cosmos-sdk/types"
 
-	"github.com/AstraProtocol/astra/v2/x/feeburn/types"
+	"github.com/AstraProtocol/astra/v3/x/feeburn/types"
 )
 
 // GetQueryCmd returns the cli query commands for this module

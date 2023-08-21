@@ -6,7 +6,7 @@ import (
 
 	"github.com/tendermint/tendermint/libs/log"
 
-	"github.com/AstraProtocol/astra/v2/x/feeburn/types"
+	"github.com/AstraProtocol/astra/v3/x/feeburn/types"
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
@@ -15,7 +15,7 @@ import (
 type (
 	Keeper struct {
 		cdc              codec.BinaryCodec
-		storeKey         sdk.StoreKey
+		storeKey         storetypes.StoreKey
 		paramstore       paramtypes.Subspace
 		bankKeeper       types.BankKeeper
 		feeCollectorName string

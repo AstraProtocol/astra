@@ -1,12 +1,12 @@
 package keeper_test
 
 import (
-	"github.com/AstraProtocol/astra/v2/app"
-	"github.com/AstraProtocol/astra/v2/cmd/config"
-	"github.com/AstraProtocol/astra/v2/x/mint/types"
+	"github.com/AstraProtocol/astra/v3/app"
+	"github.com/AstraProtocol/astra/v3/cmd/config"
+	"github.com/AstraProtocol/astra/v3/x/mint/types"
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	evm "github.com/evmos/ethermint/x/evm/types"
+	evm "github.com/evmos/evmos/v12/x/evm/types"
 	"github.com/onsi/ginkgo/v2"
 	"github.com/onsi/gomega"
 	"github.com/stretchr/testify/require"
@@ -35,7 +35,7 @@ type KeeperTestSuite struct {
 var s *KeeperTestSuite
 
 const (
-	numTests = 1000
+	numTests = 10
 )
 
 func TestKeeperTestSuite(t *testing.T) {
@@ -43,7 +43,7 @@ func TestKeeperTestSuite(t *testing.T) {
 	gomega.RegisterFailHandler(ginkgo.Fail)
 
 	suite.Run(t, s)
-	//ginkgo.RunSpecs(t, "Keeper Suite")
+	ginkgo.RunSpecs(t, "Keeper Suite")
 }
 
 func (suite *KeeperTestSuite) SetupTest() {

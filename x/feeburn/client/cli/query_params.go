@@ -3,7 +3,7 @@ package cli
 import (
 	"context"
 
-	"github.com/AstraProtocol/astra/v2/x/feeburn/types"
+	"github.com/AstraProtocol/astra/v3/x/feeburn/types"
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/spf13/cobra"

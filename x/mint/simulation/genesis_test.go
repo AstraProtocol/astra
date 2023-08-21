@@ -1,14 +1,15 @@
 package simulation_test
 
 import (
+	"cosmossdk.io/math"
 	"encoding/json"
 	"math/rand"
 	"testing"
 
 	"github.com/stretchr/testify/require"
 
-	"github.com/AstraProtocol/astra/v2/x/mint/simulation"
-	"github.com/AstraProtocol/astra/v2/x/mint/types"
+	"github.com/AstraProtocol/astra/v3/x/mint/simulation"
+	"github.com/AstraProtocol/astra/v3/x/mint/types"
 	"github.com/cosmos/cosmos-sdk/codec"
 	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -31,7 +32,7 @@ func TestRandomizedGenState(t *testing.T) {
 		Rand:         r,
 		NumBonded:    3,
 		Accounts:     simtypes.RandomAccounts(r, 3),
-		InitialStake: 1000,
+		InitialStake: math.NewInt(1000),
 		GenState:     make(map[string]json.RawMessage),
 	}
 

@@ -2,26 +2,25 @@ package tests
 
 import (
 	"fmt"
-	"github.com/AstraProtocol/astra/v2/app"
-	"github.com/AstraProtocol/astra/v2/app/ante"
-	"github.com/AstraProtocol/astra/v2/cmd/config"
+	"github.com/AstraProtocol/astra/v3/app"
+	"github.com/AstraProtocol/astra/v3/app/ante"
+	"github.com/AstraProtocol/astra/v3/cmd/config"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	"github.com/ethereum/go-ethereum/common"
 	ethtypes "github.com/ethereum/go-ethereum/core/types"
-	"github.com/evmos/ethermint/encoding"
-	evmtypes "github.com/evmos/ethermint/x/evm/types"
+	"github.com/evmos/evmos/v12/encoding"
+	utiltx "github.com/evmos/evmos/v12/testutil/tx"
+	evmtypes "github.com/evmos/evmos/v12/x/evm/types"
 	"github.com/stretchr/testify/suite"
 	"math/big"
 	"testing"
 	"time"
 
-	"github.com/AstraProtocol/astra/v2/testutil"
-	"github.com/evmos/ethermint/tests"
-
+	"github.com/AstraProtocol/astra/v3/testutil"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkvesting "github.com/cosmos/cosmos-sdk/x/auth/vesting/types"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
-	"github.com/evmos/evmos/v6/x/vesting/types"
+	"github.com/evmos/evmos/v12/x/vesting/types"
 )
 
 func TestVestingTestingSuite(t *testing.T) {
@@ -71,9 +70,9 @@ func (suite *KeeperTestSuite) TestCrawbackVestingAccountsTokens() {
 		vested          sdk.Coins
 		unlocked        sdk.Coins
 	)
-	grantee := sdk.AccAddress(tests.GenerateAddress().Bytes())
-	funder := sdk.AccAddress(tests.GenerateAddress().Bytes())
-	dest := sdk.AccAddress(tests.GenerateAddress().Bytes())
+	grantee := sdk.AccAddress(utiltx.GenerateAddress().Bytes())
+	funder := sdk.AccAddress(utiltx.GenerateAddress().Bytes())
+	dest := sdk.AccAddress(utiltx.GenerateAddress().Bytes())
 
 	testCases := []struct {
 		name     string
@@ -162,7 +161,7 @@ func (suite *KeeperTestSuite) TestCrawbackVestingAccountsTokens() {
 				vesting = clawbackAccount.GetVestingCoins(suite.ctx.BlockTime())
 				expVestedAmount := amt.Mul(sdk.NewInt(lockup))
 				expVested := sdk.NewCoins(sdk.NewCoin(stakeDenom, expVestedAmount))
-				unvested := vestingAmtTotal.Sub(vested)
+				unvested := vestingAmtTotal.Sub(vested...)
 				suite.Require().Equal(free, vested)
 				suite.Require().Equal(expVested, vested)
 				suite.Require().True(expVestedAmount.GT(sdk.NewInt(0)))
@@ -201,7 +200,7 @@ func (suite *KeeperTestSuite) TestCrawbackVestingAccountsTokens() {
 				free := clawbackAccount.GetVestedCoins(suite.ctx.BlockTime())
 				vesting = clawbackAccount.GetVestingCoins(suite.ctx.BlockTime())
 				expVested := sdk.NewCoins(sdk.NewCoin(stakeDenom, amt.Mul(sdk.NewInt(periodsTotal))))
-				unvested := vestingAmtTotal.Sub(vested)
+				unvested := vestingAmtTotal.Sub(vested...)
 				suite.Require().Equal(free, vested)
 				suite.Require().Equal(expVested, vested)
 				suite.Require().Equal(expVested, vestingAmtTotal)
@@ -247,7 +246,7 @@ func (suite *KeeperTestSuite) TestCrawbackVestingAccountsTokens() {
 			suite.Require().Equal(balanceGrantee, sdk.NewInt64Coin(stakeDenom, 0))
 			suite.Require().Equal(balanceDest, sdk.NewInt64Coin(stakeDenom, 0))
 
-			msg := types.NewMsgCreateClawbackVestingAccount(funder, grantee, vestingStart, lockupPeriods, vestingPeriods)
+			msg := types.NewMsgCreateClawbackVestingAccount(funder, grantee, vestingStart, lockupPeriods, vestingPeriods, false)
 
 			_, err := suite.app.VestingKeeper.CreateClawbackVestingAccount(ctx, msg)
 			suite.Require().NoError(err)
@@ -331,7 +330,7 @@ func (suite *KeeperTestSuite) TestCrawbackVestingAccounts() {
 				err = suite.app.BankKeeper.SendCoins(
 					suite.ctx,
 					addr,
-					tests.GenerateAddress().Bytes(),
+					utiltx.GenerateAddress().Bytes(),
 					unvested,
 				)
 				suite.Require().Error(err, "cannot transfer tokens")
@@ -359,7 +358,7 @@ func (suite *KeeperTestSuite) TestCrawbackVestingAccounts() {
 				err = suite.app.BankKeeper.SendCoins(
 					suite.ctx,
 					addr,
-					tests.GenerateAddress().Bytes(),
+					utiltx.GenerateAddress().Bytes(),
 					vested,
 				)
 
@@ -393,7 +392,7 @@ func (suite *KeeperTestSuite) TestCrawbackVestingAccounts() {
 				err = suite.app.BankKeeper.SendCoins(
 					suite.ctx,
 					addr,
-					tests.GenerateAddress().Bytes(),
+					utiltx.GenerateAddress().Bytes(),
 					vested,
 				)
 				suite.Require().NoError(err, "can transfer vested tokens")
@@ -401,7 +400,7 @@ func (suite *KeeperTestSuite) TestCrawbackVestingAccounts() {
 				err = suite.app.BankKeeper.SendCoins(
 					suite.ctx,
 					addr,
-					tests.GenerateAddress().Bytes(),
+					utiltx.GenerateAddress().Bytes(),
 					unvested,
 				)
 				suite.Require().Error(err, "cannot transfer unvested tokens")
@@ -473,8 +472,18 @@ func (suite *KeeperTestSuite) performEthTx(clawbackAccount *types.ClawbackVestin
 	from := common.BytesToAddress(addr.Bytes())
 	nonce := suite.app.EvmKeeper.GetNonce(suite.ctx, from)
 
-	msgEthereumTx := evmtypes.NewTx(chainID, nonce, &from, nil, 100000, nil,
-		suite.app.FeeMarketKeeper.GetBaseFee(suite.ctx), big.NewInt(1), nil, &ethtypes.AccessList{})
+	msgEthereumTx := evmtypes.NewTx(&evmtypes.EvmTxArgs{
+		Nonce:     nonce,
+		GasLimit:  100000,
+		Input:     nil,
+		GasFeeCap: suite.app.FeeMarketKeeper.GetBaseFee(suite.ctx),
+		GasPrice:  nil,
+		ChainID:   chainID,
+		Amount:    nil,
+		GasTipCap: big.NewInt(1),
+		To:        &from,
+		Accesses:  &ethtypes.AccessList{},
+	})
 	msgEthereumTx.From = from.String()
 
 	encodingConfig := encoding.MakeConfig(app.ModuleBasics)

@@ -4,7 +4,7 @@ package astra.mint.v1;
 import "gogoproto/gogo.proto";
 import "astra/mint/v1/mint.proto";
 
-option go_package = "github.com/AstraProtocol/astra/v2/x/mint/types";
+option go_package = "github.com/AstraProtocol/astra/v3/x/mint/types";
 
 // GenesisState defines the mint module's genesis state.
 message GenesisState {

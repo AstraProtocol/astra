@@ -1,8 +1,8 @@
 package keeper_test
 
 import (
-	"github.com/AstraProtocol/astra/v2/cmd/config"
-	"github.com/AstraProtocol/astra/v2/x/feeburn/types"
+	"github.com/AstraProtocol/astra/v3/cmd/config"
+	"github.com/AstraProtocol/astra/v3/x/feeburn/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	minttypes "github.com/cosmos/cosmos-sdk/x/mint/types"
@@ -55,7 +55,7 @@ func (suite *KeeperTestSuite) TestBurnSuccess() {
 			supplyAfter := suite.app.BankKeeper.GetSupply(suite.ctx, config.BaseDenom)
 			totalFeeBurn := params.FeeBurn.MulInt(sdk.NewInt(int64(i))).RoundInt()
 			suite.Require().Equal(supplyBefore.Amount.Sub(totalFeeBurn), supplyAfter.Amount)
-			suite.Require().Equal(true, totalFeeBurn.ToDec().Equal(totalFeeBurnAfter.Sub(totalFeeBurnBefore)))
+			suite.Require().Equal(true, sdk.NewDecFromInt(totalFeeBurn).Equal(totalFeeBurnAfter.Sub(totalFeeBurnBefore)))
 		}
 	}
 }
@@ -84,7 +84,7 @@ func (suite *KeeperTestSuite) TestBurnWhenFeeNegative() {
 			// when fee is negative then fee burn is zero
 			totalFeeBurn := params.FeeBurn.MulInt(sdk.NewInt(int64(0))).RoundInt()
 			suite.Require().Equal(supplyBefore.Amount.Sub(totalFeeBurn), supplyAfter.Amount)
-			suite.Require().Equal(true, totalFeeBurn.ToDec().Equal(totalFeeBurnAfter.Sub(totalFeeBurnBefore)))
+			suite.Require().Equal(true, sdk.NewDecFromInt(totalFeeBurn).Equal(totalFeeBurnAfter.Sub(totalFeeBurnBefore)))
 		}
 	}
 }
@@ -117,7 +117,7 @@ func (suite *KeeperTestSuite) TestBurnWhenManyFeeDenom() {
 				totalFeeBurn = params.FeeBurn.MulInt(sdk.NewInt(int64(0))).RoundInt()
 			}
 			suite.Require().Equal(supplyBefore.Amount.Sub(totalFeeBurn), supplyAfter.Amount)
-			suite.Require().Equal(true, totalFeeBurn.ToDec().Equal(totalFeeBurnAfter.Sub(totalFeeBurnBefore)))
+			suite.Require().Equal(true, sdk.NewDecFromInt(totalFeeBurn).Equal(totalFeeBurnAfter.Sub(totalFeeBurnBefore)))
 		}
 	}
 }

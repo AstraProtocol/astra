@@ -2,9 +2,9 @@ package keeper
 
 import (
 	"context"
-	"github.com/AstraProtocol/astra/v2/cmd/config"
+	"github.com/AstraProtocol/astra/v3/cmd/config"
 
-	"github.com/AstraProtocol/astra/v2/x/mint/types"
+	"github.com/AstraProtocol/astra/v3/x/mint/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
@@ -67,7 +67,7 @@ func (k Keeper) CirculatingSupply(
 	ctx := sdk.UnwrapSDKContext(c)
 	circulatingSupply := k.StakingTokenSupply(ctx)
 
-	coin := sdk.NewDecCoinFromDec(config.BaseDenom, circulatingSupply.ToDec())
+	coin := sdk.NewDecCoinFromDec(config.BaseDenom, sdk.NewDecFromInt(circulatingSupply))
 
 	return &types.QueryCirculatingSupplyResponse{CirculatingSupply: coin}, nil
 }

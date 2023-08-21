@@ -1,9 +1,9 @@
 package mint
 
 import (
+	"github.com/AstraProtocol/astra/v3/x/mint/keeper"
+	"github.com/AstraProtocol/astra/v3/x/mint/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/AstraProtocol/astra/v2/x/mint/keeper"
-	"github.com/AstraProtocol/astra/v2/x/mint/types"
 )
 
 // InitGenesis new mint genesis

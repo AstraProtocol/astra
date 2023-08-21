@@ -1,8 +1,8 @@
 package keeper_test
 
 import (
-	"github.com/AstraProtocol/astra/v2/x/mint/keeper"
-	"github.com/AstraProtocol/astra/v2/x/mint/types"
+	"github.com/AstraProtocol/astra/v3/x/mint/keeper"
+	"github.com/AstraProtocol/astra/v3/x/mint/types"
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	abci "github.com/tendermint/tendermint/abci/types"
