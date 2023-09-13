@@ -68,9 +68,6 @@ func (options HandlerOptions) Validate() error {
 	if options.EvmKeeper == nil {
 		return sdkerrors.Wrap(sdkerrors.ErrLogic, "evm keeper is required for AnteHandler")
 	}
-	if options.TxFeeChecker == nil {
-		return sdkerrors.Wrap(sdkerrors.ErrLogic, "tx fee checker is required for AnteHandler")
-	}
 	return nil
 }
 

@@ -12,7 +12,6 @@ import (
 	govclient "github.com/cosmos/cosmos-sdk/x/gov/client"
 	govv1beta1 "github.com/cosmos/cosmos-sdk/x/gov/types/v1beta1"
 	ibctestingtypes "github.com/cosmos/ibc-go/v6/testing/types"
-	evmante "github.com/evmos/evmos/v12/app/ante/evm"
 	"github.com/evmos/evmos/v12/x/erc20"
 	erc20client "github.com/evmos/evmos/v12/x/erc20/client"
 	erc20keeper "github.com/evmos/evmos/v12/x/erc20/keeper"
@@ -724,7 +723,7 @@ func NewAstraApp(
 		SigGasConsumer:     SigVerificationGasConsumer,
 		Cdc:                appCodec,
 		MaxTxGasWanted:     maxGasWanted,
-		TxFeeChecker:       evmante.NewDynamicFeeChecker(app.EvmKeeper),
+		TxFeeChecker:       nil,
 	}
 
 	if err := options.Validate(); err != nil {
