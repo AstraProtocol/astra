@@ -5,12 +5,14 @@ import (
 	"encoding/json"
 	v1 "github.com/AstraProtocol/astra/v3/app/upgrades/v1"
 	v3 "github.com/AstraProtocol/astra/v3/app/upgrades/v3"
+	v31 "github.com/AstraProtocol/astra/v3/app/upgrades/v3_1"
 	"github.com/cosmos/cosmos-sdk/client/grpc/node"
 	storetypes "github.com/cosmos/cosmos-sdk/store/types"
 	authsims "github.com/cosmos/cosmos-sdk/x/auth/simulation"
 	govclient "github.com/cosmos/cosmos-sdk/x/gov/client"
 	govv1beta1 "github.com/cosmos/cosmos-sdk/x/gov/types/v1beta1"
 	ibctestingtypes "github.com/cosmos/ibc-go/v6/testing/types"
+	evmante "github.com/evmos/evmos/v12/app/ante/evm"
 	"github.com/evmos/evmos/v12/x/erc20"
 	erc20client "github.com/evmos/evmos/v12/x/erc20/client"
 	erc20keeper "github.com/evmos/evmos/v12/x/erc20/keeper"
@@ -722,6 +724,7 @@ func NewAstraApp(
 		SigGasConsumer:     SigVerificationGasConsumer,
 		Cdc:                appCodec,
 		MaxTxGasWanted:     maxGasWanted,
+		TxFeeChecker:       evmante.NewDynamicFeeChecker(app.EvmKeeper),
 	}
 
 	if err := options.Validate(); err != nil {
@@ -1001,6 +1004,14 @@ func (app *Astra) setupUpgradeHandlers() {
 		v3.CreateUpgradeHandler(
 			app.mm, app.configurator,
 			app.StakingKeeper,
+		),
+	)
+
+	app.UpgradeKeeper.SetUpgradeHandler(
+		v31.UpgradeName,
+		v31.CreateUpgradeHandler(
+			app.mm,
+			app.configurator,
 		),
 	)
 }
