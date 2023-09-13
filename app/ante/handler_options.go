@@ -39,6 +39,7 @@ type HandlerOptions struct {
 	SigGasConsumer     func(meter sdk.GasMeter, sig signing.SignatureV2, params authtypes.Params) error
 	Cdc                codec.BinaryCodec
 	MaxTxGasWanted     uint64
+	TxFeeChecker       anteutils.TxFeeChecker
 }
 
 // Validate checks if the keepers are defined
@@ -109,8 +110,8 @@ func newCosmosAnteHandler(options HandlerOptions) sdk.AnteHandler {
 		ante.NewTxTimeoutHeightDecorator(),
 		ante.NewValidateMemoDecorator(options.AccountKeeper),
 		ante.NewConsumeGasForTxSizeDecorator(options.AccountKeeper),
-		ante.NewDeductFeeDecorator(options.AccountKeeper, options.BankKeeper,
-			options.FeegrantKeeper, nil), // see https://github.com/cosmos/cosmos-sdk/blob/release/v0.46.x/CHANGELOG.md#api-breaking-changes-5
+		cosmosante.NewDeductFeeDecorator(options.AccountKeeper, options.BankKeeper,
+			options.DistributionKeeper, options.FeegrantKeeper, options.StakingKeeper, options.TxFeeChecker),
 		feeburnante.NewFeeBurnDecorator(options.BankKeeperFork, options.FeeBurnKeeper),
 		NewVestingDelegationDecorator(options.AccountKeeper, options.StakingKeeper, options.Cdc), // TODO(thanhnv): sync with evmos
 		// SetPubKeyDecorator must be called before all signature verification decorators
@@ -140,8 +141,8 @@ func newCosmosAnteHandlerEip712(options HandlerOptions) sdk.AnteHandler {
 		ante.NewTxTimeoutHeightDecorator(),
 		ante.NewValidateMemoDecorator(options.AccountKeeper),
 		ante.NewConsumeGasForTxSizeDecorator(options.AccountKeeper),
-		ante.NewDeductFeeDecorator(options.AccountKeeper, options.BankKeeper,
-			options.FeegrantKeeper, nil),
+		cosmosante.NewDeductFeeDecorator(options.AccountKeeper, options.BankKeeper,
+			options.DistributionKeeper, options.FeegrantKeeper, options.StakingKeeper, options.TxFeeChecker),
 		feeburnante.NewFeeBurnDecorator(options.BankKeeperFork, options.FeeBurnKeeper),
 		NewVestingDelegationDecorator(options.AccountKeeper, options.StakingKeeper, options.Cdc), //TODO(vesting delegation)
 		// SetPubKeyDecorator must be called before all signature verification decorators

@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	v1 "github.com/AstraProtocol/astra/v3/app/upgrades/v1"
 	v3 "github.com/AstraProtocol/astra/v3/app/upgrades/v3"
+	v31 "github.com/AstraProtocol/astra/v3/app/upgrades/v3_1"
 	"github.com/cosmos/cosmos-sdk/client/grpc/node"
 	storetypes "github.com/cosmos/cosmos-sdk/store/types"
 	authsims "github.com/cosmos/cosmos-sdk/x/auth/simulation"
@@ -722,6 +723,7 @@ func NewAstraApp(
 		SigGasConsumer:     SigVerificationGasConsumer,
 		Cdc:                appCodec,
 		MaxTxGasWanted:     maxGasWanted,
+		TxFeeChecker:       nil,
 	}
 
 	if err := options.Validate(); err != nil {
@@ -1001,6 +1003,14 @@ func (app *Astra) setupUpgradeHandlers() {
 		v3.CreateUpgradeHandler(
 			app.mm, app.configurator,
 			app.StakingKeeper,
+		),
+	)
+
+	app.UpgradeKeeper.SetUpgradeHandler(
+		v31.UpgradeName,
+		v31.CreateUpgradeHandler(
+			app.mm,
+			app.configurator,
 		),
 	)
 }
