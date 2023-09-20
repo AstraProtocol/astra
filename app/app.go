@@ -1011,6 +1011,7 @@ func (app *Astra) setupUpgradeHandlers() {
 		v31.CreateUpgradeHandler(
 			app.mm,
 			app.configurator,
+			app.StakingKeeper,
 		),
 	)
 }

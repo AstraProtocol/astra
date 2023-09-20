@@ -1,6 +1,7 @@
 package v3
 
 import (
+	"github.com/AstraProtocol/astra/v3/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
 	stakingkeeper "github.com/cosmos/cosmos-sdk/x/staking/keeper"
@@ -17,7 +18,10 @@ func CreateUpgradeHandler(
 	return func(ctx sdk.Context, _ upgradetypes.Plan, vm module.VersionMap) (module.VersionMap, error) {
 		logger := ctx.Logger().With("upgrade", UpgradeName)
 
-		setMinCommissionRate(ctx, stakingKeeper)
+		// !mainnet only
+		if !types.IsMainnet(ctx.ChainID()) {
+			setMinCommissionRate(ctx, stakingKeeper)
+		}
 
 		// Leave modules are as-is to avoid running InitGenesis.
 		logger.Debug("running module migrations ...")
