@@ -3,7 +3,7 @@ module github.com/AstraProtocol/astra/v3
 go 1.18
 
 require (
-	cosmossdk.io/math v1.0.0-rc.0
+	cosmossdk.io/math v1.1.3-rc.1
 	github.com/cosmos/cosmos-sdk v0.46.13
 	github.com/cosmos/go-bip39 v1.0.0
 	github.com/cosmos/ibc-go/v6 v6.2.0
@@ -19,7 +19,7 @@ require (
 	github.com/rakyll/statik v0.1.7
 	github.com/spf13/cast v1.5.0
 	github.com/spf13/cobra v1.7.0
-	github.com/stretchr/testify v1.8.2
+	github.com/stretchr/testify v1.8.4
 	github.com/tendermint/tendermint v0.34.28
 	github.com/tendermint/tm-db v0.6.7
 	go.opencensus.io v0.24.0
